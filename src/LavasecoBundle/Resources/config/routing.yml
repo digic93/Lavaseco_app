@@ -1,0 +1,12 @@
+lavaseco_homepage:
+    path:     /
+    defaults: { _controller: LavasecoBundle:Home:index }
+
+lavaseco_sales:
+    path:     /venta
+    defaults: { _controller: LavasecoBundle:Sale:index }
+
+lavaseco_api_services_by_categoryid:
+    path:     /service/category/{categoryId}
+    defaults: { _controller: LavasecoBundle:Service:getByCategoryId, categoryId:0}
+    methods:  [GET]

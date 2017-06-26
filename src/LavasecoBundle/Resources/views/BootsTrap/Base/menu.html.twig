@@ -1,0 +1,53 @@
+<style>
+    .btn_log_out:hover{
+        border: ridge;
+        border-width: 2px;
+        border-color: #2e6da4;
+        padding-top: 10px !important; 
+        padding-bottom: 10px !important;
+        margin-top: 3px;
+        margin-right: 0px;
+    }
+
+    .btn_log_in:hover{
+        border: ridge;
+        border-width: 2px;
+        border-color: #5cb85c;
+        padding-top: 10px !important; 
+        padding-bottom: 10px !important;
+        margin-top: 3px;
+        margin-right: 0px;
+    }
+</style>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ path("lavaseco_homepage") }}"><span class="glyphicon glyphicon-leaf" aria-hidden="true"></span> Lavaseco Modelo</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                    <li><p class="navbar-text"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ app.user.firstName }} {{ app.user.lastName }}</p></li>
+                    {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                    <li><a href="{{ path('fos_user_security_logout') }}" class="btn_log_out">Cerrar sesión <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> </a></li>
+                    {% else %}
+                    <li><a href="{{ path('fos_user_security_login') }}" class="btn_log_in">Iniciar sesión <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </a></li>
+                    {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div style="margin-bottom: 55px;">
+</div>

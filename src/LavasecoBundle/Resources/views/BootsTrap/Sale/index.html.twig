@@ -1,0 +1,232 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <style>
+        .service:hover
+        {
+            cursor: pointer;
+            border-color: #5cb85c;
+        }
+
+        .detail_item:hover{
+            cursor: pointer;
+            background-color: rgba(255, 0, 0, 0.14);
+        }
+
+    </style>
+{% endblock %} 
+
+{% block body %} 
+    <h1>Ventas</h1>
+    <hr>
+    <div class="row">
+        <!--Productos por categoria-->
+        <div class="col-md-8">  
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-cubes" aria-hidden="true"></i> Servicios</h3>
+                </div>  
+                <div class="panel-body">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Buscar...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </span>
+                    </div>
+                    <br>
+
+                    <div class="btn-group text-center" role="group">
+                        {% for serviceCategory in serviceCagories %}
+                            <button type="button" class="btn btn-default" onClick="getServiceByCategoryId({{ serviceCategory.id }});" >
+                                <img src="{{ asset( serviceCategory.img ) }}" style="width: 30px;" /> {{ serviceCategory.name }}
+                            </button>
+                        {% endfor %}        
+                    </div>
+
+                    <hr>
+                    <div id="servicesItems">
+                        <div class="col-sm-6 col-md-4 service-itm" data-service-id="1" data-service-name="Lavado Prenda Sencilla" data-service-price="4000">                        <div class="thumbnail service">                            <img src="/serviceImg/servicio.jpg" alt="img">                            <h5 class="text-center">Lavado Prenda Sencilla</h5>                        </div>                    </div><div class="col-sm-6 col-md-4 service-itm" data-service-id="2" data-service-name="Lavado Prenda Compuesta" data-service-price="6500">                        <div class="thumbnail service">                            <img src="/serviceImg/servicio.jpg" alt="img">                            <h5 class="text-center">Lavado Prenda Compuesta</h5>                        </div>                    </div><div class="col-sm-6 col-md-4 service-itm" data-service-id="5" data-service-name="Lavado Cobija Pequeña" data-service-price="5000">                        <div class="thumbnail service">                            <img src="/serviceImg/servicio.jpg" alt="img">                            <h5 class="text-center">Lavado Cobija Pequeña</h5>                        </div>                    </div><div class="col-sm-6 col-md-4 service-itm" data-service-id="6" data-service-name="Lavado Cobija Mediana" data-service-price="10000">                        <div class="thumbnail service">                            <img src="/serviceImg/servicio.jpg" alt="img">                            <h5 class="text-center">Lavado Cobija Mediana</h5>                        </div>                    </div><div class="col-sm-6 col-md-4 service-itm" data-service-id="7" data-service-name="Lavado Cobija Grande" data-service-price="15000">                        <div class="thumbnail service">                            <img src="/serviceImg/servicio.jpg" alt="img">                            <h5 class="text-center">Lavado Cobija Grande</h5>                        </div>                    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Factura-->
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-file-text" aria-hidden="true"></i> Factura</h3>
+                </div>
+                <div class="panel-body">
+                    <h2 class="text-center">Lavaseco Modelo</h2>
+                    <h4 class="text-center">Nit 51918156</h4>
+                    <h6 class="text-center">calle 68 # 55-21</h6>
+                    <hr>
+                    <p>
+                        Orden: #0325-03-29<br>
+                        Cajero: {{ app.user.firstName }} {{ app.user.lastName }}<br>
+                        TV:tableta
+                    </p>
+                    <hr>
+                    <p>
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr style="border-bottom-style: solid; border-bottom-width: 1px">
+                                <th class="text-center">Servicio</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">Precio</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr style="border-top-style: solid; border-top-width: 1px">
+                                <td><strong>Total</strong></td>
+                                <td></td>
+                                <td id="totalBill" class="text-right"><strong>$0</strong></td>
+                            </tr>
+                        </tfoot>
+                        <tbody id="billDetail">
+                        </tbody>
+                    </table>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="serviceQuantity" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="titleModal" class="modal-title" id="gridSystemModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-success" type="button" onclick="quantityModal(false)"><i class="fa fa-minus" aria-hidden="true"></i></button>
+                        </span>
+                        <input id="quantityModal"type="text" class="form-control text-center" value="1">
+                        <span class="input-group-btn">
+                            <button class="btn btn-success" type="button" onclick="quantityModal(true);"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                        </span>
+                    </div>
+                    <hr>
+                    <p id="costoUnitarioModal"></p>
+                    <p id="costoTotalModal"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="addService();">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script>
+        var bill = [];
+        var serviceName = "";
+
+        var totalBill = 0;
+        var serviceId = 0;
+        var servicePrice = 0;
+
+        function quantityModal(add) {
+            var quantity = parseInt($("#quantityModal").val());
+            if (add) {
+                quantity++;
+            } else {
+                if (quantity <= 1) {
+                    quantity = 1;
+                } else {
+                    quantity--;
+                }
+            }
+            $("#quantityModal").val(quantity);
+            $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(servicePrice * quantity));
+        }
+
+        function addService() {
+            var quantity = parseInt($("#quantityModal").val());
+
+            bill.push([serviceId, quantity]);
+
+            $("#billDetail").append("<tr class=\"detail_item\" data-service-id=\"" + serviceId + "\">\
+                                        <td>" + serviceName + "</td>\
+                                        <td class=\"text-right\">" + quantity + "</td>\
+                                        <td class=\"text-right\">$" + $.number(servicePrice * quantity) + "</td>\
+                                    </tr>");
+
+            totalBill += servicePrice * quantity;
+
+            $("#totalBill").html("<strong>$" + $.number(totalBill) + "</strong>");
+            $('#serviceQuantity').modal('hide');
+
+            serviceId = 0;
+            servicePrice = 0;
+            serviceName = "";
+
+            $("#quantityModal").val(1);
+        }
+
+        function getServiceByCategoryId(categoryId) {
+            $.ajax({
+                url: "{{ path('lavaseco_api_services_by_categoryid') }}/" + categoryId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (services) {
+                    $("#servicesItems").empty();
+
+                    for (var service in services) {
+                        addServiceItem(services[service]);
+                    }
+                }});
+        }
+
+        function addServiceItem(service) {
+            $("#servicesItems").append(
+                    "<div class=\"col-sm-6 col-md-4 service-itm\" \
+                            data-service-id=\"" + service.id + "\" \
+                            data-service-name=\"" + service.name + "\" \
+                            data-service-price=\"" + service.price + "\">\
+                        <div class=\"thumbnail service\">\
+                            <img src=\"{{ asset("serviceImg/servicio.jpg") }}\" alt=\"img\">\
+                            <h5 class=\"text-center\">" + service.name + "</h5>\
+                        </div>\
+                    </div>");
+
+        }
+
+        $(document).ready(function () {
+            $("#quantityModal").number(true);
+
+            $(".service-itm").click(function () {
+                serviceId = $(this).data("serviceId");
+                serviceName = $(this).data("serviceName");
+                servicePrice = parseInt($(this).data("servicePrice"));
+
+                $("#titleModal").html("Agregar " + serviceName);
+                $("#costoUnitarioModal").html("<strong>Precio unitario: </strong> $" + $.number(servicePrice));
+                $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(servicePrice));
+                $('#serviceQuantity').modal('show');
+            });
+
+            $("#quantityModal").on("change paste keyup", function () {
+
+                var quantity = parseInt($("#quantityModal").val());
+
+                if (quantity <= 0) {
+                    $("#quantityModal").val(1);
+                }
+                $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(servicePrice * quantity));
+
+            });
+        });
+    </script>
+{% endblock %}
+

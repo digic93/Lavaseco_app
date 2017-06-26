@@ -1,0 +1,60 @@
+{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+    <script>window.location.href = "{{ path("lavaseco_homepage") }}"</script>
+{% endif %}
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% if error %}
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        {{ error.messageKey|trans(error.messageData, 'security') }}
+    </div>
+{% endif %}
+
+<form class="form-horizontal" action="{{ path("fos_user_security_check") }}" method="post">
+
+    <!-- Form Name -->
+    <legend>Inicia sesión</legend>
+    
+    {% if csrf_token %}
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+    {% endif %}
+    
+    <fieldset>
+        <!-- Text input-->
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="textinput">Correo</label>  
+            <div class="col-md-5">
+                <input id="username" name="_username"type="text" placeholder="ejemplo@email.com" class="form-control input-md" value="{{ last_username }}" required>
+            </div>
+        </div>
+
+        <!-- Password input-->
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="passwordinput">Contraseña</label>
+            <div class="col-md-5">
+                <input id="password" name="_password" type="password" placeholder="Contraseña" class="form-control input-md" required>
+            </div>
+        </div>
+
+        <!-- Multiple Checkboxes (inline) -->
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="checkboxes">Recordarme</label>
+            <div class="col-md-5">
+                <label class="checkbox-inline" for="checkboxes-0">
+                    <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
+                </label>
+            </div>
+        </div>
+        <hr>
+        <!-- Button (Double) -->
+        <div class="form-group">
+            <label class="col-md-7 control-label" for="button1id"></label>
+            <div class="col-md-2">
+                <input type="submit" id="_submit" name="_submit" class="btn btn-success" value="Ingresar" />
+                <a href="" class="btn btn-default">Regresar</a>
+            </div>
+        </div>
+    </fieldset>
+</form>
+<a href="">¿Olvidaste la contraseña?</a>

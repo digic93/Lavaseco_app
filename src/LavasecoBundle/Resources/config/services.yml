@@ -1,0 +1,4 @@
+services:
+    lavaseco.app_configuration:
+        class: LavasecoBundle\Services\AppConfiguration
+        arguments: []
