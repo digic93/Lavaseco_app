@@ -24,30 +24,15 @@ class Service
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=50, unique=true)
-     */
-    private $name;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="price", type="decimal", precision=10, scale=0)
      */
     private $price;
-
+    
     /**
-     * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=150)
+     * @ORM\ManyToOne(targetEntity="AbstractService", inversedBy="services")
+     * @ORM\JoinColumn(name="abstract_service_id", referencedColumnName="id")
      */
-    private $description;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="img", type="string", length=80)
-     */
-    private $img;
+    protected $abstractService;
     
     /**
      * @ORM\ManyToOne(targetEntity="ServiceCategory", inversedBy="services")
@@ -61,11 +46,24 @@ class Service
     protected $billDetails;
     
     /**
-     * @ORM\OneToMany(targetEntity="ServiceAttribute", mappedBy="service")
+     * @ORM\OneToMany(targetEntity="ServiceCategoryState", mappedBy="service")
      */
     protected $serviceAttributes;
+
+    /**
+     * @ORM\OneToMany(targetEntity="StateObjectRecevidService", mappedBy="service")
+     */
+    protected $stateObjectRecevidServices;
     
-    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->billDetails = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->serviceAttributes = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
     /**
      * Get id
      *
@@ -74,30 +72,6 @@ class Service
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Service
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**
@@ -125,51 +99,27 @@ class Service
     }
 
     /**
-     * Set description
+     * Set abstractService
      *
-     * @param string $description
+     * @param \LavasecoBundle\Entity\AbstractService $abstractService
      *
      * @return Service
      */
-    public function setDescription($description)
+    public function setAbstractService(\LavasecoBundle\Entity\AbstractService $abstractService = null)
     {
-        $this->description = $description;
+        $this->abstractService = $abstractService;
 
         return $this;
     }
 
     /**
-     * Get description
+     * Get abstractService
      *
-     * @return string
+     * @return \LavasecoBundle\Entity\AbstractService
      */
-    public function getDescription()
+    public function getAbstractService()
     {
-        return $this->description;
-    }
-
-    /**
-     * Set img
-     *
-     * @param string $img
-     *
-     * @return Service
-     */
-    public function setImg($img)
-    {
-        $this->img = $img;
-
-        return $this;
-    }
-
-    /**
-     * Get img
-     *
-     * @return string
-     */
-    public function getImg()
-    {
-        return $this->img;
+        return $this->abstractService;
     }
 
     /**
@@ -194,13 +144,6 @@ class Service
     public function getServiceCategory()
     {
         return $this->serviceCategory;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->billDetails = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -240,11 +183,11 @@ class Service
     /**
      * Add serviceAttribute
      *
-     * @param \LavasecoBundle\Entity\ServiceAttribute $serviceAttribute
+     * @param \LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute
      *
      * @return Service
      */
-    public function addServiceAttribute(\LavasecoBundle\Entity\ServiceAttribute $serviceAttribute)
+    public function addServiceAttribute(\LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute)
     {
         $this->serviceAttributes[] = $serviceAttribute;
 
@@ -254,9 +197,9 @@ class Service
     /**
      * Remove serviceAttribute
      *
-     * @param \LavasecoBundle\Entity\ServiceAttribute $serviceAttribute
+     * @param \LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute
      */
-    public function removeServiceAttribute(\LavasecoBundle\Entity\ServiceAttribute $serviceAttribute)
+    public function removeServiceAttribute(\LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute)
     {
         $this->serviceAttributes->removeElement($serviceAttribute);
     }

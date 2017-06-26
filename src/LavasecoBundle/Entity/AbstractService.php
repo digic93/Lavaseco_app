@@ -5,12 +5,12 @@ namespace LavasecoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ServiceCategory
+ * AbstractService
  *
- * @ORM\Table(name="service_category")
- * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\ServiceCategoryRepository")
+ * @ORM\Table(name="abstract_service")
+ * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\AbstractServiceRepository")
  */
-class ServiceCategory
+class AbstractService
 {
     /**
      * @var int
@@ -31,40 +31,27 @@ class ServiceCategory
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="img", type="string", length=80)
+     * @ORM\Column(name="img", type="string", length=150, nullable=true)
      */
     private $img;
 
     /**
-     * @ORM\OneToMany(targetEntity="Service", mappedBy="serviceCategory")
+     * @ORM\OneToMany(targetEntity="Service", mappedBy="abstractService")
      */
     protected $services;
-
-    /**
-     * @ORM\OneToMany(targetEntity="ServiceCategory", mappedBy="serviceCategory")
-     */
-    protected $subServiceCategories;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="ServiceCategory", inversedBy="subServiceCategories")
-     * @ORM\JoinColumn(name="service_category_id", referencedColumnName="id")
-     */
-    protected $serviceCategory;
- 
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->subServiceCategories = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -82,7 +69,7 @@ class ServiceCategory
      *
      * @param string $name
      *
-     * @return ServiceCategory
+     * @return AbstractService
      */
     public function setName($name)
     {
@@ -106,7 +93,7 @@ class ServiceCategory
      *
      * @param string $description
      *
-     * @return ServiceCategory
+     * @return AbstractService
      */
     public function setDescription($description)
     {
@@ -130,7 +117,7 @@ class ServiceCategory
      *
      * @param string $img
      *
-     * @return ServiceCategory
+     * @return AbstractService
      */
     public function setImg($img)
     {
@@ -154,7 +141,7 @@ class ServiceCategory
      *
      * @param \LavasecoBundle\Entity\Service $service
      *
-     * @return ServiceCategory
+     * @return AbstractService
      */
     public function addService(\LavasecoBundle\Entity\Service $service)
     {
@@ -181,63 +168,5 @@ class ServiceCategory
     public function getServices()
     {
         return $this->services;
-    }
-
-    /**
-     * Add subServiceCategory
-     *
-     * @param \LavasecoBundle\Entity\ServiceCategory $subServiceCategory
-     *
-     * @return ServiceCategory
-     */
-    public function addSubServiceCategory(\LavasecoBundle\Entity\ServiceCategory $subServiceCategory)
-    {
-        $this->subServiceCategories[] = $subServiceCategory;
-
-        return $this;
-    }
-
-    /**
-     * Remove subServiceCategory
-     *
-     * @param \LavasecoBundle\Entity\ServiceCategory $subServiceCategory
-     */
-    public function removeSubServiceCategory(\LavasecoBundle\Entity\ServiceCategory $subServiceCategory)
-    {
-        $this->subServiceCategories->removeElement($subServiceCategory);
-    }
-
-    /**
-     * Get subServiceCategories
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getSubServiceCategories()
-    {
-        return $this->subServiceCategories;
-    }
-
-    /**
-     * Set serviceCategory
-     *
-     * @param \LavasecoBundle\Entity\ServiceCategory $serviceCategory
-     *
-     * @return ServiceCategory
-     */
-    public function setServiceCategory(\LavasecoBundle\Entity\ServiceCategory $serviceCategory = null)
-    {
-        $this->serviceCategory = $serviceCategory;
-
-        return $this;
-    }
-
-    /**
-     * Get serviceCategory
-     *
-     * @return \LavasecoBundle\Entity\ServiceCategory
-     */
-    public function getServiceCategory()
-    {
-        return $this->serviceCategory;
     }
 }

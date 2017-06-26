@@ -54,13 +54,12 @@ class User extends BaseUser
      * @ORM\OneToMany(targetEntity="BillHistory", mappedBy="user")
      */
     protected $billHistories;
-    
-    public function __construct()
-    {
+
+    public function __construct() {
         parent::__construct();
         
-        $this->saleBills= new ArrayCollection();
-        $this->customerbills= new ArrayCollection();
+        $this->saleBills = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->customerbills = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 
