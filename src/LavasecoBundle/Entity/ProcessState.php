@@ -34,9 +34,17 @@ class ProcessState
     protected $billHistories;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->billHistories = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -65,13 +73,6 @@ class ProcessState
     public function getName()
     {
         return $this->name;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->billHistories = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**

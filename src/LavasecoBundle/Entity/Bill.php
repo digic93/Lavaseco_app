@@ -75,10 +75,14 @@ class Bill
      */
     protected $paymentAgreement;
 
-    
-    public function __construct() {
-        $this->payDetails = new ArrayCollection();
-        $this->billDetails = new ArrayCollection();
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->payDetails = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->billDetails = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->billHistories = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -142,11 +146,11 @@ class Bill
     /**
      * Add payDetail
      *
-     * @param \LavasecoBundle\Entity\PayDetails $payDetail
+     * @param \LavasecoBundle\Entity\PayDetail $payDetail
      *
      * @return Bill
      */
-    public function addPayDetail(\LavasecoBundle\Entity\PayDetails $payDetail)
+    public function addPayDetail(\LavasecoBundle\Entity\PayDetail $payDetail)
     {
         $this->payDetails[] = $payDetail;
 
@@ -156,9 +160,9 @@ class Bill
     /**
      * Remove payDetail
      *
-     * @param \LavasecoBundle\Entity\PayDetails $payDetail
+     * @param \LavasecoBundle\Entity\PayDetail $payDetail
      */
-    public function removePayDetail(\LavasecoBundle\Entity\PayDetails $payDetail)
+    public function removePayDetail(\LavasecoBundle\Entity\PayDetail $payDetail)
     {
         $this->payDetails->removeElement($payDetail);
     }
@@ -208,6 +212,40 @@ class Bill
     }
 
     /**
+     * Add billHistory
+     *
+     * @param \LavasecoBundle\Entity\BillHistory $billHistory
+     *
+     * @return Bill
+     */
+    public function addBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory)
+    {
+        $this->billHistories[] = $billHistory;
+
+        return $this;
+    }
+
+    /**
+     * Remove billHistory
+     *
+     * @param \LavasecoBundle\Entity\BillHistory $billHistory
+     */
+    public function removeBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory)
+    {
+        $this->billHistories->removeElement($billHistory);
+    }
+
+    /**
+     * Get billHistories
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBillHistories()
+    {
+        return $this->billHistories;
+    }
+
+    /**
      * Set sellerUser
      *
      * @param \LavasecoBundle\Entity\User $sellerUser
@@ -229,6 +267,30 @@ class Bill
     public function getSellerUser()
     {
         return $this->sellerUser;
+    }
+
+    /**
+     * Set customerUser
+     *
+     * @param \LavasecoBundle\Entity\User $customerUser
+     *
+     * @return Bill
+     */
+    public function setCustomerUser(\LavasecoBundle\Entity\User $customerUser = null)
+    {
+        $this->customerUser = $customerUser;
+
+        return $this;
+    }
+
+    /**
+     * Get customerUser
+     *
+     * @return \LavasecoBundle\Entity\User
+     */
+    public function getCustomerUser()
+    {
+        return $this->customerUser;
     }
 
     /**
@@ -277,63 +339,5 @@ class Bill
     public function getPaymentAgreement()
     {
         return $this->paymentAgreement;
-    }
-
-    /**
-     * Set customerUser
-     *
-     * @param \LavasecoBundle\Entity\User $customerUser
-     *
-     * @return Bill
-     */
-    public function setCustomerUser(\LavasecoBundle\Entity\User $customerUser = null)
-    {
-        $this->customerUser = $customerUser;
-
-        return $this;
-    }
-
-    /**
-     * Get customerUser
-     *
-     * @return \LavasecoBundle\Entity\User
-     */
-    public function getCustomerUser()
-    {
-        return $this->customerUser;
-    }
-
-    /**
-     * Add billHistory
-     *
-     * @param \LavasecoBundle\Entity\BillHistory $billHistory
-     *
-     * @return Bill
-     */
-    public function addBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory)
-    {
-        $this->billHistories[] = $billHistory;
-
-        return $this;
-    }
-
-    /**
-     * Remove billHistory
-     *
-     * @param \LavasecoBundle\Entity\BillHistory $billHistory
-     */
-    public function removeBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory)
-    {
-        $this->billHistories->removeElement($billHistory);
-    }
-
-    /**
-     * Get billHistories
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getBillHistories()
-    {
-        return $this->billHistories;
     }
 }

@@ -3,15 +3,14 @@
 namespace LavasecoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * PaymentAgreement
+ * Attribute
  *
- * @ORM\Table(name="payment_agreement")
- * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\PaymentAgreementRepository")
+ * @ORM\Table(name="attribute")
+ * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\CategoryStateObjectRepository")
  */
-class PaymentAgreement
+class CategoryStateObject
 {
     /**
      * @var int
@@ -28,10 +27,9 @@ class PaymentAgreement
      * @ORM\Column(name="name", type="string", length=50, unique=true)
      */
     private $name;
-    
-    /**
-     * @ORM\OneToMany(targetEntity="Bill", mappedBy="paymentAgreement")
-     */
-    protected $bills;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ServiceCategoryState", mappedBy="categoryStateObject")
+     */
+    protected $serviceCategoryStates;
 }

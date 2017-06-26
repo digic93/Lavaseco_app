@@ -46,14 +46,13 @@ class BillDetail
      * @ORM\JoinColumn(name="service_id", referencedColumnName="id")
      */
     protected $service;
-
+    
     /**
-     * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="billDetails")
-     * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity="StateObjectRecevidService", mappedBy="billDetail")
      */
-    protected $attribute;
+    protected $stateObjectRecevidServices;
     
-    
+
     /**
      * Get id
      *
@@ -158,29 +157,5 @@ class BillDetail
     public function getService()
     {
         return $this->service;
-    }
-
-    /**
-     * Set attribute
-     *
-     * @param \LavasecoBundle\Entity\Attribute $attribute
-     *
-     * @return BillDetail
-     */
-    public function setAttribute(\LavasecoBundle\Entity\Attribute $attribute = null)
-    {
-        $this->attribute = $attribute;
-
-        return $this;
-    }
-
-    /**
-     * Get attribute
-     *
-     * @return \LavasecoBundle\Entity\Attribute
-     */
-    public function getAttribute()
-    {
-        return $this->attribute;
     }
 }

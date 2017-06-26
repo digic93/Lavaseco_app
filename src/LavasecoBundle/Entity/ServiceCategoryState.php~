@@ -1,0 +1,35 @@
+<?php
+
+namespace LavasecoBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * ServiceAttribute
+ *
+ * @ORM\Table(name="service_category_state")
+ * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\ServiceCategoryStateRepository")
+ */
+class ServiceCategoryState
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Service", inversedBy="serviceAttributes")
+     * @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     */
+    protected $service;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="CategoryStateObject", inversedBy="serviceCategoryStates")
+     * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id")
+     */
+    protected $categoryStateObject;
+}

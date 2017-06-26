@@ -47,7 +47,7 @@ class PayDetail
      * @ORM\JoinColumn(name="pay_method_id", referencedColumnName="id")
      */
     protected $payMethod;
-    
+ 
 
     /**
      * Get id

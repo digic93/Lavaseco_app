@@ -34,8 +34,12 @@ class PaymentAgreement
      */
     protected $bills;
 
-    public function __construct() {
-        $this->bills = new ArrayCollection();
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->bills = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**

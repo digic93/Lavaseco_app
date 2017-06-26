@@ -33,9 +33,12 @@ class PayMethod
      * @ORM\OneToMany(targetEntity="PayDetail", mappedBy="payMethod")
      */
     protected $payDetails;
-
-    public function __construct() {
-        $this->payDetails = new ArrayCollection();
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->payDetails = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**

@@ -32,9 +32,12 @@ class BillState
      * @ORM\OneToMany(targetEntity="Bill", mappedBy="billState")
      */
     protected $bills;
-
-    public function __construct() {
-        $this->bills = new ArrayCollection();
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->bills = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
