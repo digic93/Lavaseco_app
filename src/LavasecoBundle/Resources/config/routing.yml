@@ -6,6 +6,10 @@ lavaseco_sales:
     path:     /venta
     defaults: { _controller: LavasecoBundle:Sale:index }
 
+lavaseco_settign_bill_content:
+    path:     /configuracion/factura
+    defaults: { _controller: LavasecoBundle:Bill:setting }
+
 lavaseco_api_services_by_categoryid:
     path:     /service/category/{categoryId}
     defaults: { _controller: LavasecoBundle:Service:getByCategoryId, categoryId:0}

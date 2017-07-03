@@ -1,0 +1,134 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <style>
+        textarea {
+            height: 120px !important;
+            width: 297px !important;
+        }
+    </style>
+{% endblock %} 
+
+{% block body %} 
+    <h1>Configuración Contenido Factura</h1>
+    <p>
+        Configura el contenido que va a salir en la factura.    
+    </p>
+    <hr>
+    <div class="row">
+        <!--Formulario contenidio-->
+        <div class="col-md-8">  
+            {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
+            <fieldset>
+
+                <!-- Form Name -->
+                <legend>Informacion de la factura</legend>
+
+                <div class="form-group">
+                    {{ form_errors(form.companyName) }}
+                    <label class="col-md-4 control-label" for="textinput">{{ form_label(form.companyName, 'Nombre de la Compañia') }}</label>  
+                    <div class="col-md-5">
+                        {{ form_widget(form.companyName, {'attr': {'class': 'form-control input-md'} }) }}
+                    </div>
+                </div>
+
+                <!-- Text input-->
+                <div class="form-group">
+                    {{ form_errors(form.fiscalId) }}
+                    <label class="col-md-4 control-label" for="">{{ form_label(form.fiscalId, 'Nit') }}</label>  
+                    <div class="col-md-5">
+                        {{ form_widget(form.fiscalId, {'attr': {'class': 'form-control input-md'} }) }}
+                    </div>
+                </div>
+
+                <!-- Text input-->
+                <div class="form-group">
+                    {{ form_errors(form.address) }}
+                    <label class="col-md-4 control-label" for="textinput">{{ form_label(form.address, 'Dirección') }}</label>  
+                    <div class="col-md-5">
+                        {{ form_widget(form.address, {'attr': {'class': 'form-control input-md'} }) }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_errors(form.head) }}
+                    <label class="col-md-4 control-label" for="textarea">{{ form_label(form.head, 'Cabecera') }}</label>
+                    <div class="col-md-4">         
+                        {{ form_widget(form.head, {'attr': {'class': 'form-control'} }) }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_errors(form.foot) }}
+                    <label class="col-md-4 control-label" for="textarea">{{ form_label(form.foot, 'Pie de pagina') }}</label>
+                    <div class="col-md-4">                     
+                        {{ form_widget(form.foot, {'attr': {'class': 'form-control'} }) }}
+                    </div>
+                </div>
+
+                <!-- Button -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="singlebutton"></label>
+                    <div class="col-md-4">
+                        <input type="submit" id="singlebutton" name="singlebutton" class="btn btn-success" value="Guardar">
+                    </div>
+                </div>
+
+            </fieldset>
+            {{ form_end(form) }}
+        </div>
+
+        <!--Factura-->
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-file-text" aria-hidden="true"></i> Factura</h3>
+                </div>
+                <div class="panel-body">
+                    <h2 class="text-center">Nombre Compañia</h2>
+                    <h4 class="text-center">Nit 000.000.000-0</h4>
+                    <h6 class="text-center">Dirección</h6>
+                    <hr>
+                    <p>
+                        Orden: #0325-03-29<br>
+                        Cajero: {{ app.user.firstName }} {{ app.user.lastName }}<br>
+                        TV:tableta
+                    </p>
+                    <hr>
+                    <p>
+                        cabecera
+                    </p>
+                    <hr>
+                    <p>
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr style="border-bottom-style: solid; border-bottom-width: 1px">
+                                <th class="text-center">Servicio</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">Precio</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr style="border-top-style: solid; border-top-width: 1px">
+                                <td><strong>Total</strong></td>
+                                <td></td>
+                                <td id="totalBill" class="text-right"><strong>$0</strong></td>
+                            </tr>
+                        </tfoot>
+                        <tbody id="billDetail">
+                        </tbody>
+                    </table>
+                    </p>
+                    <hr>
+                    <p>
+                        Pie de pagina
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
