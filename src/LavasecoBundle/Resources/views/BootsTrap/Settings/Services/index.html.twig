@@ -2,10 +2,35 @@
 
 {% block stylesheets %}
     <style>
+        textarea {
+            height: 120px !important;
+            width: 297px !important;
+        }
+
         .treeNode {
             list-style: none;
             margin-left: 0;
             padding-left: 1em;
+        }
+
+        /* layout.css Style */
+        .upload-drop-zone {
+            height: 200px;
+            border-width: 2px;
+            margin-bottom: 20px;
+        }
+
+        /* skin.css Style*/
+        .upload-drop-zone {
+            color: #ccc;
+            border-style: dashed;
+            border-color: #ccc;
+            line-height: 200px;
+            text-align: center
+        }
+        .upload-drop-zone.drop {
+            color: #222;
+            border-color: #222;
         }
     </style>
 {% endblock %} 
@@ -25,7 +50,8 @@
                         <li>
                             <a href="#categori_{{ serviceCagory.id }}" class="list-group-item" 
                                role="button" data-toggle="collapse" href="#categori_{{ serviceCagory.id }}" 
-                               aria-expanded="false" aria-controls="categori_{{ serviceCagory.id }}">
+                               aria-expanded="false" aria-controls="categori_{{ serviceCagory.id }}" 
+                               onclick="editServiceCategory('{{ serviceCagory.name }}', '{{ serviceCagory.description }}', 'Categoria');">
                                 <i class="fa fa-list-ul" aria-hidden="true"></i>
                                 {{ serviceCagory.name }}
                             </a>
@@ -34,14 +60,16 @@
                                     <li>
                                         <a href="#subcategori_{{ subServiceCategory.id }}" class="list-group-item" 
                                            role="button" data-toggle="collapse" href="#subcategori_{{ subServiceCategory.id }}" 
-                                           aria-expanded="false" aria-controls="subcategori_{{ subServiceCategory.id }}">
+                                           aria-expanded="false" aria-controls="subcategori_{{ subServiceCategory.id }}" 
+                                           onclick="editServiceCategory('{{ subServiceCategory.name }}', '{{ subServiceCategory.description }}', 'SubCategoria');">
                                             <strong>&#8226;</strong>
                                             {{ subServiceCategory.name }}
                                         </a>
                                         <ul class="collapse treeNode" id="subcategori_{{ subServiceCategory.id }}">
                                             {% for service in subServiceCategory.subServiceCategories %}
-                                                
-                                                <li><button type="button" class="list-group-item">{{ service.name }}</button></li>
+
+                                                <li><button type="button" class="list-group-item" 
+                                                            onclick="editServiceCategory('{{ service.name }}', '{{ service.description }}', 'Servicio');">{{ service.name }}</button></li>
                                                 {% endfor %}
                                             <li>
                                                 <button type="button" class="list-group-item" data-toggle="modal" data-target="#categoriesModal">
@@ -74,15 +102,20 @@
         <!--Especificacion Categorias y servcios-->
         <div class="col-md-4">
             <div class="panel panel-default">
-                <div class="panel-heading"><i class="fa fa-list-alt" aria-hidden="true"></i> Categoria Lavado</div>
+                <div class="panel-heading">
+                    <i class="fa fa-list-alt" aria-hidden="true"></i> 
+                    <label id="tittle_service_category"></label>
+                </div>
                 <div class="panel-body">
-                    <h3>Lavado</h3>
-                    <h5>Descripcion:</h5>
-                    <p>Aca ba la descripcion de la categoria o servicio</p>
+                    <h3 id="name_service_category" class="text-center">Tipo Categoria o Servicio</h3>
+                    <hr>
+                    <h4>Descripcion:</h4>
+                    <p id="descrip_service_category">...</p>
                     <hr>
                     <div class="btn-group pull-right" role="group">
-                        <button type="button" class="btn btn-primary">Modificar</button>
-                        <button type="button" class="btn btn-default">Eliminar</button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#categoriesModal" 
+                                onclick="updateServiceCategory();">Modificar</button>
+                        <button type="button" class="btn btn-default" onclick="deleteServiceCategory();">Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -95,14 +128,51 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Modal title</h4>
+                    <h4 class="modal-title">Agregar</h4>
                 </div>
                 <div class="modal-body">
-                    <p>One fine body&hellip;</p>
+                    <div class="row">
+                        <!-- Service options -->
+                        <div class="col-md-12">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label id="name_new_service" class="control-label col-md-5">Nombre</label>
+                                    <div class="input-group">
+                                        <input id="nameNewCategory" type="text" class="form-control" value="">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label id="description_new_service" class="control-label col-md-5">Descripción</label>
+                                    <div class="input-group">
+                                        <textarea id="descriptionNewCategory" class="form-control" rows="2" value=""></textarea>
+                                    </div>
+                                </div>  
+
+                                <hr>
+                                <div class="form-group">
+                                    <label id="image_new_service" class="control-label col-md-6">Seleccione una imagen de su Computador</label>
+
+                                    <div class="form-inline">
+                                        <div class="form-group">
+                                            <input type="file" name="files[]" id="js-upload-files" multiple>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <!-- Drop Zone -->
+                                    <div class="upload-drop-zone" id="drop-zone">
+                                        Just drag and drop files here
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewCategory();">Guardar</button>
                 </div>
             </div>
         </div>
@@ -110,5 +180,39 @@
 {% endblock %}
 
 {% block javascripts %}
+    <script>
+
+        function editServiceCategory(name, description, tipoServicio) {
+            $("#tittle_service_category").text(tipoServicio + " " + name);
+            $("#name_service_category").text(name);
+            $("#descrip_service_category").text(description);
+        }
+
+        function updateServiceCategory() {
+            var name = $("#name_service_category").text();
+            var description = $("#descrip_service_category").text();
+            if ($("#tittle_service_category").text().length > 0){
+                $("#nameNewCategory").val(name);
+                $("#descriptionNewCategory").val(description);
+            }
+        }
+
+        function deleteServiceCategory() {
+            
+        }
+
+        function saveNewCategory() {
+            var nameCategory = $("#nameNewCategory").val();
+            var descriptionCategory = $("#descriptionNewCategory").val();
+            $.ajax({
+                url: "/" + nameCategory + "/" + descriptionCategory,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function () {
+                    alert('envio exitoso');
+                }});
+        }
+    </script>
 {% endblock %}
 
