@@ -6,30 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class ServiceController extends Controller {
 
-    public function getByCategoryIdAction($categoryId) {
-        return $this->json($this->getServicesByCategoryId($categoryId));
-    }
-
-    private function getServicesByCategoryId($categoryId) {
-        $servicesArray = array();
+    public function settingAction(){
+        $configuration = $this->get('lavaseco.app_configuration');
+        
         $doctrineManager = $this->get('doctrine')->getManager();
         $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
-        $serviceCagory = $serviceCategoryRepository->find($categoryId);
-
-        $services = $serviceCagory->getServices();
-
-        if (!$services->isEmpty()) {
-            $service = $services->first();
-            do {
-                $servicesArray [] = [
-                    "id" => $service->getId(),
-                    "name" => $service->getName(),
-                    "price" => $service->getprice(),
-                    "img" => $service->getImg(),
-                ];
-            } while ($service = $services->next());
-        }
-        return $servicesArray;
+        $serviceCagories = $serviceCategoryRepository->getFirstLevel();
+        
+        return $this->render($configuration->getViewTheme() . ':Settings/Services/index.html.twig',
+                ['serviceCagories' => $serviceCagories]
+            );
     }
-
 }

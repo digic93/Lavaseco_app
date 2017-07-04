@@ -1,0 +1,114 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <style>
+        .treeNode {
+            list-style: none;
+            margin-left: 0;
+            padding-left: 1em;
+        }
+    </style>
+{% endblock %} 
+
+{% block body %} 
+    <h1>Configuración de Servicios</h1>
+    <p>
+        Configura los servicios y sus respectivas categorias    
+    </p>
+    <hr>
+    <div class="row">
+        <!--arbol de categorias y servicios-->
+        <div class="col-md-8">
+            <div class="list-group">
+                <ul class="treeNode">
+                    {% for serviceCagory in serviceCagories %}
+                        <li>
+                            <a href="#categori_{{ serviceCagory.id }}" class="list-group-item" 
+                               role="button" data-toggle="collapse" href="#categori_{{ serviceCagory.id }}" 
+                               aria-expanded="false" aria-controls="categori_{{ serviceCagory.id }}">
+                                <i class="fa fa-list-ul" aria-hidden="true"></i>
+                                {{ serviceCagory.name }}
+                            </a>
+                            <ul class="collapse treeNode" id="categori_{{ serviceCagory.id }}">
+                                {% for subServiceCategory in serviceCagory.subServiceCategories %}
+                                    <li>
+                                        <a href="#subcategori_{{ subServiceCategory.id }}" class="list-group-item" 
+                                           role="button" data-toggle="collapse" href="#subcategori_{{ subServiceCategory.id }}" 
+                                           aria-expanded="false" aria-controls="subcategori_{{ subServiceCategory.id }}">
+                                            <strong>&#8226;</strong>
+                                            {{ subServiceCategory.name }}
+                                        </a>
+                                        <ul class="collapse treeNode" id="subcategori_{{ subServiceCategory.id }}">
+                                            {% for service in subServiceCategory.subServiceCategories %}
+                                                
+                                                <li><button type="button" class="list-group-item">{{ service.name }}</button></li>
+                                                {% endfor %}
+                                            <li>
+                                                <button type="button" class="list-group-item" data-toggle="modal" data-target="#categoriesModal">
+                                                    <strong>+</strong>Agregar Servicio
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                                <li>
+                                    <button type="button" class="list-group-item" data-toggle="modal" data-target="#categoriesModal">
+                                        <strong>+</strong>
+                                        Agregar Subcategoria
+                                    </button>
+                                </li>
+                            </ul>
+
+                        </li>    
+                    {% endfor %}
+                    <li>
+                        <button type="button" class="list-group-item" data-toggle="modal" data-target="#categoriesModal">
+                            <strong>+</strong>
+                            Agregar Categoria
+                        </button>    
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!--Especificacion Categorias y servcios-->
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading"><i class="fa fa-list-alt" aria-hidden="true"></i> Categoria Lavado</div>
+                <div class="panel-body">
+                    <h3>Lavado</h3>
+                    <h5>Descripcion:</h5>
+                    <p>Aca ba la descripcion de la categoria o servicio</p>
+                    <hr>
+                    <div class="btn-group pull-right" role="group">
+                        <button type="button" class="btn btn-primary">Modificar</button>
+                        <button type="button" class="btn btn-default">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal Registro Categorias-->
+    <div id="categoriesModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+

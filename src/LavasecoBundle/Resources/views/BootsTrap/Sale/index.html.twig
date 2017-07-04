@@ -35,7 +35,7 @@
                     <br>
 
                     <div class="btn-group text-center" role="group">
-                        {% for serviceCategory in serviceCagories %}
+                        {% for serviceCategory in serviceCategories %}
                             <button type="button" class="btn btn-default" onClick="getServiceByCategoryId({{ serviceCategory.id }});" >
                                 <img src="{{ asset( serviceCategory.img ) }}" style="width: 30px;" /> {{ serviceCategory.name }}
                             </button>
@@ -44,23 +44,18 @@
 
                     <hr>
                     <div id="servicesItems">
-
-                        <div class="col-sm-6 col-md-4 service-itm" onclick="itemShowModal(this);"
-                             data-subcategory-id="1" 
-                             data-subcategory-name="Lavado Prenda">                        
-                            <div class="thumbnail service">                            
-                                <img src="/serviceImg/servicio.jpg" alt="img">                            
-                                <h5 class="text-center">Lavado Prenda</h5>                        
-                            </div>                    
-                        </div>
-
-                        <div class="col-sm-6 col-md-4 service-itm" data-service-id="2" data-service-name="Lavado Cobija" data-service-price="15000">                       
-                            <div class="thumbnail service">                            
-                                <img src="/serviceImg/servicio.jpg" alt="img">                            
-                                <h5 class="text-center">Lavado Cobija</h5>                        
-                            </div>                    
-                        </div>
-
+                        {% for serviceCategory in serviceCategories %}
+                            {% for subServiceCagory in serviceCategory.subServiceCategories %}
+                                <div class="col-sm-6 col-md-4 service-itm" onclick="itemShowModal(this);"
+                                     data-subcategory-id="{{ subServiceCagory.id }}" 
+                                     data-subcategory-name="{{ subServiceCagory.name }}">                        
+                                    <div class="thumbnail service">                            
+                                        <img src="/serviceImg/servicio.jpg" alt="img">                            
+                                        <h5 class="text-center">{{ subServiceCagory.name }}</h5>                        
+                                    </div>                    
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -73,14 +68,18 @@
                     <h3 class="panel-title"><i class="fa fa-file-text" aria-hidden="true"></i> Factura</h3>
                 </div>
                 <div class="panel-body">
-                    <h2 class="text-center">Lavaseco Modelo</h2>
-                    <h4 class="text-center">Nit 51918156</h4>
-                    <h6 class="text-center">calle 68 # 55-21</h6>
+                    <h2 class="text-center">{{ billContent.companyName }}</h2>
+                    <h4 class="text-center">Nit {{ billContent.fiscalId }}</h4>
+                    <h6 class="text-center">{{ billContent.address }}</h6>
                     <hr>
                     <p>
                         Orden: #0325-03-29<br>
                         Cajero: {{ app.user.firstName }} {{ app.user.lastName }}<br>
                         TV:tableta
+                    </p>
+                    <hr>
+                    <p>
+                        {{ billContent.head }}
                     </p>
                     <hr>
                     <p>
@@ -102,6 +101,10 @@
                         <tbody id="billDetail">
                         </tbody>
                     </table>
+                    </p>
+                    <hr>
+                    <p>
+                        {{ billContent.foot }}
                     </p>
                 </div>
             </div>
@@ -179,12 +182,12 @@
                                         </tr>
                                     </thead>
                                     <tfoot>
-                                            <th class="text-center">Total</th>
-                                            <th class="text-center"></th>
-                                            <th class="text-right"></th>
-                                            <th class="text-right">$$$$$</th>
-                                            <th class="text-center"></th>
-                                            <th class="text-center"></th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center"></th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right">$$$$$</th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center"></th>
                                     </tfoot>
                                     <tbody id="summaryDetail">
                                     </tbody>
@@ -246,8 +249,8 @@
 
         $(document).ready(function () {
             $("#priceServiceImput").number(true);
-            
-            
+
+
             //Evento cerrar ventana modal
             $('#addServiceModal').on('hidden.bs.modal', function (e) {
                 clearServicesFormImput();
@@ -371,8 +374,8 @@
         }
 
         function clearServicesFormImput() {}
-        
-        function addServicesInBill(){}        
+
+        function addServicesInBill() {}
         {#        var bill = [];
                 var summaryService = [];
                 var serviceName = "";

@@ -11,10 +11,17 @@ class SaleController extends Controller
         $doctrineManager = $this->get('doctrine')->getManager();
         $configuration = $this->get('lavaseco.app_configuration');
         
+        $billContentRepository = $doctrineManager->getRepository("LavasecoBundle:BillContent");
+
+        $billContent = $billContentRepository->find(1);
+        
         $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
-        $serviceCagories = $serviceCategoryRepository->findAll();
+        $serviceCagories = $serviceCategoryRepository->getFirstLevel();
         
-        
-        return $this->render($configuration->getViewTheme() . ':Sale/index.html.twig', ["serviceCagories" => $serviceCagories]);
+        return $this->render($configuration->getViewTheme() . ':Sale/index.html.twig', 
+                [
+                    "billContent" => $billContent,
+                    "serviceCategories" => $serviceCagories
+                ]);
     }
 }
