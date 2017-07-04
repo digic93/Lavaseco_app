@@ -85,9 +85,9 @@
                     <h3 class="panel-title"><i class="fa fa-file-text" aria-hidden="true"></i> Factura</h3>
                 </div>
                 <div class="panel-body">
-                    <h2 class="text-center">Nombre Compañia</h2>
-                    <h4 class="text-center">Nit 000.000.000-0</h4>
-                    <h6 class="text-center">Dirección</h6>
+                    <h2 id="nameCompany_invoice" class="text-center">Nombre Compañia</h2>
+                    <h4 id="fiscalID_invoice" class="text-center">Nit 000.000.000-0</h4>
+                    <h6 id="address_invoice" class="text-center">Dirección</h6>
                     <hr>
                     <p>
                         Orden: #0325-03-29<br>
@@ -96,7 +96,7 @@
                     </p>
                     <hr>
                     <p>
-                        cabecera
+                        <label id="invoice_header">Cabecera</label>
                     </p>
                     <hr>
                     <p>
@@ -121,7 +121,7 @@
                     </p>
                     <hr>
                     <p>
-                        Pie de pagina
+                        <label id="invoice_footer">Pie de Pagina</label>
                     </p>
                 </div>
             </div>
@@ -130,5 +130,46 @@
 {% endblock %}
 
 {% block javascripts %}
+    <script>
+        $("#lavasecobundle_billcontent_companyName").on('keyup change', function () {
+            var msg = $("#lavasecobundle_billcontent_companyName").val();
+            $("#nameCompany_invoice").text(msg);
+        });
+        $("#lavasecobundle_billcontent_fiscalId").on('keyup change', function () {
+            var msg = $("#lavasecobundle_billcontent_fiscalId").val();
+            $("#fiscalID_invoice").text(msg);
+        });
+        $("#lavasecobundle_billcontent_address").on('keyup change', function () {
+            var msg = $("#lavasecobundle_billcontent_address").val();
+            $("#address_invoice").text(msg);
+        });
+        $("#lavasecobundle_billcontent_head").on('keyup change', function () {
+            var msg = $("#lavasecobundle_billcontent_head").val();
+            $("#invoice_header").text(msg);
+        });
+        $("#lavasecobundle_billcontent_foot").on('keyup change', function () {
+            var msg = $("#lavasecobundle_billcontent_foot").val();
+            $("#invoice_footer").text(msg);
+        });
+
+        // A $( document ).ready() block.
+        $(document).ready(function () {
+            if ($("#lavasecobundle_billcontent_companyName").val().length > 0) {
+                $("#nameCompany_invoice").text($("#lavasecobundle_billcontent_companyName").val());
+            }
+            if ($("#lavasecobundle_billcontent_fiscalId").val().length > 0) {
+                $("#fiscalID_invoice").text($("#lavasecobundle_billcontent_fiscalId").val());
+            }
+            if ($("#lavasecobundle_billcontent_address").val().length > 0) {
+                $("#address_invoice").text($("#lavasecobundle_billcontent_address").val());
+            }
+            if ($("#lavasecobundle_billcontent_head").val().length > 0) {
+                $("#invoice_header").text($("#lavasecobundle_billcontent_head").val());
+            }
+            if ($("#lavasecobundle_billcontent_foot").val().length > 0) {
+                $("#invoice_footer").text($("#lavasecobundle_billcontent_foot").val());
+            }
+        });
+    </script>
 {% endblock %}
 
