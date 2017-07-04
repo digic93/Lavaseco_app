@@ -10,12 +10,18 @@ lavaseco_settign_bill_content:
     path:     /configuracion/factura
     defaults: { _controller: LavasecoBundle:Bill:setting }
 
+lavaseco_settign_descriptions:
+    path:     /configuracion/descriptores
+    defaults: { _controller: LavasecoBundle:Description:setting }
+
 lavaseco_settign_service_categories:
     path:     /configuracion/servicios
     defaults: { _controller: LavasecoBundle:Service:setting }
 
 #Ajax Service-------------------------------------------------------------------
-lavaseco_api_service:
-    path:     /api/service/{subServiceCategoryId}
-    defaults: { _controller: LavasecoBundle:Sale:getServiceBySubserviceCategory }
+lavaseco_api_service_category:
+    path:     /api/service/category/{serviceCategoryId}
+    defaults: { _controller: LavasecoBundle:Service:getServiceByServiceCategoryId, serviceCategoryId: 0}
     methods:  [GET]
+    requirements:
+        serviceCategoryId:  \d+
