@@ -187,3 +187,4 @@ class BillContent
         return $this->foot;
     }
 }
+

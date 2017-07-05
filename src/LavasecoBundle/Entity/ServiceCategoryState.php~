@@ -32,4 +32,62 @@ class ServiceCategoryState
      * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id")
      */
     protected $categoryStateObject;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set service
+     *
+     * @param \LavasecoBundle\Entity\Service $service
+     *
+     * @return ServiceCategoryState
+     */
+    public function setService(\LavasecoBundle\Entity\Service $service = null)
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * Get service
+     *
+     * @return \LavasecoBundle\Entity\Service
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+
+    /**
+     * Set categoryStateObject
+     *
+     * @param \LavasecoBundle\Entity\CategoryStateObject $categoryStateObject
+     *
+     * @return ServiceCategoryState
+     */
+    public function setCategoryStateObject(\LavasecoBundle\Entity\CategoryStateObject $categoryStateObject = null)
+    {
+        $this->categoryStateObject = $categoryStateObject;
+
+        return $this;
+    }
+
+    /**
+     * Get categoryStateObject
+     *
+     * @return \LavasecoBundle\Entity\CategoryStateObject
+     */
+    public function getCategoryStateObject()
+    {
+        return $this->categoryStateObject;
+    }
 }

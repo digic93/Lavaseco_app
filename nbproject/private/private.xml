@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Settings/Bill/index.html.twig</file>
-            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Resources/config/routing.yml</file>
+            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Form/StateObjectDescriptionType.php</file>
             <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Controller/DescriptionController.php</file>
             <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Settings/Descriptions/index.html.twig</file>
+            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Form/CategoryStateObjectType.php</file>
         </group>
     </open-files>
 </project-private>
