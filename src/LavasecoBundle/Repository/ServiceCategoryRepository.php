@@ -9,12 +9,21 @@ namespace LavasecoBundle\Repository;
  * repository methods below.
  */
 class ServiceCategoryRepository extends \Doctrine\ORM\EntityRepository {
-//subServiceCategories
+
     public function getFirstLevel() {
         $query = $this->createQueryBuilder('sc')
                 ->where('sc.serviceCategory IS NULL')
                 ->getQuery();
-                
+
+        return $query->getResult();
+    }
+
+    public function getSubserviceCategoriesByServiceCategoryId($serviceCategoryId) {
+        $query = $this->createQueryBuilder('sc')
+                ->where('sc.serviceCategory = :serviceCategoryId')
+                ->setParameter('serviceCategoryId', $serviceCategoryId)
+                ->getQuery();
+
         return $query->getResult();
     }
 

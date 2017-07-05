@@ -114,4 +114,42 @@ class CategoryStateObject
     {
         return $this->serviceCategoryStates;
     }
+
+    /**
+     * Add stateObjectDescription
+     *
+     * @param \LavasecoBundle\Entity\StateObjectDescription $stateObjectDescription
+     *
+     * @return CategoryStateObject
+     */
+    public function addStateObjectDescription(\LavasecoBundle\Entity\StateObjectDescription $stateObjectDescription)
+    {
+        $this->stateObjectDescriptions[] = $stateObjectDescription;
+
+        return $this;
+    }
+
+    /**
+     * Remove stateObjectDescription
+     *
+     * @param \LavasecoBundle\Entity\StateObjectDescription $stateObjectDescription
+     */
+    public function removeStateObjectDescription(\LavasecoBundle\Entity\StateObjectDescription $stateObjectDescription)
+    {
+        $this->stateObjectDescriptions->removeElement($stateObjectDescription);
+    }
+
+    /**
+     * Get stateObjectDescriptions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getStateObjectDescriptions()
+    {
+        return $this->stateObjectDescriptions;
+    }
+       
+    public function __toString() {
+        return $this->name;
+    }
 }

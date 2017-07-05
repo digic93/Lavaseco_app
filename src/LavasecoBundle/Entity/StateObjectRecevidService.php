@@ -48,5 +48,76 @@ class StateObjectRecevidService
     {
         return $this->id;
     }
-}
 
+    /**
+     * Set service
+     *
+     * @param \LavasecoBundle\Entity\Service $service
+     *
+     * @return StateObjectRecevidService
+     */
+    public function setService(\LavasecoBundle\Entity\Service $service = null)
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * Get service
+     *
+     * @return \LavasecoBundle\Entity\Service
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+
+    /**
+     * Set billDetail
+     *
+     * @param \LavasecoBundle\Entity\BillDetail $billDetail
+     *
+     * @return StateObjectRecevidService
+     */
+    public function setBillDetail(\LavasecoBundle\Entity\BillDetail $billDetail = null)
+    {
+        $this->billDetail = $billDetail;
+
+        return $this;
+    }
+
+    /**
+     * Get billDetail
+     *
+     * @return \LavasecoBundle\Entity\BillDetail
+     */
+    public function getBillDetail()
+    {
+        return $this->billDetail;
+    }
+
+    /**
+     * Set stateObjectDescription
+     *
+     * @param \LavasecoBundle\Entity\StateObjectDescription $stateObjectDescription
+     *
+     * @return StateObjectRecevidService
+     */
+    public function setStateObjectDescription(\LavasecoBundle\Entity\StateObjectDescription $stateObjectDescription = null)
+    {
+        $this->stateObjectDescription = $stateObjectDescription;
+
+        return $this;
+    }
+
+    /**
+     * Get stateObjectDescription
+     *
+     * @return \LavasecoBundle\Entity\StateObjectDescription
+     */
+    public function getStateObjectDescription()
+    {
+        return $this->stateObjectDescription;
+    }
+}

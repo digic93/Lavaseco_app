@@ -17,4 +17,20 @@ class ServiceController extends Controller {
                 ['serviceCagories' => $serviceCagories]
             );
     }
+    
+    public function getServiceByServiceCategoryIdAction($serviceCategoryId){
+        $serviceCagoriesResponse = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
+        $serviceCagories = $serviceCategoryRepository->getSubserviceCategoriesByServiceCategoryId($serviceCategoryId);
+        
+        foreach ($serviceCagories as $serviceCagory){
+            $serviceCagoriesResponse [] = [
+                        "id" => $serviceCagory->getId(),
+                        "name" => $serviceCagory->getName()
+                    ];
+        }
+        
+        return $this->json($serviceCagoriesResponse);
+    }
 }
