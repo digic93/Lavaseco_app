@@ -146,13 +146,13 @@
                                     <div class="col-md-7">
                                         <div class="input-group">
                                             <span class="input-group-btn">
-                                                <button class="btn btn-success" type="button">
+                                                <button class="btn btn-success" type="button" onclick="quantityServiceChange(false);">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </button>
                                             </span>
-                                            <input type="text" class="form-control text-center" value="1">
+                                            <input id="quantity_service" type="text" class="form-control text-center" value="1">
                                             <span class="input-group-btn">
-                                                <button class="btn btn-success" type="button">
+                                                <button class="btn btn-success" type="button" onclick="quantityServiceChange(true);">
                                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                                 </button>
                                             </span>
@@ -182,12 +182,12 @@
                                         </tr>
                                     </thead>
                                     <tfoot>
-                                    <th class="text-center">Total</th>
-                                    <th class="text-center"></th>
-                                    <th class="text-right"></th>
-                                    <th class="text-right">$$$$$</th>
-                                    <th class="text-center"></th>
-                                    <th class="text-center"></th>
+                                        <th class="text-center">Total</th>
+                                        <th class="text-center"></th>
+                                        <th class="text-right"></th>
+                                        <th class="text-right">$0</th>
+                                        <th class="text-center"></th>
+                                        <th class="text-center"></th>
                                     </tfoot>
                                     <tbody id="summaryDetail">
                                     </tbody>
@@ -195,41 +195,6 @@
                             </div>
                         </div>
                     </div>
-                    {#                    
-                                        <div class="input-group">
-                                            <div class="col-md-4">
-                                                <!-- Combo Box Services -->
-                                                
-                    
-                                                <!-- special categories by services-->
-                                                <div id="services_category"></div>
-                                                <div id="quantity_services_category"></div>
-                                                <div id="price_services_category"></div>
-                    
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <h4 class="modal-title" id="gridSystemModalLabel"> Tabla Resumen</h4>
-                                            <div id="summary_services_category">
-                                                <table style="width: 100%;">
-                                                    <thead>
-                                                        <tr style="border-bottom-style: solid; border-bottom-width: 1px">
-                                                            <th class="text-center">Tipo Servicio</th>
-                                                            <th class="text-center">Descripción</th>
-                                                            <th class="text-right">Cantidad</th>
-                                                            <th class="text-right">Precio</th>
-                                                            <th class="text-center"></th>
-                                                            <th class="text-center"></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="summaryDetail">
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <hr>
-                                        <p id="costoUnitarioModal"></p>
-                                        <p id="costoTotalModal"></p>#}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -248,8 +213,8 @@
     <script>
 
         $(document).ready(function () {
+            $("#quantity_service").number(true);
             $("#priceServiceImput").number(true);
-
 
             //Evento cerrar ventana modal
             $('#addServiceModal').on('hidden.bs.modal', function (e) {
@@ -326,25 +291,21 @@
 
         //Id category 2do nivel
         function addServicesSelectImput(categoryId) {
+            $.ajax({
+                url: "{{ path('lavaseco_api_service_category') }}/" + categoryId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (servicesCategories) {
+                    addImputsDescriptions(servicesCategories[0].id);
 
-            //ajax
-
-            //success ajax
-            var result = [
-                {"id": 1, "name": "Camisa"},
-                {"id": 2, "name": "Pantalon"},
-                {"id": 3, "name": "Camiseta"},
-                {"id": 4, "name": "Chaqueta"}
-            ];
-            //omitir resutl " success: function(resutl){ .."
-
-            addImputsDescriptions(result[0].id);
-
-            $("#servicesSelectImput").empty();
-            for (var key in result) {
-                var service = result[key];
-                addOptionsServicesSelectImput(service);
-            }
+                    $("#servicesSelectImput").empty();
+                    for (var key in servicesCategories) {
+                        var serviceCategory = servicesCategories[key];
+                        addOptionsServicesSelectImput(serviceCategory);
+                    }
+                }
+            });
         }
 
         function addOptionsServicesSelectImput(service) {
@@ -373,219 +334,24 @@
                     </tr>");
         }
 
-        function clearServicesFormImput() {}
-
-        function addServicesInBill() {}
-        {#        var bill = [];
-                var summaryService = [];
-                var serviceName = "";
-                var serviceCategoryName = "";
-
-                var totalBill = 0;
-                var serviceId = 0;
-                var servicePrice = 0;
-                var quantity = 0;
-
-                function resetVariables() {
-                    serviceId = 0;
-                    servicePrice = 0;
-                    serviceCategoryName = "";
-                    quantity = 0;
-
-                    $("#opc_services").val(0);
-                    $("#services_category").html("");
-                    $("#quantity_services_category").html("");  
-                    $("#price_services_category").html("");
-
-                    $("#costoUnitarioModal").html("<strong>Precio unitario: </strong> $" + $.number(0));
-                    $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(0));
+        function quantityServiceChange(add) {
+            var quantity = parseInt($("#quantity_service").val());
+            if (add) {
+                quantity++;
+            } else {
+                if (quantity <= 1) {
+                    quantity = 1;
+                } else {
+                    quantity--;
                 }
+            }
+            $("#quantity_service").val(quantity);
+        {#            $("#totalPrice").html("<strong>Precio Total: </strong> $" + $.number(servicePrice * quantity));#}
+            }
 
-                function cancel() {
-                    resetVariables();
-                    summaryService = [];
-                    $("#summaryDetail").html("");
-                }
+            function clearServicesFormImput() {}
 
-                function changeService() {
-                    servicePrice = $(".service-itm").data("servicePrice");
-                    serviceCategoryName = $("#opc_services").val();
-                    if (serviceCategoryName === "Camisa") {
-                        $("#services_category").html("<strong>Color: </strong> \n\
-                                                       <select id='color_service' size=1>\n\
-                                                            <option value='0'>seleccione una opción ....</option>\n\
-                                                            <option value='Rojo'>Rojo</option>\n\
-                                                            <option value='Amarillo'>Amarillo</option>\n\
-                                                            <option value='Azul'>Azul</option>\n\
-                                                            <option value='Violeta'>Violeta</option>\n\
-                                                       </select> <p/>\n\
-                                                    <strong>Estado: </strong> \n\
-                                                       <select id='estado_service' size=1>\n\
-                                                            <option value='0'>seleccione una opción ....</option>\n\
-                                                            <option value='Dañado'>Dañado</option>\n\
-                                                            <option value='Desgastado'>Desgastado</option>\n\
-                                                            <option value='Bueno'>Bueno</option>\n\
-                                                       </select> <p/>");
-                    }
-                    $("#quantity_services_category").html("<strong>Cantidad:</strong>\
-                                                           <span class='input-group-btn'>\
-                                                                <button class='btn btn-success' type='button' onclick='quantityModal(false)'>\
-                                                                    <i class='fa fa-minus' aria-hidden='true'></i>\
-                                                                </button>\
-                                                           </span><input id='quantityModal' type='text' class='form-control text-center' value='1'><span class='input-group-btn'>\
-                                                                <button class='btn btn-success' type='button' onclick='quantityModal(true);'>\
-                                                                    <i class='fa fa-plus' aria-hidden='true'></i>\
-                                                                </button>\
-                                                            </span></p>");
-                    $("#price_services_category").html("<strong>Precio:</strong> <input type='number' id='price_service' value='" + servicePrice + "' onchange='updatePrice()'> <p/>");
-                    $("#costoUnitarioModal").html("<strong>Precio unitario: </strong> $" + $.number(servicePrice));
-                    $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(servicePrice));
-                }
-
-                function addSummaryServices() {
-                    summaryService.push([serviceId, serviceName, serviceCategoryName, quantity, servicePrice]);
-                    drawTableSummaryService();
-                    serviceId++;
-                    resetVariables();
-                }
-
-                function drawTableSummaryService() {
-                    $("#summaryDetail").html("");
-                    for (var i = 0; i < summaryService.length; i++) {
-                        $("#summaryDetail").append("<tr class=\"detail_item\" data-service-id=\"" + summaryService[i][0] + "\">\
-                                                <td>" + summaryService[i][2] + "</td>\
-                                                <td class=\"text-right\">" + summaryService[i][3] + "</td>\
-                                                <td class=\"text-right\">$" + summaryService[i][4] + "</td>\
-                                                <td class=\"text-center\"> <button type='button' class='btn btn-info' onclick='editItemServiceCategory(" + serviceId + ");'>Editar</button></td>\
-                                                <td class=\"text-center\"> <button type='button' class='btn btn-danger' onclick='deleteItemServiceCategory(" + serviceId + ");'>Eliminar</button></td>\
-                                            </tr>");
-                    }
-                }
-
-                function editItemServiceCategory(itemService) {
-                    for (var i = 0; i < summaryService.length; i++) {
-                        if (summaryService[i][0] == itemService) {
-                            $("#opc_services").val(summaryService[i][2]);
-                            $("#quantity_services_category").html("<strong>Cantidad:</strong>\
-                                                           <span class='input-group-btn'>\
-                                                                <button class='btn btn-success' type='button' onclick='quantityModal(false)'>\
-                                                                    <i class='fa fa-minus' aria-hidden='true'></i>\
-                                                                </button>\
-                                                           </span><input id='quantityModal' type='text' class='form-control text-center' value='" + summaryService[i][3] + "'><span class='input-group-btn'>\
-                                                                <button class='btn btn-success' type='button' onclick='quantityModal(true);'>\
-                                                                    <i class='fa fa-plus' aria-hidden='true'></i>\
-                                                                </button>\
-                                                            </span></p>");
-                            $("#price_services_category").html("<strong>Precio:</strong> <input type='number' id='price_service' value='" + summaryService[i][4] + "' onchange='updatePrice()'> <p/>");
-
-                        }
-                    }
-
-                }
-
-                function deleteItemServiceCategory(itemService) {
-                    for (var i = 0; i < summaryService.length; i++) {
-                        if (summaryService[i][0] == itemService) {
-                            summaryService.splice(summaryService[i][0], 1);
-                        }
-                    }
-                    drawTableSummaryService();
-                }
-
-                function updatePrice() {
-                    servicePrice = $("#price_service").val();
-                    $("#costoUnitarioModal").html("<strong>Precio unitario: </strong> $" + $.number(servicePrice));
-                    $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(servicePrice * quantity));
-                }
-
-                function quantityModal(add) {
-                    quantity = parseInt($("#quantityModal").val());
-                    if (add) {
-                        quantity++;
-                    } else {
-                        if (quantity <= 1) {
-                            quantity = 1;
-                        } else {
-                            quantity--;
-                        }
-                    }
-                    $("#quantityModal").val(quantity);
-                    $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(servicePrice * quantity));
-                }
-
-                function addService() {
-                    if (summaryService.length > 0) {
-                        for (var i = 0; i < summaryService.length; i++) {
-                            bill.push(summaryService[i]);
-                            $("#billDetail").append("<tr class=\"detail_item\" data-service-id=\"" + summaryService[i][0] + "\">\
-                                                <td>" + summaryService[i][1] + "</td>\
-                                                <td class=\"text-right\">" + summaryService[i][3] + "</td>\
-                                                <td class=\"text-right\">$" + $.number(summaryService[i][4] * summaryService[i][3]) + "</td>\
-                                            </tr>");
-                            totalBill += parseInt(summaryService[i][4]) * parseInt(summaryService[i][3]);
-                        }
-                        $("#totalBill").html("<strong>$" + $.number(totalBill) + "</strong>");
-                        $('#serviceQuantity').modal('hide');
-
-                        resetVariables();
-                        summaryService = [];
-                        $("#summaryDetail").html("");
-                    }
-                }
-
-                function getServiceByCategoryId(categoryId) {
-                    $.ajax({
-                        url: "{{ path('lavaseco_api_services_by_categoryid') }}/" + categoryId,
-                        method: "GET",
-                        contentType: 'application/json',
-                        dataType: 'json',
-                        success: function (services) {
-                            $("#servicesItems").empty();
-
-                            for (var service in services) {
-                                addServiceItem(services[service]);
-                            }
-                        }});
-                }
-
-                function addServiceItem(service) {
-                    $("#servicesItems").append(
-                            "<div class=\"col-sm-6 col-md-4 service-itm\" \
-                                    data-service-id=\"" + service.id + "\" \
-                                    data-service-name=\"" + service.name + "\" \
-                                    data-service-price=\"" + service.price + "\">\
-                                <div class=\"thumbnail service\">\
-                                    <img src=\"{{ asset("serviceImg/servicio.jpg") }}\" alt=\"img\">\
-                                    <h5 class=\"text-center\">" + service.name + "</h5>\
-                                </div>\
-                            </div>");
-                }
-
-                $(document).ready(function () {
-                    $("#quantityModal").number(true);
-
-                    $(".service-itm").click(function () {
-                        serviceId = $(this).data("serviceId");
-                        serviceName = $(this).data("serviceName");
-                        servicePrice = 0;
-
-                        $("#titleModal").html("Agregar " + serviceName);
-                        $("#costoUnitarioModal").html("<strong>Precio unitario: </strong> $" + $.number(servicePrice));
-                        $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(servicePrice));
-                        $('#serviceQuantity').modal('show');
-                    });
-
-                    $("#quantityModal").on("change paste keyup", function () {
-
-                        var quantity = parseInt($("#quantityModal").val());
-
-                        if (quantity <= 0) {
-                            $("#quantityModal").val(1);
-                        }
-                        $("#costoTotalModal").html("<strong>Precio Total: </strong> $" + $.number(servicePrice * quantity));
-
-                    });
-                });#}
+            function addServicesInBill() {}
     </script>
 {% endblock %}
 

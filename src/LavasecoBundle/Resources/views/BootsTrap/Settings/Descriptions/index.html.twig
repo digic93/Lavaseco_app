@@ -1,0 +1,124 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+    {#    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/dataTables.bootstrap.css") }}">#}
+{% endblock %} 
+
+{% block body %} 
+
+    <h1>Configuración De Descriptores</h1>
+    <p>
+        Cree o modifique los descriptores que se utilizaran para describir lo recibido en los servicios.    
+    </p>
+    <hr>
+    <div class="row">
+        <!--Formulario contenidio-->
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Registro Descriptor</h3>
+                </div>
+                <div class="panel-body">                    
+                    <!-- Form Descriptor -->
+                    {{ form_start(formObjectDescription, {'attr': {'class': 'form-horizontal'} }) }}
+                    <fieldset>
+                            <!-- Text input-->
+                            <div class="form-group">
+                                {{ form_errors(formObjectDescription.name) }}
+                                <label class="col-md-4 control-label" for="textinput">{{ form_label(formObjectDescription.name, 'Nombre') }}</label>  
+                                <div class="col-md-5">
+                                    {{ form_widget(formObjectDescription.name, {'attr': {'class': 'form-control input-md'} }) }}
+                                </div>
+                            </div>
+                                
+                            <!-- Select Basic -->
+                            <div class="form-group">
+                                {{ form_errors(formObjectDescription.categoryStateObject) }}
+                                <label class="col-md-4 control-label" for="selectbasic">{{ form_label(formObjectDescription.categoryStateObject, 'Tipo Descriptor') }}</label>
+                                <div class="col-md-5">
+                                    {{ form_widget(formObjectDescription.categoryStateObject, {'attr': {'class': 'form-control'} }) }}
+                                </div>
+                            </div>
+
+                            <!-- Button -->
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="singlebutton"></label>
+                                <div class="col-md-4">
+                                    <input id="singlebutton" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    {{ form_end(formObjectDescription) }}
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <!-- Form Tipo descriptor-->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Registro Tipo Descriptor</h3>
+                </div>
+                <div class="panel-body">
+                    <!-- Form Tipo descriptor-->
+                    {{ form_start(formCategoryStateObject, {'attr': {'class': 'form-horizontal'} }) }}
+                        <fieldset>
+                            <!-- Text input-->
+                            <div class="form-group">
+                                {{ form_errors(formCategoryStateObject.name) }}
+                                <label class="col-md-4 control-label" for="textinput">{{ form_label(formCategoryStateObject.name, 'Tipo Descriptor') }}</label>  
+                                <div class="col-md-5">
+                                    {{ form_widget(formCategoryStateObject.name, {'attr': {'class': 'form-control  input-md'} }) }}
+                                </div>
+                            </div>
+
+                            <!-- Button -->
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="singlebutton"></label>
+                                <div class="col-md-4">
+                                    <input id="singlebutton" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
+                                </div>
+                            </div>
+                        </fieldset>
+                    {{ form_end(formCategoryStateObject) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <h3>Descriptores Registrados</h3>
+            <hr>
+         
+            <table id="example" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Descriptor</th>
+                        <th>Tipo Descriptor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ObjectDescription in ObjectDescriptions %}
+                    <tr>
+                        <td>{{ ObjectDescription.name }}</td>
+                        <td>{{ ObjectDescription.categoryStateObject.name }}</td>
+                        <td>Editd</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+    </script>
+{% endblock %}
