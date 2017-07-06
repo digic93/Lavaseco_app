@@ -25,3 +25,10 @@ lavaseco_api_service_category:
     methods:  [GET]
     requirements:
         serviceCategoryId:  \d+
+
+lavaseco_api_service_descriptions:
+    path:     /api/service/descriptions/{serviceCategoryId}
+    defaults: { _controller: LavasecoBundle:Service:getServiceAndDescriptionsByServiceCategoryId, serviceCategoryId: 0}
+    methods:  [GET]
+    requirements:
+        serviceCategoryId:  \d+
