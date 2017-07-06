@@ -22,7 +22,7 @@ class ServiceCategoryState
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Service", inversedBy="serviceAttributes")
+     * @ORM\ManyToOne(targetEntity="Service", inversedBy="serviceDescriptors")
      * @ORM\JoinColumn(name="service_id", referencedColumnName="id", nullable=false)
      */
     protected $service;
