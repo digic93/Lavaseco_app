@@ -127,7 +127,7 @@
                                 <div class="form-group">
                                     <label id="name_service" class="control-label col-md-5">Servicio</label>
                                     <div class="col-md-7">
-                                        <select id="servicesSelectImput" onChange="addImputsDescriptions(this);" class="form-control">
+                                        <select id="servicesSelectImput" onChange="changeImputsDescriptions(this);" class="form-control">
                                         </select>
                                     </div>
                                 </div>
@@ -182,12 +182,12 @@
                                         </tr>
                                     </thead>
                                     <tfoot>
-                                        <th class="text-center">Total</th>
-                                        <th class="text-center"></th>
-                                        <th class="text-right"></th>
-                                        <th class="text-right">$0</th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center"></th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right">$0</th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center"></th>
                                     </tfoot>
                                     <tbody id="summaryDetail">
                                     </tbody>
@@ -232,48 +232,28 @@
 
         }
 
-        function addImputsDescriptions(idService) {
-            //ajax
+        function changeImputsDescriptions(selectServiceCategory) {
+            addImputsDescriptions($(selectServiceCategory).val());
+        }
 
-            //success ajax
-            var result = {
-                "service":
-                        {
-                            "name": "Nombre servicio",
-                            "price": "8000"
-                        },
-                "decriptions":
-                        [
-                            {
-                                "name": "Color",
-                                "options":
-                                        [
-                                            {"id": 1, "name": "Rojo"},
-                                            {"id": 2, "name": "Amarillo"},
-                                            {"id": 3, "name": "Azul"},
-                                            {"id": 4, "name": "Violeta"}
-                                        ]
-                            },
-                            {
-                                "name": "Estado",
-                                "options":
-                                        [
-                                            {"id": 1, "name": "Bueno"},
-                                            {"id": 2, "name": "Desgastado"},
-                                            {"id": 4, "name": "Dañado"}
-                                        ]
-                            }
-                        ]
-            };
-            //omitir resutl " success: function(resutl){ .."
-            var decriptions = result.decriptions;
+        function addImputsDescriptions(serviceCategoryId) {
+            $.ajax({
+                url: "{{ path('lavaseco_api_service_descriptions') }}/" + serviceCategoryId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (services) {
+                    var decriptions = services.decriptions;
 
-            $("#imputsDescriptions").empty();
-            $("#priceServiceImput").val(result.service.price);
+                    $("#imputsDescriptions").empty();
+                    $("#priceServiceImput").val(services.service.price);
 
-            for (var desc in decriptions) {
-                addImputsDescription(decriptions[desc]);
-            }
+                    for (var desc in decriptions) {
+                        addImputsDescription(decriptions[desc]);
+                    }
+                }
+            });
+
         }
 
         function addImputsDescription(description) {
