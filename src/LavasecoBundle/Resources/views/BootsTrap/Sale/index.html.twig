@@ -48,7 +48,8 @@
                             {% for subServiceCagory in serviceCategory.subServiceCategories %}
                                 <div class="col-sm-6 col-md-4 service-itm" onclick="itemShowModal(this);"
                                      data-subcategory-id="{{ subServiceCagory.id }}" 
-                                     data-subcategory-name="{{ subServiceCagory.name }}">                        
+                                     data-subcategory-name="{{ subServiceCagory.name }}"
+                                     data-category-name="{{ serviceCategory.name }}">                        
                                     <div class="thumbnail service">                            
                                         <img src="/serviceImg/servicio.jpg" alt="img">                            
                                         <h5 class="text-center">{{ subServiceCagory.name }}</h5>                        
@@ -161,7 +162,6 @@
                                 </div>  
                                 <hr>
                                 <div id="imputsDescriptions">
-
                                 </div>
                                 <button type="button" class="btn btn-primary btn-block" onclick="addService()">Agregar <i class="fa fa-plus" aria-hidden="true"></i></button>
                             </div>
@@ -173,19 +173,18 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">Tipo Servicio</th>
-                                            <th class="text-center">Descripción</th>
+                                            <th>Tipo Servicio</th>
+                                            <th>Descripción</th>
                                             <th class="text-right">Cantidad</th>
                                             <th class="text-right">Precio</th>
-                                            <th class="text-center"></th>
-                                            <th class="text-center"></th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                     <th class="text-center">Total</th>
                                     <th class="text-center"></th>
                                     <th class="text-right"></th>
-                                    <th class="text-right">$0</th>
+                                    <th id="summaryServicesTotal" class="text-right">$0</th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     </tfoot>
@@ -198,7 +197,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" onclick="addServicesInBill();">Facturar</button>
+                    <button type="button" class="btn btn-success" onclick="addServicesInBill();">Añadir Factura</button>
                 </div>
             </div>
         </div>
@@ -211,8 +210,12 @@
     <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
 
     <script>
+        var factrua = {};
+        var summaryServices = {};
 
         $(document).ready(function () {
+            factrua["total"] = 0;
+
             $("#quantity_service").number(true);
             $("#priceServiceImput").number(true);
 
@@ -223,13 +226,15 @@
         });
 //Functions////////////////////////////////////////////////////////        
         function itemShowModal(item) {
-            var serviceName = $(item).data("subcategoryName");
             var subCategoryId = $(item).data("subcategoryId");
-            $("#titleModal").html("Agregar " + serviceName);
+            var categories = $(item).data("categoryName") + ", " + $(item).data("subcategoryName");
+            $("#titleModal").html("Agregar " + categories);
 
             addServicesSelectImput(subCategoryId);
-            $('#addServiceModal').modal('show');
 
+            summaryServices["total"] = 0;
+            summaryServices["services"] = [];
+            summaryServices["categories"] = categories;
         }
 
         function changeImputsDescriptions(selectServiceCategory) {
@@ -261,10 +266,10 @@
             var html = "<div class=\"form-group\">\
                             <label class=\"control-label col-md-5\">" + description.name + "</label>\
                             <div class=\"col-md-7\">\
-                                <select class=\"form-control\">\
-                                    <option value=\"0\">seleccione una opción ....</option>";
+                                <select class=\"form-control imputDescription\">\
+                                    <option data-id=\"0\" data-name=\"\" value=\"0\">seleccione una opción ....</option>";
             for (var key in options)
-                html += "<option value=\"" + options[key].id + "\">" + options[key].name + "</option>"
+                html += "<option data-id=\"" + options[key].id + "\" data-name=\"" + options[key].name + "\" >" + options[key].name + "</option>"
             html += "</select></div></div>";
             $("#imputsDescriptions").append(html);
         }
@@ -277,6 +282,12 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (servicesCategories) {
+                    if (!servicesCategories.length) {
+                        alert("Servicios no Disponibles");
+                        return;
+                    }
+
+                    $('#addServiceModal').modal('show');
                     addImputsDescriptions(servicesCategories[0].id);
 
                     $("#servicesSelectImput").empty();
@@ -289,22 +300,54 @@
         }
 
         function addOptionsServicesSelectImput(service) {
-            var html = "<option value=\"" + service.id + "\">" + service.name + "</option>"
+            var html = "<option value=\"" + service.id + "\" data-id=\"" + service.id + "\" data-name=\"" + service.name + "\">" + service.name + "</option>"
             $("#servicesSelectImput").append(html);
         }
 
         function addService() {
-            addRowTable("summaryService");
-            clearServicesFormImput();
+            var serviceDetail = {}
+            var price = parseInt($("#priceServiceImput").val());
+            var quantity = parseInt($("#quantity_service").val());
+
+            serviceDetail["id"] = $("#servicesSelectImput").find(':selected').data('id');
+            serviceDetail["service"] = $("#servicesSelectImput").find(':selected').data('name');
+            serviceDetail["price"] = price;
+            serviceDetail["quantity"] = quantity;
+            serviceDetail["total"] = $.number(price * quantity);
+            serviceDetail["descriptors"] = getDescriptors();
+
+            summaryServices.total += price * quantity;
+            summaryServices["services"].push(serviceDetail);
+
+            addRowTable(serviceDetail);
+            $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
+
+            $("#quantity_service").val(1);
+            addImputsDescriptions(serviceDetail.id);
+        }
+
+        function getDescriptors() {
+            var descriptors = [];
+            $(".imputDescription").each(function (index) {
+                var id = parseInt($(this).find(':selected').data('id'));
+
+                if (id !== 0) {
+                    descriptors.push({
+                        "id": id,
+                        "name": $(this).find(':selected').data('name')
+                    });
+                }
+            });
+            return descriptors;
         }
 
         function addRowTable(summaryService) {
             $("#summaryDetail").append(
-                    "<tr class=\"detail_item\" data-service-id=\" + summaryService.id + \">\
-                        <td>summaryService.serviceName</td>\
-                        <td>summaryService.description</td>\
-                        <td class=\"text-left\">summaryService.cantidad</td>\
-                        <td class=\"text-left\"> $summaryService.precio</td>\
+                    "<tr class=\"detail_item\" data-service-id=\"" + summaryService.id + "\">\
+                        <td>" + summaryService.service + "</td>\
+                        <td>" + getDescriptionsToString(summaryService.descriptors) + "</td>\
+                        <td class=\"text-right\">" + summaryService.quantity + "</td>\
+                        <td class=\"text-right\">$" + summaryService.total + "</td>\
                         <td>\
                             <div class=\"btn-group btn-group-xs\" role=\"group\">\
                                 <button type='button' class='btn btn-primary' onclick='editItemServiceCategory( + serviceId + );'>Editar</button>\
@@ -312,6 +355,14 @@
                             </div>\
                         </td>\
                     </tr>");
+        }
+
+        function getDescriptionsToString(descriptors) {
+            var descriptorsResutl = [];
+            for (var key in descriptors) {
+                descriptorsResutl.push(descriptors[key].name);
+            }
+            return descriptorsResutl.toString();
         }
 
         function quantityServiceChange(add) {
@@ -329,9 +380,48 @@
         {#            $("#totalPrice").html("<strong>Precio Total: </strong> $" + $.number(servicePrice * quantity));#}
             }
 
-            function clearServicesFormImput() {}
+            function clearServicesFormImput() {
+                summaryServices.total = 0;
+                summaryServices["services"] = [];
 
-            function addServicesInBill() {}
+                $("#summaryDetail").empty();
+                $("#servicesSelectImput").empty();
+                $("#imputsDescriptions").empty();
+
+                $("#quantity_service").val(1);
+                $("#summaryServicesTotal").html("$0");
+            }
+
+            function addToBillSummaryServices() {
+                var html =
+                        "<tr style=\"border-bottom-style: solid; border-bottom-width: 2px\">\
+                        <td colspan=\"3\">" + summaryServices.categories + "</td>\
+                    </tr>";
+
+                for (var i in summaryServices.services) {
+                    html +=
+                            "<tr>\
+                                <td>" + summaryServices.services[i].service + "</td>\
+                                <td class=\"text-right\">" + summaryServices.services[i].quantity + "</td>\
+                                <td class=\"text-right\">$" + $.number(summaryServices.services[i].total) + "</td>\
+                            </tr>\
+                            <tr>\
+                                <td colspan=\"3\">" + getDescriptionsToString(summaryServices.services[i].descriptors) + "</td>\
+                            </tr>";
+                }
+                $("#billDetail").append(html);
+            }
+
+            function addServicesInBill() {
+                if (summaryServices.total !== 0) {
+                    factrua.total += summaryServices.total;
+                    addToBillSummaryServices();
+
+                    $("#totalBill").html("<strong>$" + $.number(factrua.total) + "</strong>");
+                }
+                $('#addServiceModal').modal('hide');
+                
+            }
     </script>
 {% endblock %}
 
