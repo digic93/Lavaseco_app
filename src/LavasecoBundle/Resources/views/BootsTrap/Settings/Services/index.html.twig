@@ -50,8 +50,10 @@
                         <li>
                             <a href="#categori_{{ serviceCagory.id }}" class="list-group-item" 
                                role="button" data-toggle="collapse" href="#categori_{{ serviceCagory.id }}" 
-                               aria-expanded="false" aria-controls="categori_{{ serviceCagory.id }}" 
-                               onclick="editServiceCategory('{{ serviceCagory.name }}', '{{ serviceCagory.description }}', 'Categoria');">
+                               aria-expanded="false" aria-controls="categori_{{ serviceCagory.id }}"
+                               data-service-name="{{ serviceCagory.name }}"
+                               data-service-description="{{ serviceCagory.description }}"
+                               data-service-type="Categoria">
                                 <i class="fa fa-list-ul" aria-hidden="true"></i>
                                 {{ serviceCagory.name }}
                             </a>
@@ -61,18 +63,24 @@
                                         <a href="#subcategori_{{ subServiceCategory.id }}" class="list-group-item" 
                                            role="button" data-toggle="collapse" href="#subcategori_{{ subServiceCategory.id }}" 
                                            aria-expanded="false" aria-controls="subcategori_{{ subServiceCategory.id }}" 
-                                           onclick="editServiceCategory('{{ subServiceCategory.name }}', '{{ subServiceCategory.description }}', 'SubCategoria');">
+                                           data-service-name="{{ subServiceCategory.name }}"
+                                           data-service-description="{{ subServiceCategory.description }}"
+                                           data-service-type="SubCategoria">
                                             <strong>&#8226;</strong>
                                             {{ subServiceCategory.name }}
                                         </a>
                                         <ul class="collapse treeNode" id="subcategori_{{ subServiceCategory.id }}">
                                             {% for service in subServiceCategory.subServiceCategories %}
-
-                                                <li><button type="button" class="list-group-item" 
-                                                            onclick="editServiceCategory('{{ service.name }}', '{{ service.description }}', 'Servicio');">{{ service.name }}</button></li>
-                                                {% endfor %}
+                                                <li>
+                                                    <button type="button" class="list-group-item" 
+                                                            data-service-name="{{ service.name }}"
+                                                            data-service-description="{{ service.description }}"
+                                                            data-service-type="Servicio">{{ service.name }}</button>
+                                                </li>
+                                            {% endfor %}
                                             <li>
-                                                <button type="button" class="list-group-item" data-toggle="modal" data-target="#categoriesModal">
+                                                <button type="button" class="list-group-item" data-toggle="modal" 
+                                                        data-target="#categoriesModal" data-service-category="3">
                                                     <strong>+</strong>Agregar Servicio
                                                 </button>
                                             </li>
@@ -136,19 +144,21 @@
                         <div class="col-md-12">
                             <div class="form-horizontal">
                                 <div class="form-group">
-                                    <label id="name_new_service" class="control-label col-md-5">Nombre</label>
+                                    <label id="name_new_service" class="control-label col-md-4">Nombre</label>
                                     <div class="input-group">
-                                        <input id="nameNewCategory" type="text" class="form-control" value="">
+                                        <input id="nameNewCategory" type="text" class="form-control input-md col-md-6" value="" required="required">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label id="description_new_service" class="control-label col-md-5">Descripción</label>
+                                    <label id="description_new_service" class="control-label col-md-4">Descripción</label>
                                     <div class="input-group">
-                                        <textarea id="descriptionNewCategory" class="form-control" rows="2" value=""></textarea>
+                                        <textarea id="descriptionNewCategory" class="form-control input-md col-md-6" rows="2" value="" required="required"></textarea>
                                     </div>
                                 </div>  
-
+                                
+                                <div class="form-group" id="select_state_new_service"></div> 
+                                
                                 <hr>
                                 <div class="form-group">
                                     <label id="image_new_service" class="control-label col-md-6">Seleccione una imagen de su Computador</label>
@@ -182,23 +192,78 @@
 {% block javascripts %}
     <script>
 
-        function editServiceCategory(name, description, tipoServicio) {
-            $("#tittle_service_category").text(tipoServicio + " " + name);
-            $("#name_service_category").text(name);
-            $("#descrip_service_category").text(description);
+        $(".list-group-item").on('click', function () {
+            $("#tittle_service_category").text($(this).data('serviceType') + " " + $(this).data('serviceName'));
+            $("#name_service_category").text($(this).data('serviceName'));
+            $("#descrip_service_category").text($(this).data('serviceDescription'));
+            
+            var serviceCategory = $(this).data('serviceCategory');
+
+            if (serviceCategory == 3) {
+                alert("etre");
+                addImputsDescriptions();
+            }
+        });
+        
+        function addImputsDescriptions() {
+            //ajax
+alert("_etre");
+            //success ajax
+            var result = {
+                "service":
+                        {
+                            "name": "Nombre servicio",
+                            "price": "8000"
+                        },
+                "decriptions":
+                        [
+                            {
+                                "name": "Color",
+                                "options":
+                                        [
+                                            {"id": 1, "name": "Rojo"},
+                                            {"id": 2, "name": "Amarillo"},
+                                            {"id": 3, "name": "Azul"},
+                                            {"id": 4, "name": "Violeta"}
+                                        ]
+                            },
+                            {
+                                "name": "Estado",
+                                "options":
+                                        [
+                                            {"id": 1, "name": "Bueno"},
+                                            {"id": 2, "name": "Desgastado"},
+                                            {"id": 4, "name": "Dañado"}
+                                        ]
+                            }
+                        ]
+            };
+            //omitir resutl " success: function(resutl){ .."
+            var decriptions = result.decriptions;
+            
+            var tittle= "<hr> <h4 class='modal-title text-center'>Seleccione las caracteristicas</h4> <hr>";
+            $("#select_state_new_service").append(tittle);
+            
+            for (var desc in decriptions) {
+                var html = "<div class=\"col-md-2\">\
+                            <input type='checkbox' name='service' value='"+ decriptions[desc].name +"'>\
+                            <label class=\"control-label\">" + decriptions[desc].name + "</label>";
+                html += "</input></div>";
+                $("#select_state_new_service").append(html);
+            }
         }
 
         function updateServiceCategory() {
             var name = $("#name_service_category").text();
             var description = $("#descrip_service_category").text();
-            if ($("#tittle_service_category").text().length > 0){
+            if ($("#tittle_service_category").text().length > 0) {
                 $("#nameNewCategory").val(name);
                 $("#descriptionNewCategory").val(description);
             }
         }
 
         function deleteServiceCategory() {
-            
+
         }
 
         function saveNewCategory() {
