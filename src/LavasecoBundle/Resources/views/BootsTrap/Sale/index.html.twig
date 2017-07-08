@@ -104,9 +104,16 @@
                     </table>
                     </p>
                     <hr>
+                    <p> <b> Observaciones </b> </p>
+                    <textarea id="bill_observation" name="bill_observation" required="required" class="form-control"></textarea>
+                    <hr>
                     <p>
                         {{ billContent.foot }}
                     </p>
+                    <button type="button" class="btn btn-info btn-block" onclick="">
+                        <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                        Facturar
+                    </button>
                 </div>
             </div>
         </div>
@@ -159,10 +166,14 @@
                                             </span>
                                         </div>
                                     </div>
-                                </div>  
+                                </div>
                                 <hr>
                                 <div id="imputsDescriptions">
                                 </div>
+                                <hr>
+                                <p> <b> Observaciones </b> </p>
+                                <textarea id="observation_service" required="required" class="form-control"></textarea>
+                                <hr>
                                 <button type="button" class="btn btn-primary btn-block" onclick="addService()">Agregar <i class="fa fa-plus" aria-hidden="true"></i></button>
                             </div>
                         </div>
@@ -258,7 +269,6 @@
                     }
                 }
             });
-
         }
 
         function addImputsDescription(description) {
@@ -305,7 +315,7 @@
         }
 
         function addService() {
-            var serviceDetail = {}
+            var serviceDetail = {};
             var price = parseInt($("#priceServiceImput").val());
             var quantity = parseInt($("#quantity_service").val());
 
@@ -315,9 +325,11 @@
             serviceDetail["quantity"] = quantity;
             serviceDetail["total"] = $.number(price * quantity);
             serviceDetail["descriptors"] = getDescriptors();
+            serviceDetail["observations"] = $("#observation_service").val();
 
             summaryServices.total += price * quantity;
             summaryServices["services"].push(serviceDetail);
+            serviceDetail["idSummaryService"] = summaryServices["services"].length;
 
             addRowTable(serviceDetail);
             $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
@@ -350,12 +362,20 @@
                         <td class=\"text-right\">$" + summaryService.total + "</td>\
                         <td>\
                             <div class=\"btn-group btn-group-xs\" role=\"group\">\
-                                <button type='button' class='btn btn-primary' onclick='editItemServiceCategory( + serviceId + );'>Editar</button>\
-                                <button type='button' class='btn btn-danger' onclick='deleteItemServiceCategory( + summaryService.id + );'>Eliminar</button>\
+                                <button type='button' data-summary-service-id=\"" + summaryService.idSummaryService+ "\" class='btn btn-primary btn-editar'>Editar</button>\
+                                <button type='button' data-summary-service-id=\"" + summaryService.idSummaryService+ "\" class='btn btn-danger btn-eliminar'>Eliminar</button>\
                             </div>\
                         </td>\
                     </tr>");
         }
+        
+        $(".btn-editar").on('click', function () {
+            alert($(this).data('summaryServiceId'));
+        });
+        
+        $(".btn-eliminar").on('click', function () {
+            
+        });
 
         function getDescriptionsToString(descriptors) {
             var descriptorsResutl = [];
@@ -377,30 +397,29 @@
                 }
             }
             $("#quantity_service").val(quantity);
-        {#            $("#totalPrice").html("<strong>Precio Total: </strong> $" + $.number(servicePrice * quantity));#}
-            }
+        }
 
-            function clearServicesFormImput() {
-                summaryServices.total = 0;
-                summaryServices["services"] = [];
+        function clearServicesFormImput() {
+            summaryServices.total = 0;
+            summaryServices["services"] = [];
 
-                $("#summaryDetail").empty();
-                $("#servicesSelectImput").empty();
-                $("#imputsDescriptions").empty();
+            $("#summaryDetail").empty();
+            $("#servicesSelectImput").empty();
+            $("#imputsDescriptions").empty();
 
-                $("#quantity_service").val(1);
-                $("#summaryServicesTotal").html("$0");
-            }
+            $("#quantity_service").val(1);
+            $("#summaryServicesTotal").html("$0");
+        }
 
-            function addToBillSummaryServices() {
-                var html =
-                        "<tr style=\"border-bottom-style: solid; border-bottom-width: 2px\">\
+        function addToBillSummaryServices() {
+            var html =
+                    "<tr style=\"border-bottom-style: solid; border-bottom-width: 2px\">\
                         <td colspan=\"3\">" + summaryServices.categories + "</td>\
                     </tr>";
 
-                for (var i in summaryServices.services) {
-                    html +=
-                            "<tr>\
+            for (var i in summaryServices.services) {
+                html +=
+                        "<tr>\
                                 <td>" + summaryServices.services[i].service + "</td>\
                                 <td class=\"text-right\">" + summaryServices.services[i].quantity + "</td>\
                                 <td class=\"text-right\">$" + $.number(summaryServices.services[i].total) + "</td>\
@@ -408,20 +427,20 @@
                             <tr>\
                                 <td colspan=\"3\">" + getDescriptionsToString(summaryServices.services[i].descriptors) + "</td>\
                             </tr>";
-                }
-                $("#billDetail").append(html);
             }
+            $("#billDetail").append(html);
+        }
 
-            function addServicesInBill() {
-                if (summaryServices.total !== 0) {
-                    factrua.total += summaryServices.total;
-                    addToBillSummaryServices();
+        function addServicesInBill() {
+            if (summaryServices.total !== 0) {
+                factrua.total += summaryServices.total;
+                addToBillSummaryServices();
 
-                    $("#totalBill").html("<strong>$" + $.number(factrua.total) + "</strong>");
-                }
-                $('#addServiceModal').modal('hide');
-                
+                $("#totalBill").html("<strong>$" + $.number(factrua.total) + "</strong>");
             }
+            $('#addServiceModal').modal('hide');
+
+        }
     </script>
 {% endblock %}
 
