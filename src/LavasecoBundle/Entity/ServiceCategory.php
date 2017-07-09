@@ -38,7 +38,7 @@ class ServiceCategory
     /**
      * @var string
      *
-     * @ORM\Column(name="img", type="string", length=80)
+     * @ORM\Column(name="img", type="string", length=80, nullable=true)
      */
     private $img;
 

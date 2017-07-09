@@ -2,6 +2,8 @@
 
 namespace LavasecoBundle\Controller;
 
+use LavasecoBundle\Entity\ServiceCategory;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class ServiceController extends Controller {
@@ -40,9 +42,9 @@ class ServiceController extends Controller {
         $doctrineManager = $this->get('doctrine')->getManager();
         $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
         $serviceCategory = $serviceCategoryRepository->find($serviceCategoryId);
-  
+
         $service = $serviceCategory->getServices()[0];
-        
+
         $servicesResponse ["service"] = [
             "id" => $service->getId(),
             "name" => $serviceCategory->getName(),
@@ -54,8 +56,44 @@ class ServiceController extends Controller {
         foreach ($descriptors as $descriptor) {
             $servicesResponse ["decriptions"] [] = $this->getDescriptors($descriptor);
         }
-        
+
         return $this->json($servicesResponse);
+    }
+
+    public function getDescriptorsAction() {
+        $descriptorsResponse = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $categoryStateObjectRepository = $doctrineManager->getRepository("LavasecoBundle:CategoryStateObject");
+        $categoryStateObjects = $categoryStateObjectRepository->findAll();
+
+        foreach ($categoryStateObjects as $categoryStateObject) {
+            $descriptorsResponse[] = [
+                "id" => $categoryStateObject->getId(),
+                "name" => $categoryStateObject->getName(),
+            ];
+        }
+        return $this->json($descriptorsResponse);
+    }
+
+    public function addServiceCategoryAction(Request $request) {
+        $type = $request->request->get('type');
+        $serviceCategory = new ServiceCategory();
+
+        $em = $this->get('doctrine')->getManager();
+        $serviceCategoryRepository = $em->getRepository("LavasecoBundle:ServiceCategory");
+
+        $serviceCategory->setName($request->request->get('name'));
+        $serviceCategory->setDescription($request->request->get('description'));
+         
+        if ($type != 1) {
+            $superServiceCategory = $serviceCategoryRepository->find($request->query->get('superCategory'));
+            $serviceCategory->setServiceCategory($superServiceCategory);
+        }
+
+        $em->persist($serviceCategory);
+        $em->flush();
+        
+        return $this->json(["categoryId" => $serviceCategory->getId()]);
     }
 
     private function getDescriptors($descriptor) {
