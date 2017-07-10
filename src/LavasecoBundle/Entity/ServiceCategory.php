@@ -24,7 +24,7 @@ class ServiceCategory
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=50, unique=true)
+     * @ORM\Column(name="name", type="string", length=50)
      */
     private $name;
 
@@ -63,6 +63,7 @@ class ServiceCategory
      */
     public function __construct()
     {
+        $this->img = "/CategoryIcons/default.png";
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
         $this->subServiceCategories = new \Doctrine\Common\Collections\ArrayCollection();
     }
