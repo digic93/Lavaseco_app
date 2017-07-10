@@ -12,6 +12,7 @@
             cursor: pointer;
             background-color: rgba(255, 0, 0, 0.14);
         }
+
     </style>
 {% endblock %} 
 
@@ -172,7 +173,7 @@
                                 </div>
                                 <hr>
                                 <p> <b> Observaciones </b> </p>
-                                <textarea id="observation_service" required="required" class="form-control"></textarea>
+                                <textarea id="observationService" required="required" class="form-control"></textarea>
                                 <hr>
                                 <button type="button" class="btn btn-primary btn-block" onclick="addService()">Agregar <i class="fa fa-plus" aria-hidden="true"></i></button>
                             </div>
@@ -279,7 +280,7 @@
                                 <select class=\"form-control imputDescription\">\
                                     <option data-id=\"0\" data-name=\"\" value=\"0\">seleccione una opción ....</option>";
             for (var key in options)
-                html += "<option data-id=\"" + options[key].id + "\" data-name=\"" + options[key].name + "\" >" + options[key].name + "</option>"
+                html += "<option value=\"" + options[key].name + "\" data-id=\"" + options[key].id + "\" data-name=\"" + options[key].name + "\" >" + options[key].name + "</option>"
             html += "</select></div></div>";
             $("#imputsDescriptions").append(html);
         }
@@ -310,7 +311,7 @@
         }
 
         function addOptionsServicesSelectImput(service) {
-            var html = "<option value=\"" + service.id + "\" data-id=\"" + service.id + "\" data-name=\"" + service.name + "\">" + service.name + "</option>"
+            var html = "<option value=\"" + service.name + "\" data-id=\"" + service.id + "\" data-name=\"" + service.name + "\">" + service.name + "</option>"
             $("#servicesSelectImput").append(html);
         }
 
@@ -325,16 +326,19 @@
             serviceDetail["quantity"] = quantity;
             serviceDetail["total"] = $.number(price * quantity);
             serviceDetail["descriptors"] = getDescriptors();
-            serviceDetail["observations"] = $("#observation_service").val();
+            serviceDetail["observations"] = $("#observationService").val();
+            serviceDetail["idSummaryService"] = summaryServices["services"].length;
 
             summaryServices.total += price * quantity;
             summaryServices["services"].push(serviceDetail);
-            serviceDetail["idSummaryService"] = summaryServices["services"].length;
 
             addRowTable(serviceDetail);
-            $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
 
+            $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
             $("#quantity_service").val(1);
+            $("#observationService").val("");
+            $("#imputsDescriptions").empty();
+
             addImputsDescriptions(serviceDetail.id);
         }
 
@@ -362,19 +366,43 @@
                         <td class=\"text-right\">$" + summaryService.total + "</td>\
                         <td>\
                             <div class=\"btn-group btn-group-xs\" role=\"group\">\
-                                <button type='button' data-summary-service-id=\"" + summaryService.idSummaryService+ "\" class='btn btn-primary btn-editar'>Editar</button>\
-                                <button type='button' data-summary-service-id=\"" + summaryService.idSummaryService+ "\" class='btn btn-danger btn-eliminar'>Eliminar</button>\
+                                <button type='button' onclick=\"editServiceSummary(" + summaryService.idSummaryService + ")\" class='btn btn-primary'>Editar</button>\
+                                <button type='button' onclick=\"deleteServiceSummary(" + summaryService.idSummaryService + ")\" class='btn btn-danger'>Eliminar</button>\
                             </div>\
                         </td>\
                     </tr>");
         }
-        
-        $(".btn-editar").on('click', function () {
-            alert($(this).data('summaryServiceId'));
-        });
-        
+
+        function editServiceSummary(idService) {
+            for (var i in summaryServices.services) {
+                if (summaryServices.services[i].idSummaryService == idService) {
+                    $("#priceServiceImput").val(summaryServices.services[i].price);
+                    $("#quantity_service").val(summaryServices.services[i].quantity);
+                    $("#observationService").val(summaryServices.services[i].observations);
+                    $("#servicesSelectImput").val(summaryServices.services[i].service);
+
+                    for (var j in summaryServices.services[i].descriptors) {
+
+                        console.log(summaryServices.services[i].descriptors[j]);
+                    }
+                }
+            }
+        }
+
+        function deleteServiceSummary(idService) {
+            for (var i in summaryServices.services) {
+                if (summaryServices.services[i].idSummaryService == idService) {
+                    console.log(summaryServices);
+                    //summaryServices.splice(i,1);
+                }
+            }
+            for (var i in summaryServices.services) {
+                console.log(summaryServices.services[i]);
+            }
+        }
+
         $(".btn-eliminar").on('click', function () {
-            
+
         });
 
         function getDescriptionsToString(descriptors) {
@@ -409,6 +437,7 @@
 
             $("#quantity_service").val(1);
             $("#summaryServicesTotal").html("$0");
+            $("#observationService").val("");
         }
 
         function addToBillSummaryServices() {
