@@ -48,39 +48,42 @@
                 <ul class="treeNode">
                     {% for serviceCagory in serviceCagories %}
                         <li>
-                            <a href="#categori_{{ serviceCagory.id }}" class="list-group-item categroy" 
-                               role="button" data-toggle="collapse" href="#categori_{{ serviceCagory.id }}" 
-                               aria-expanded="false" aria-controls="categori_{{ serviceCagory.id }}"
+                            <a href="#Categoria_{{ serviceCagory.id }}" onclick="addCategoryButtonClickEvent(this);"
+                               class="list-group-item" 
+                               role="button" data-toggle="collapse" href="#Categoria_{{ serviceCagory.id }}" 
+                               aria-expanded="false" aria-controls="Categoria_{{ serviceCagory.id }}"
                                data-service-name="{{ serviceCagory.name }}"
                                data-service-description="{{ serviceCagory.description }}"
                                data-service-type="Categoria">
                                 <i class="fa fa-list-ul" aria-hidden="true"></i>
                                 {{ serviceCagory.name }}
                             </a>
-                            <ul class="collapse treeNode" id="categori_{{ serviceCagory.id }}">
+                            <ul class="collapse treeNode" id="Categoria_{{ serviceCagory.id }}">
                                 {% for subServiceCategory in serviceCagory.subServiceCategories %}
                                     <li>
-                                        <a href="#subcategori_{{ subServiceCategory.id }}" class="list-group-item categroy" 
-                                           role="button" data-toggle="collapse" href="#subcategori_{{ subServiceCategory.id }}" 
-                                           aria-expanded="false" aria-controls="subcategori_{{ subServiceCategory.id }}" 
+                                        <a href="#Subcategoria_{{ subServiceCategory.id }}"  onclick="addCategoryButtonClickEvent(this);"
+                                           class="list-group-item" 
+                                           role="button" data-toggle="collapse" href="#Subcategoria_{{ subServiceCategory.id }}" 
+                                           aria-expanded="false" aria-controls="Subcategoria_{{ subServiceCategory.id }}" 
                                            data-service-name="{{ subServiceCategory.name }}"
                                            data-service-description="{{ subServiceCategory.description }}"
                                            data-service-type="Subcategoria">
                                             <strong>&#8226;</strong>
                                             {{ subServiceCategory.name }}
                                         </a>
-                                        <ul class="collapse treeNode" id="subcategori_{{ subServiceCategory.id }}">
+                                        <ul class="collapse treeNode" id="Subcategoria_{{ subServiceCategory.id }}">
                                             {% for service in subServiceCategory.subServiceCategories %}
                                                 <li>
-                                                    <button type="button" class="list-group-item categroy" 
+                                                    <button type="button" class="list-group-item" onclick="addCategoryButtonClickEvent(this);"
                                                             data-service-name="{{ service.name }}"
                                                             data-service-description="{{ service.description }}"
                                                             data-service-type="Servicio">{{ service.name }}
                                                     </button>
                                                 </li>
                                             {% endfor %}
+                                            <div id="newServicio_{{ subServiceCategory.id }}"></div>
                                             <li>
-                                                <button type="button" class="list-group-item addcategroy" data-toggle="modal" 
+                                                <button type="button" onclick="addBuntonClickEvent(this);" class="list-group-item" data-toggle="modal" 
                                                         data-target="#categoriesModal"
                                                         data-service-type="Servicio"
                                                         data-super-category="{{ subServiceCategory.id }}">
@@ -90,8 +93,9 @@
                                         </ul>
                                     </li>
                                 {% endfor %}
+                                <div id="newSubcategoria_{{ serviceCagory.id }}"></div>
                                 <li>
-                                    <button type="button" class="list-group-item addcategroy" data-toggle="modal" 
+                                    <button type="button" onclick="addBuntonClickEvent(this);" class="list-group-item" data-toggle="modal" 
                                             data-target="#categoriesModal"
                                             data-service-type="Subcategoria"
                                             data-super-category="{{ serviceCagory.id }}">
@@ -100,14 +104,11 @@
                                     </button>
                                 </li>
                             </ul>
-
                         </li>    
                     {% endfor %}
-                    <div id="newCategory">
-
-                    </div>
+                    <div id="newCategoria"></div>
                     <li class="list-group-item-success">
-                        <button type="button" class="list-group-item addcategroy" data-toggle="modal" 
+                        <button type="button" onclick="addBuntonClickEvent(this);" class="list-group-item" data-toggle="modal" 
                                 data-target="#categoriesModal" data-service-type="Categoria">
                             <strong>+</strong>
                             Agregar Categoria
@@ -214,22 +215,14 @@
             var serviceName = $(this).data('serviceName');
             var serviceDescription = $(this).data('serviceDescription');
             var serviceTitle = $(this).data('serviceType') + " " + $(this).data('serviceName');
+
             if (serviceName !== undefined) {
                 $("#tittle_service_category").text(serviceTitle);
                 $("#name_service_category").text(serviceName);
                 $("#descrip_service_category").text(serviceDescription);
             }
         });
-        $(".addcategroy").on('click', function () {
-            $("#descriptors").hide();
-            $("#priceNewServiceImput").hide();
-            $("#typeCategory").val($(this).data('serviceType'));
-            $("#superCategory").val($(this).data('superCategory'));
-            $("#titleModal").html("Agregar " + $(this).data('serviceType'));
-            if ($(this).data('serviceType') === "Servicio") {
-                getImputsDescriptions();
-            }
-        });
+
         $(document).ready(function () {
             $("#priceNewService").number(true);
             //Evento cerrar ventana modal
@@ -237,6 +230,31 @@
                 clearcCategoriesModal();
             })
         });
+        
+        function addCategoryButtonClickEvent(button){
+            var serviceName = $(button).data('serviceName');
+            var serviceDescription = $(button).data('serviceDescription');
+            var serviceTitle = $(button).data('serviceType') + " " + $(button).data('serviceName');
+
+            if (serviceName !== undefined) {
+                $("#tittle_service_category").text(serviceTitle);
+                $("#name_service_category").text(serviceName);
+                $("#descrip_service_category").text(serviceDescription);
+            }
+        }
+        
+        function addBuntonClickEvent(button) {
+            $("#descriptors").hide();
+            $("#priceNewServiceImput").hide();
+            $("#typeCategory").val($(button).data('serviceType'));
+            $("#superCategory").val($(button).data('superCategory'));
+            $("#titleModal").html("Agregar " + $(button).data('serviceType'));
+
+            if ($(button).data('serviceType') === "Servicio") {
+                getImputsDescriptions();
+            }
+        }
+
         function getImputsDescriptions() {
             $.ajax({
                 url: "{{ path("lavaseco_api_descriptors") }}",
@@ -302,49 +320,81 @@
                 dataType: "json",
                 data: category,
                 success: function (result) {
-                    addCategoryAtTree(result.categoryId, category);
+                    category["id"] = result.categoryId;
+                    addCategoryAtTree(category);
                     $('#categoriesModal').modal('hide');
                 }
             });
         }
 
-        function addCategoryAtTree(categoryId, category) {
+        function addCategoryAtTree(category) {
+            var html;
             var type;
-            switch (category.type) {
-                case 1:
-                    type = "categori";
-                    break;
-                case 2:
-                    type = "subcategori";
-                    break;
-                case 3:
-                    type = "service";
-                    break;
+            
+            if (category.type === 1 || category.type === 2) {
+                type = (category.type === 1) ? "Categoria" : "Subcategoria";
+                html = addCategory(type, category);
+                html += addButtonAgregar(type, category);
+            } else {
+                html = addService(category);
             }
-            ;
+            
+            type += ((category.superCategory !== undefined) ? "_" + category.superCategory : "");
+            $("#new" + type).append(html);
 
-            var html = "<a href=\"#" + type + "_" + categoryId + "\" class=\"list-group-item categroy\"\
-                   role=\"button\" data-toggle=\"collapse\" href=\"#" + type + "_" + categoryId + "\"\
-                   aria-expanded=\"false\" aria-controls=\"" + type + "_" + categoryId + "\"\
+        }
+
+        function addCategory(type, category) {
+            var id = type + "_" + category.id;
+            return "<li>\
+                <a href=\"#" + id + "\" class=\"list-group-item\" onclick=\"addCategoryButtonClickEvent(this);\"\
+                   role=\"button\" data-toggle=\"collapse\" href=\"#" + id + "\"\
+                   aria-expanded=\"false\" aria-controls=\"" + id + "\"\
                    data-service-name=\"" + category.id + "\"\
                    data-service-description=\"" + category.description + "\"\
-                   data-service-type=\"" + type + "\">\
-                        <i class=\"fa fa-list-ul\" aria-hidden=\"true\"></i> "
+                   data-service-type=\"" + type + "\">"
+                    + getCategoryicon(type)
                     + category.name +
                     "</a>\
-                <ul class=\"collapse treeNode\" id=\"" + type + "_" + categoryId + "\">\
-                    <li>\
-                        <button type=\"button\" class=\"list-group-item addcategroy\" data-toggle=\"modal\"\
-                                data-target=\"#categoriesModal\"\
-                                data-service-type=\"Subcategoria\"\
-                                data-super-category=\"0\">\
-                            <strong>+</strong>\
-                            Agregar Subcategoria\
-                        </button>\
-                    </li>\
-                </ul>";
-            $("#newCategory").append(html);
+            </li>";
+        }
+        
+        function addService(category){
+            return = "<li>\
+                    <button type=\"button\" class=\"list-group-item\" onclick=\"addCategoryButtonClickEvent(this);\"\
+                        data-service-name=\"" + category.name + "\"\
+                        data-service-description=\"" + category.description + "\"\
+                        data-service-type=\"Servicio\">" + category.name + "\
+                    </button>\
+                </li>";
+        }
 
+        function addButtonAgregar(type, category) {
+            var id = type + "_" + category.id;
+            var subType = ((type === "Categoria") ? "Subcategoria" : ((type === "Subcategoria") ? "Servicio" : ""));
+            return "<ul class=\"collapse treeNode\" id=\"" + id + "\">\
+                        <div id=\"new" + subType + "_" + category.id + "\"></div>\
+                        <li>\
+                            <button onclick=\"addBuntonClickEvent(this);\" type=\"button\" class=\"list-group-item\" data-toggle=\"modal\"\
+                                data-target=\"#categoriesModal\"\
+                                data-service-type=\"" + subType + "\"\
+                                data-super-category=\"" + category.id + "\">\
+                            <strong>+</strong>\
+                            Agregar " + subType +
+                        "</button>\
+                    </li>\
+                </ul>"
+        }
+
+        function getCategoryicon(type) {
+            var icon = "";
+            if (type === "Categoria") {
+                icon = "<i class=\"fa fa-list-ul\" aria-hidden=\"true\"></i> ";
+            }
+            if (type === "Subcategoria") {
+                icon = "<strong>&#8226;</strong> ";
+            }
+            return icon;
         }
 
         function clearcCategoriesModal() {
@@ -352,7 +402,6 @@
             $("#descriptionNewCategory").val("");
             $("#priceNewService").val("")
         }
-        ;
 
     </script>
 {% endblock %}
