@@ -216,6 +216,10 @@
             var serviceDescription = $(this).data('serviceDescription');
             var serviceTitle = $(this).data('serviceType') + " " + $(this).data('serviceName');
 
+//<<<<<<< btnEliminarEditar
+//            if (serviceCategory == 3) {
+//                addImputsDescriptions();
+//=======
             if (serviceName !== undefined) {
                 $("#tittle_service_category").text(serviceTitle);
                 $("#name_service_category").text(serviceName);
@@ -231,6 +235,53 @@
             })
         });
         
+//<<<<<<< btnEliminarEditar
+//        function addImputsDescriptions() {
+//            //ajax
+//            //
+//            //success ajax
+//            var result = {
+//                "service":
+//                        {
+//                            "name": "Nombre servicio",
+//                            "price": "8000"
+//                        },
+//                "decriptions":
+//                        [
+//                            {
+//                                "name": "Color",
+//                                "options":
+//                                        [
+//                                            {"id": 1, "name": "Rojo"},
+//                                            {"id": 2, "name": "Amarillo"},
+//                                            {"id": 3, "name": "Azul"},
+//                                            {"id": 4, "name": "Violeta"}
+//                                        ]
+//                            },
+//                            {
+//                                "name": "Estado",
+//                                "options":
+//                                        [
+//                                            {"id": 1, "name": "Bueno"},
+//                                            {"id": 2, "name": "Desgastado"},
+//                                            {"id": 4, "name": "Dañado"}
+//                                        ]
+//                            }
+//                        ]
+//            };
+//            //omitir resutl " success: function(resutl){ .."
+//            var decriptions = result.decriptions;
+//            
+//            var tittle= "<hr> <h4 class='modal-title text-center'>Seleccione las caracteristicas</h4> <hr>";
+//            $("#select_state_new_service").append(tittle);
+//            
+//            for (var desc in decriptions) {
+//                var html = "<div class=\"col-md-2\">\
+//                            <input type='checkbox' name='service' value='"+ decriptions[desc].name +"'>\
+//                           <label class=\"control-label\">" + decriptions[desc].name + "</label>";
+//                html += "</input></div>";
+//                $("#select_state_new_service").append(html);
+//=======
         function addCategoryButtonClickEvent(button){
             var serviceName = $(button).data('serviceName');
             var serviceDescription = $(button).data('serviceDescription');
