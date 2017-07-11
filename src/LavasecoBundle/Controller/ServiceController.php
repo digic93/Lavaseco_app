@@ -2,6 +2,10 @@
 
 namespace LavasecoBundle\Controller;
 
+use LavasecoBundle\Entity\Service;
+use LavasecoBundle\Entity\ServiceCategory;
+use LavasecoBundle\Entity\ServiceCategoryState;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class ServiceController extends Controller {
@@ -40,9 +44,9 @@ class ServiceController extends Controller {
         $doctrineManager = $this->get('doctrine')->getManager();
         $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
         $serviceCategory = $serviceCategoryRepository->find($serviceCategoryId);
-  
+
         $service = $serviceCategory->getServices()[0];
-        
+
         $servicesResponse ["service"] = [
             "id" => $service->getId(),
             "name" => $serviceCategory->getName(),
@@ -54,8 +58,72 @@ class ServiceController extends Controller {
         foreach ($descriptors as $descriptor) {
             $servicesResponse ["decriptions"] [] = $this->getDescriptors($descriptor);
         }
-        
+
         return $this->json($servicesResponse);
+    }
+
+    public function getDescriptorsAction() {
+        $descriptorsResponse = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $categoryStateObjectRepository = $doctrineManager->getRepository("LavasecoBundle:CategoryStateObject");
+        $categoryStateObjects = $categoryStateObjectRepository->findAll();
+
+        foreach ($categoryStateObjects as $categoryStateObject) {
+            $descriptorsResponse[] = [
+                "id" => $categoryStateObject->getId(),
+                "name" => $categoryStateObject->getName(),
+            ];
+        }
+        return $this->json($descriptorsResponse);
+    }
+
+    public function addServiceCategoryAction(Request $request) {
+        $type = $request->request->get('type');
+        $serviceCategory = new ServiceCategory();
+
+        $em = $this->get('doctrine')->getManager();
+        $serviceCategoryRepository = $em->getRepository("LavasecoBundle:ServiceCategory");
+
+        $serviceCategory->setName($request->request->get('name'));
+        $serviceCategory->setDescription($request->request->get('description'));
+
+        if ($type != 1) {
+            $superServiceCategory = $serviceCategoryRepository->find($request->request->get('superCategory'));
+            $serviceCategory->setServiceCategory($superServiceCategory);
+        }
+
+        $em->persist($serviceCategory);
+        $em->flush();
+
+        //cuando es service
+        if ($type == 3) {
+            $this->addService($request->request->get('price'), $request->request->get('descriptors'), $serviceCategory);
+        }
+
+        return $this->json(["categoryId" => $serviceCategory->getId()]);
+    }
+
+    private function addService($price, $descriptors, $serviceCategory) {
+        $service = new Service();
+        $em = $this->get('doctrine')->getManager();
+            
+        $service->setPrice($price);
+        $service->setServiceCategory($serviceCategory);
+        $em->persist($service);
+        $em->flush();
+
+        foreach ($descriptors as $descriptorId) {
+            $categoryStateObjectRepository = $em->getRepository("LavasecoBundle:CategoryStateObject");
+            $categoryStateObject = $categoryStateObjectRepository->find($descriptorId);
+
+            if (isset($categoryStateObject)) {
+                $serviceCategoryState = new ServiceCategoryState();
+                $serviceCategoryState->setService($service);
+                $serviceCategoryState->setCategoryStateObject($categoryStateObject);
+                $em->persist($serviceCategoryState);
+                $em->flush();
+            }
+        }
     }
 
     private function getDescriptors($descriptor) {
