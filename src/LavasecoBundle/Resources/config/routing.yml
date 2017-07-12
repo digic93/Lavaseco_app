@@ -42,3 +42,17 @@ lavaseco_api_descriptors:
     path:     /api/descriptors
     defaults: { _controller: LavasecoBundle:Service:getDescriptors }
     methods:  [GET]
+
+#permitido solo para los usuarios que tienen acceso a venta
+lavaseco_api_search_user:
+    path:     /api/tool/user
+    defaults: { _controller: LavasecoBundle:User:search }
+    methods:  [POST]
+    
+#permitido solo para los usuarios que tienen acceso a venta    
+lavaseco_api_user:
+    path:     /api/user/{userId}
+    defaults: { _controller: LavasecoBundle:User:getByUserId, userId:0}
+    methods:  [GET]
+    requirements:
+        userId:  \d+
