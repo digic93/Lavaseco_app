@@ -81,6 +81,12 @@
                     </p>
                     <hr>
                     <p>
+                    <div class="well">
+                        <input id="clientBill" type="text" class=" form-control" placeholder="Buscar Cliente..." autocomplete="off" />
+                    </div>
+                    </p>
+                    <hr>
+                    <p>
                         {{ billContent.head }}
                     </p>
                     <hr>
@@ -220,6 +226,7 @@
 
 {% block javascripts %}
     <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/bootstrap-typeahead.js") }}"></script>
 
     <script>
         var factrua = {};
@@ -266,18 +273,18 @@
                     $("#priceServiceImput").val(services.service.price);
 
                     for (var desc in decriptions) {
-                        addImputsDescription(decriptions[desc]);
+                        addImputsDescription(decriptions[desc], decriptions.indexOf(decriptions[desc]));
                     }
                 }
             });
         }
 
-        function addImputsDescription(description) {
+        function addImputsDescription(description, idDescription) {
             var options = description.options;
             var html = "<div class=\"form-group\">\
                             <label class=\"control-label col-md-5\">" + description.name + "</label>\
                             <div class=\"col-md-7\">\
-                                <select class=\"form-control imputDescription\">\
+                                <select id=\"description_" + idDescription + "\" class=\"form-control imputDescription\">\
                                     <option data-id=\"0\" data-name=\"\" value=\"0\">seleccione una opción ....</option>";
             for (var key in options)
                 html += "<option value=\"" + options[key].name + "\" data-id=\"" + options[key].id + "\" data-name=\"" + options[key].name + "\" >" + options[key].name + "</option>"
@@ -361,7 +368,7 @@
             $("#summaryDetail").append(
                     "<tr class=\"detail_item\" data-service-id=\"" + summaryService.id + "\">\
                         <td>" + summaryService.service + "</td>\
-                        <td>" + getDescriptionsToString(summaryService.descriptors) + "</td>\
+                        <td>" + getDescriptionsToString(summaryService.descriptors) + "<p>" + summaryService.observations + "</td>\
                         <td class=\"text-right\">" + summaryService.quantity + "</td>\
                         <td class=\"text-right\">$" + summaryService.total + "</td>\
                         <td>\
@@ -381,25 +388,29 @@
                     $("#observationService").val(summaryServices.services[i].observations);
                     $("#servicesSelectImput").val(summaryServices.services[i].service);
 
-                    for (var j in summaryServices.services[i].descriptors) {
 
-                        console.log(summaryServices.services[i].descriptors[j]);
+                    for (var j in summaryServices.services[i].descriptors) {
+                        var index = summaryServices.services[i].descriptors.indexOf(summaryServices.services[i].descriptors[j]);
+                        $("#description_" + index).val(summaryServices.services[i].descriptors[j].name)
                     }
+
+                    var indice = summaryServices.services.indexOf(summaryServices.services[i]); // obtenemos el indice
+                    deleteServiceSummary(indice);
                 }
             }
         }
 
         function deleteServiceSummary(idService) {
-            for (var i in summaryServices.services) {
-                if (summaryServices.services[i].idSummaryService == idService) {
-                    console.log(summaryServices);
-                    //summaryServices.splice(i,1);
+            summaryServices.services.splice(idService, 1); // 1 es la cantidad de elemento a eliminar
+            console.log(summaryServices.services);
+            $("#summaryDetail").empty();
+            if (summaryServices.services.length > 0) {
+                for (i in summaryServices.services) {
+                    addRowTable(summaryServices.services[i]);
                 }
             }
-            for (var i in summaryServices.services) {
-                console.log(summaryServices.services[i]);
-            }
         }
+
 
         $(".btn-eliminar").on('click', function () {
 
@@ -470,6 +481,41 @@
             $('#addServiceModal').modal('hide');
 
         }
+
+        function displayResult(item) {
+            $('.alert').show().html('You selected <strong>' + item.value + '</strong>: <strong>' + item.text + '</strong>');
+        }
+
+        $('#clientBill').typeahead({
+
+            source: [
+                {ID: 1, Name: 'Toronto'},
+                {ID: 2, Name: 'Montreal'},
+                {ID: 3, Name: 'New York'},
+                {ID: 4, Name: 'Buffalo'},
+                {ID: 5, Name: 'Boston'},
+                {ID: 6, Name: 'Columbus'},
+                {ID: 7, Name: 'Dallas'},
+                {ID: 8, Name: 'Vancouver'},
+                {ID: 9, Name: 'Seattle'},
+                {ID: 10, Name: 'Los Angeles'}
+            ],
+            displayField: 'Name',
+            valueField: 'ID',
+            onSelect: displayResult
+                    /*ajax: {
+                     url: "{{ path('lavaseco_api_search_user') }}",
+                     method: 'post',
+                     triggerLength: 1,
+                     contentType: 'application/json',
+                     dataType: 'json',
+                     success: function(data) {
+                     alert(data);
+                     }
+                     },
+                     onSelect: displayResult*/
+        });
+
     </script>
 {% endblock %}
 
