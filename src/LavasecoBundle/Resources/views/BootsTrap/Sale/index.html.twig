@@ -487,33 +487,32 @@
         }
 
         $('#clientBill').typeahead({
-
-            source: [
-                {ID: 1, Name: 'Toronto'},
-                {ID: 2, Name: 'Montreal'},
-                {ID: 3, Name: 'New York'},
-                {ID: 4, Name: 'Buffalo'},
-                {ID: 5, Name: 'Boston'},
-                {ID: 6, Name: 'Columbus'},
-                {ID: 7, Name: 'Dallas'},
-                {ID: 8, Name: 'Vancouver'},
-                {ID: 9, Name: 'Seattle'},
-                {ID: 10, Name: 'Los Angeles'}
-            ],
-            displayField: 'Name',
-            valueField: 'ID',
+            /*source: [
+             {ID: 1, Name: 'Toronto'},
+             {ID: 2, Name: 'Montreal'},
+             {ID: 3, Name: 'New York'},
+             {ID: 4, Name: 'Buffalo'},
+             {ID: 5, Name: 'Boston'},
+             {ID: 6, Name: 'Columbus'},
+             {ID: 7, Name: 'Dallas'},
+             {ID: 8, Name: 'Vancouver'},
+             {ID: 9, Name: 'Seattle'},
+             {ID: 10, Name: 'Los Angeles'}
+             ],
+             displayField: 'Name',
+             valueField: 'ID',
+             onSelect: displayResult*/
+            ajax: {
+                url: "{{ path('lavaseco_api_search_user') }}",
+                method: 'post',
+                triggerLength: 1,
+                contentType: 'application/json',
+                dataType: 'json',
+                response: function (data) {
+                    this.responseText =data;
+                }
+            },
             onSelect: displayResult
-                    /*ajax: {
-                     url: "{{ path('lavaseco_api_search_user') }}",
-                     method: 'post',
-                     triggerLength: 1,
-                     contentType: 'application/json',
-                     dataType: 'json',
-                     success: function(data) {
-                     alert(data);
-                     }
-                     },
-                     onSelect: displayResult*/
         });
 
     </script>
