@@ -502,17 +502,40 @@
              displayField: 'Name',
              valueField: 'ID',
              onSelect: displayResult*/
+            onSelect: function (item) {
+                console.log(item);
+            },
             ajax: {
                 url: "{{ path('lavaseco_api_search_user') }}",
-                method: 'post',
+                timeout: 500,
+                displayField: "title",
                 triggerLength: 1,
-                contentType: 'application/json',
-                dataType: 'json',
-                response: function (data) {
-                    this.responseText =data;
+                method: "POST",
+                loadingClass: "loading-circle",
+                preDispatch: function (query) {
+                    return {
+                        search: query
+                    }
+                },
+                preProcess: function (data) {
+                    if (data.success === false) {
+                        // Hide the list, there was some error
+                        return false;
+                    }
+                    // We good!
+                    return data.mylist;
                 }
-            },
-            onSelect: displayResult
+            }
+            /*ajax: {
+             url: "{{ path('lavaseco_api_search_user') }}",
+             method: "POST",
+             dataType: "json",
+             triggerLength: 1,
+             response: function (result) {
+             this.responseText =result;
+             }
+             },
+             onSelect: displayResult*/
         });
 
     </script>
