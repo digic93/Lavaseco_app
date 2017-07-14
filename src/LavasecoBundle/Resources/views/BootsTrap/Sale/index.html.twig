@@ -81,6 +81,12 @@
                     </p>
                     <hr>
                     <p>
+                    <div class="well">
+                        <input id="clientBill" type="text" class=" form-control" placeholder="Buscar Cliente..." autocomplete="off" />
+                    </div>
+                    </p>
+                    <hr>
+                    <p>
                         {{ billContent.head }}
                     </p>
                     <hr>
@@ -220,37 +226,33 @@
 
 {% block javascripts %}
     <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/bootstrap-typeahead.js") }}"></script>
 
     <script>
         var factrua = {};
         var summaryServices = {};
-
         $(document).ready(function () {
             factrua["total"] = 0;
-
             $("#quantity_service").number(true);
             $("#priceServiceImput").number(true);
-
             //Evento cerrar ventana modal
             $('#addServiceModal').on('hidden.bs.modal', function (e) {
                 clearServicesFormImput();
-            })
+            });
         });
 //Functions////////////////////////////////////////////////////////        
         function itemShowModal(item) {
             var subCategoryId = $(item).data("subcategoryId");
             var categories = $(item).data("categoryName") + ", " + $(item).data("subcategoryName");
             $("#titleModal").html("Agregar " + categories);
-
             addServicesSelectImput(subCategoryId);
-
             summaryServices["total"] = 0;
             summaryServices["services"] = [];
             summaryServices["categories"] = categories;
         }
 
         function changeImputsDescriptions(selectServiceCategory) {
-            addImputsDescriptions($(selectServiceCategory).val());
+            addImputsDescriptions($(selectServiceCategory).find(':selected').data('id'));
         }
 
         function addImputsDescriptions(serviceCategoryId) {
@@ -261,23 +263,21 @@
                 dataType: 'json',
                 success: function (services) {
                     var decriptions = services.decriptions;
-
                     $("#imputsDescriptions").empty();
                     $("#priceServiceImput").val(services.service.price);
-
                     for (var desc in decriptions) {
-                        addImputsDescription(decriptions[desc]);
+                        addImputsDescription(decriptions[desc], decriptions.indexOf(decriptions[desc]));
                     }
                 }
             });
         }
 
-        function addImputsDescription(description) {
+        function addImputsDescription(description, idDescription) {
             var options = description.options;
             var html = "<div class=\"form-group\">\
                             <label class=\"control-label col-md-5\">" + description.name + "</label>\
                             <div class=\"col-md-7\">\
-                                <select class=\"form-control imputDescription\">\
+                                <select id=\"description_" + idDescription + "\" class=\"form-control imputDescription\">\
                                     <option data-id=\"0\" data-name=\"\" value=\"0\">seleccione una opción ....</option>";
             for (var key in options)
                 html += "<option value=\"" + options[key].name + "\" data-id=\"" + options[key].id + "\" data-name=\"" + options[key].name + "\" >" + options[key].name + "</option>"
@@ -300,7 +300,6 @@
 
                     $('#addServiceModal').modal('show');
                     addImputsDescriptions(servicesCategories[0].id);
-
                     $("#servicesSelectImput").empty();
                     for (var key in servicesCategories) {
                         var serviceCategory = servicesCategories[key];
@@ -319,7 +318,6 @@
             var serviceDetail = {};
             var price = parseInt($("#priceServiceImput").val());
             var quantity = parseInt($("#quantity_service").val());
-
             serviceDetail["id"] = $("#servicesSelectImput").find(':selected').data('id');
             serviceDetail["service"] = $("#servicesSelectImput").find(':selected').data('name');
             serviceDetail["price"] = price;
@@ -328,17 +326,13 @@
             serviceDetail["descriptors"] = getDescriptors();
             serviceDetail["observations"] = $("#observationService").val();
             serviceDetail["idSummaryService"] = summaryServices["services"].length;
-
             summaryServices.total += price * quantity;
             summaryServices["services"].push(serviceDetail);
-
             addRowTable(serviceDetail);
-
             $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
             $("#quantity_service").val(1);
             $("#observationService").val("");
             $("#imputsDescriptions").empty();
-
             addImputsDescriptions(serviceDetail.id);
         }
 
@@ -346,7 +340,6 @@
             var descriptors = [];
             $(".imputDescription").each(function (index) {
                 var id = parseInt($(this).find(':selected').data('id'));
-
                 if (id !== 0) {
                     descriptors.push({
                         "id": id,
@@ -361,7 +354,7 @@
             $("#summaryDetail").append(
                     "<tr class=\"detail_item\" data-service-id=\"" + summaryService.id + "\">\
                         <td>" + summaryService.service + "</td>\
-                        <td>" + getDescriptionsToString(summaryService.descriptors) + "</td>\
+                        <td>" + getDescriptionsToString(summaryService.descriptors) + "<p>" + summaryService.observations + "</td>\
                         <td class=\"text-right\">" + summaryService.quantity + "</td>\
                         <td class=\"text-right\">$" + summaryService.total + "</td>\
                         <td>\
@@ -380,31 +373,32 @@
                     $("#quantity_service").val(summaryServices.services[i].quantity);
                     $("#observationService").val(summaryServices.services[i].observations);
                     $("#servicesSelectImput").val(summaryServices.services[i].service);
-
                     for (var j in summaryServices.services[i].descriptors) {
-
-                        console.log(summaryServices.services[i].descriptors[j]);
+                        var index = summaryServices.services[i].descriptors.indexOf(summaryServices.services[i].descriptors[j]);
+                        $("#description_" + index).val(summaryServices.services[i].descriptors[j].name)
                     }
+
+                    var indice = summaryServices.services.indexOf(summaryServices.services[i]); // obtenemos el indice
+                    deleteServiceSummary(indice);
                 }
             }
         }
 
         function deleteServiceSummary(idService) {
-            for (var i in summaryServices.services) {
-                if (summaryServices.services[i].idSummaryService == idService) {
-                    console.log(summaryServices);
-                    //summaryServices.splice(i,1);
+            summaryServices.services.splice(idService, 1); // 1 es la cantidad de elemento a eliminar
+            console.log(summaryServices.services);
+            $("#summaryDetail").empty();
+            if (summaryServices.services.length > 0) {
+                for (i in summaryServices.services) {
+                    addRowTable(summaryServices.services[i]);
                 }
             }
-            for (var i in summaryServices.services) {
-                console.log(summaryServices.services[i]);
-            }
         }
+
 
         $(".btn-eliminar").on('click', function () {
 
         });
-
         function getDescriptionsToString(descriptors) {
             var descriptorsResutl = [];
             for (var key in descriptors) {
@@ -430,11 +424,9 @@
         function clearServicesFormImput() {
             summaryServices.total = 0;
             summaryServices["services"] = [];
-
             $("#summaryDetail").empty();
             $("#servicesSelectImput").empty();
             $("#imputsDescriptions").empty();
-
             $("#quantity_service").val(1);
             $("#summaryServicesTotal").html("$0");
             $("#observationService").val("");
@@ -445,7 +437,6 @@
                     "<tr style=\"border-bottom-style: solid; border-bottom-width: 2px\">\
                         <td colspan=\"3\">" + summaryServices.categories + "</td>\
                     </tr>";
-
             for (var i in summaryServices.services) {
                 html +=
                         "<tr>\
@@ -464,12 +455,85 @@
             if (summaryServices.total !== 0) {
                 factrua.total += summaryServices.total;
                 addToBillSummaryServices();
-
                 $("#totalBill").html("<strong>$" + $.number(factrua.total) + "</strong>");
             }
             $('#addServiceModal').modal('hide');
-
         }
+
+        function displayResult(item) {
+            $('.alert').show().html('You selected <strong>' + item.value + '</strong>: <strong>' + item.text + '</strong>');
+        }
+
+        function searchNameOrEmail() {
+            $.ajax({
+                url: "{{ path('lavaseco_api_search_user') }}",
+                type: 'POST',
+                data: {
+                    nameOrEmail: nameOrEmail
+                },
+                dataType: 'JSON',
+                async: false,
+                success: function (data) {
+                    return data;
+                },
+                error: function () {
+                    alert('System Error! Please try again.');
+                }
+            });
+        }
+
+        $('#clientBill').typeahead({
+            
+            ajax: {
+                url: "{{ path('lavaseco_api_search_user') }}",
+                
+                method: "POST",
+                loadingClass: "loading-circle",
+                preDispatch: function (query) {
+                    //showLoadingMask(true);
+                    console.log(query);
+                    return {
+                        nameOrEmail: query
+                    }
+                },
+                preProcess: function (data) {
+                    //showLoadingMask(false);
+                    console.log(data);
+                    
+                    if (data.success === false) {// Hide the list, there was some error 				
+                        return false;
+                    } 			// We good! 			
+                    return data;
+                }
+            },
+         onSelect: displayResult
+        });
+        /*source: [
+         {ID: 1, Name: 'Toronto'},
+         {ID: 2, Name: 'Montreal'},
+         {ID: 3, Name: 'New York'},
+         {ID: 4, Name: 'Buffalo'},
+         {ID: 5, Name: 'Boston'},
+         {ID: 6, Name: 'Columbus'},
+         {ID: 7, Name: 'Dallas'},
+         {ID: 8, Name: 'Vancouver'},
+         {ID: 9, Name: 'Seattle'},
+         {ID: 10, Name: 'Los Angeles'}
+         ],
+         
+
+        /*ajax: {
+         url: "{{ path('lavaseco_api_search_user') }}",
+         method: "POST",
+         dataType: "json",
+         triggerLength: 1,
+         response: function (result) {
+         this.responseText =result;
+         }
+         },
+         onSelect: displayResult*/
+
+
     </script>
 {% endblock %}
 

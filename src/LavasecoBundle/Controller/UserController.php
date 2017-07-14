@@ -15,7 +15,7 @@ class UserController extends Controller {
         $users = $userRepository->getUserByNameOrEmail($request->request->get('nameOrEmail'));
 
         foreach ($users as $user) {
-            $usersResutl = [
+            $usersResutl [] = [
                 "id" => $user->getId(),
                 "name" => $user->getFirstName() . " " . $user->getLastName(),
                 "email" => $user->getEmail()
