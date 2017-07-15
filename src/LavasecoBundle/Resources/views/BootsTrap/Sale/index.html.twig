@@ -81,9 +81,15 @@
                     </p>
                     <hr>
                     <p>
-                    <div class="well">
-                        <input id="clientBill" type="text" class=" form-control" placeholder="Buscar Cliente..." autocomplete="off" />
+                    <div class="well input-group">
+                        <input id="clientBill" type="text" class="form-control" placeholder="Buscar Cliente..." autocomplete="off" />
+                        <span class="input-group-btn">
+                            <button id="addClientBill" class="btn btn-secondary" type="button" disabled="true" onclick="signUpClient()">
+                                <i class="fa fa-user-plus" aria-hidden="true"></i>
+                            </button>
+                        </span>
                     </div>
+                    <div id="infoClientBill" class="form-group"></div>      
                     </p>
                     <hr>
                     <p>
@@ -222,6 +228,27 @@
     </div>
     <!--end Modal Window-->  
 
+    <!-- Modal -->
+    <div id="modalSignUpClient" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Registro de Clientes</h4>
+                </div>
+                <div class="modal-body">
+                    {% include 'LavasecoBundle:BootsTrap:SignUp/index.html.twig' %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -229,10 +256,11 @@
     <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/bootstrap-typeahead.js") }}"></script>
 
     <script>
-        var factrua = {};
+        var factura = {};
         var summaryServices = {};
         $(document).ready(function () {
-            factrua["total"] = 0;
+            factura["total"] = 0;
+            factura["services"] = [];
             $("#quantity_service").number(true);
             $("#priceServiceImput").number(true);
             //Evento cerrar ventana modal
@@ -368,7 +396,7 @@
 
         function editServiceSummary(idService) {
             for (var i in summaryServices.services) {
-                if (summaryServices.services[i].idSummaryService == idService) {
+                if (summaryServices.services[i].idSummaryService === idService) {
                     $("#priceServiceImput").val(summaryServices.services[i].price);
                     $("#quantity_service").val(summaryServices.services[i].quantity);
                     $("#observationService").val(summaryServices.services[i].observations);
@@ -395,10 +423,6 @@
             }
         }
 
-
-        $(".btn-eliminar").on('click', function () {
-
-        });
         function getDescriptionsToString(descriptors) {
             var descriptorsResutl = [];
             for (var key in descriptors) {
@@ -453,86 +477,55 @@
 
         function addServicesInBill() {
             if (summaryServices.total !== 0) {
-                factrua.total += summaryServices.total;
+                factura.total += summaryServices.total;
+                for (i in summaryServices.services)
+                    factura["services"].push(summaryServices.services[i]);
+
                 addToBillSummaryServices();
-                $("#totalBill").html("<strong>$" + $.number(factrua.total) + "</strong>");
+                $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
             }
             $('#addServiceModal').modal('hide');
         }
 
-        function displayResult(item) {
-            $('.alert').show().html('You selected <strong>' + item.value + '</strong>: <strong>' + item.text + '</strong>');
-        }
-
-        function searchNameOrEmail() {
-            $.ajax({
-                url: "{{ path('lavaseco_api_search_user') }}",
-                type: 'POST',
-                data: {
-                    nameOrEmail: nameOrEmail
-                },
-                dataType: 'JSON',
-                async: false,
-                success: function (data) {
-                    return data;
-                },
-                error: function () {
-                    alert('System Error! Please try again.');
-                }
-            });
-        }
-
         $('#clientBill').typeahead({
-            
+            order: "asc",
             ajax: {
                 url: "{{ path('lavaseco_api_search_user') }}",
-                
                 method: "POST",
                 loadingClass: "loading-circle",
                 preDispatch: function (query) {
-                    //showLoadingMask(true);
-                    console.log(query);
                     return {
                         nameOrEmail: query
                     }
                 },
                 preProcess: function (data) {
-                    //showLoadingMask(false);
-                    console.log(data);
-                    
-                    if (data.success === false) {// Hide the list, there was some error 				
+                    if (data.success === false) {// Hide the list, there was some error
                         return false;
-                    } 			// We good! 			
+                    }// We good!
+                    console.log(data);
+                    if (data.length === 0) {
+                        $("#addClientBill").attr('disabled', false);
+                    } else {
+                        $("#addClientBill").attr('disabled', true);
+                    }
                     return data;
                 }
             },
-         onSelect: displayResult
+
+            displayField: "name",
+            valueField: "email",
+            onSelect: displayResult
         });
-        /*source: [
-         {ID: 1, Name: 'Toronto'},
-         {ID: 2, Name: 'Montreal'},
-         {ID: 3, Name: 'New York'},
-         {ID: 4, Name: 'Buffalo'},
-         {ID: 5, Name: 'Boston'},
-         {ID: 6, Name: 'Columbus'},
-         {ID: 7, Name: 'Dallas'},
-         {ID: 8, Name: 'Vancouver'},
-         {ID: 9, Name: 'Seattle'},
-         {ID: 10, Name: 'Los Angeles'}
-         ],
-         
 
-        /*ajax: {
-         url: "{{ path('lavaseco_api_search_user') }}",
-         method: "POST",
-         dataType: "json",
-         triggerLength: 1,
-         response: function (result) {
-         this.responseText =result;
-         }
-         },
-         onSelect: displayResult*/
-
+        function displayResult(item) {
+            var html = "<p> <strong> Nombre Cliente :</strong>"+ item.text +" </p> <p><strong> Email Cliente: </strong>"+ item.value+" </p>";                   
+            $("#infoClientBill").html(html);
+            $('.alert').show().html('You selected <strong>' + item.value + '</strong>: <strong>' + item.text + '</strong>');
+        }
+        
+        function signUpClient (){
+            $('#modalSignUpClient').modal('show');
+        }
 
     </script>
 {% endblock %}
