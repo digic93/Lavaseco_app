@@ -1,0 +1,114 @@
+<style> 
+    .req {
+        margin:2px;
+        color:#1ab188;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">  
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Registro de Datos Personales</h3>
+            </div>
+            <div class="panel-body">
+
+                <div class="form-group">
+                    <p>Nombres<span class="req">*</span></p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                        <input class="form-control" id="client_firstName" type="text" required autocomplete="off" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <p>Apellidos<span class="req">*</span></p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                        <input class="form-control" id="client_lastName" type="text"required autocomplete="off"/>
+                    </div>                     
+                </div>
+
+                <div id="divEmail" class="form-group">
+                    <label  class="control-label">Email<span class="req">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+                        <input class="form-control" id="client_email" type="email" o required autocomplete="off"/>
+                    </div>                  
+                </div>
+
+                <div class="form-group">
+                    <p>Numero Telefono<span class="req">*</span></p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i></span>
+                        <input class="form-control" id="client_phone_number" type="text"required autocomplete="off"/>
+                    </div> 
+                </div>
+
+                <!--pasar al formulario de confirmacion
+                                <div class="form-group">
+                                    <p>Contraseña<span class="req">*</span></p>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                                        <input class="form-control" id="client_psw" type="password"required autocomplete="off"/>
+                                    </div>
+                                </div>
+                
+                                <div class="form-group">
+                                    <p>Confirmar Contraseña<span class="req">*</span></p>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                                        <input class="form-control" id="client_confirmPsw" type="password"required autocomplete="off"/>
+                
+                                    </div>
+                                </div>
+                -->
+                <button type="submit"  onclick="saveUser();" class="btn btn-success btn-block"/>Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+    <script>
+        var valid = false
+        $("#client_email").focusout(function () {
+            $.ajax({
+                url: "{{ path('lavaseco_api_validate_user') }}/" + $("#client_email").val(),
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (result) {
+                    var valid = result.valid;
+                    if (!valid) {
+                        $("#divEmail").removeClass("has-success");
+                        $("#divEmail").addClass("has-error");
+                    } else {
+                        $("#divEmail").removeClass("has-error");
+                        $("#divEmail").addClass("has-success");
+                    }
+                }
+            });
+        });
+
+        function saveUser() {
+            var user = {
+                email: $("#client_email").val(),
+                firstName: $("#client_firstName").val(),
+                lastName: $("#client_lastName").val(),
+                phoneNumber: $("#client_phone_number").val(),
+            };
+            $.ajax({
+                url: "{{ path("lavaseco_api_create_user") }}",
+                method: "POST",
+                dataType: "json",
+                data: user,
+                success: function (result) {
+                    category["id"] = result.categoryId;
+                    addCategoryAtTree(category);
+                    $('#categoriesModal').modal('hide');
+                }
+            });
+        }
+    </script>
+{% endblock %}

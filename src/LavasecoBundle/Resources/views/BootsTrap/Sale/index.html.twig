@@ -1,4 +1,4 @@
-{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+    {% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
 
 {% block stylesheets %}
     <style>
@@ -84,7 +84,7 @@
                     <div class="well input-group">
                         <input id="clientBill" type="text" class="form-control" placeholder="Buscar Cliente..." autocomplete="off" />
                         <span class="input-group-btn">
-                            <button id="addClientBill" class="btn btn-secondary" type="button" disabled="true" onclick="signUpClient()">
+                            <button id="addClientBill" class="btn btn-secondary" type="button"  onclick="signUpClient()">
                                 <i class="fa fa-user-plus" aria-hidden="true"></i>
                             </button>
                         </span>
@@ -187,7 +187,7 @@
                                 <p> <b> Observaciones </b> </p>
                                 <textarea id="observationService" required="required" class="form-control"></textarea>
                                 <hr>
-                                <button type="button" class="btn btn-primary btn-block" onclick="addService()">Agregar <i class="fa fa-plus" aria-hidden="true"></i></button>
+                                <button type="button" class="btn btn-primary btn-block" onclick="addService();">Agregar <i class="fa fa-plus" aria-hidden="true"></i></button>
                             </div>
                         </div>
                         <!-- Table Service options -->
@@ -239,7 +239,7 @@
                     <h4 class="modal-title">Registro de Clientes</h4>
                 </div>
                 <div class="modal-body">
-                    {% include 'LavasecoBundle:BootsTrap:SignUp/index.html.twig' %}
+                    {% include 'LavasecoBundle:BootsTrap:Settings/Users/userForm.html.twig' %}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

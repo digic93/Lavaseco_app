@@ -27,16 +27,10 @@ class Service
      * @ORM\Column(name="price", type="decimal", precision=10, scale=0)
      */
     private $price;
-    
-    /**
-     * @ORM\ManyToOne(targetEntity="AbstractService", inversedBy="services")
-     * @ORM\JoinColumn(name="abstract_service_id", referencedColumnName="id")
-     */
-    protected $abstractService;
-    
+      
     /**
      * @ORM\ManyToOne(targetEntity="ServiceCategory", inversedBy="services")
-     * @ORM\JoinColumn(name="service_category_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="service_category_id", referencedColumnName="id", nullable=false, unique=true)
      */
     protected $serviceCategory;
     
@@ -48,7 +42,7 @@ class Service
     /**
      * @ORM\OneToMany(targetEntity="ServiceCategoryState", mappedBy="service")
      */
-    protected $serviceAttributes;
+    protected $serviceDescriptors;
 
     /**
      * @ORM\OneToMany(targetEntity="StateObjectRecevidService", mappedBy="service")
@@ -61,7 +55,7 @@ class Service
     public function __construct()
     {
         $this->billDetails = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->serviceAttributes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->serviceDescriptors = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -96,30 +90,6 @@ class Service
     public function getPrice()
     {
         return $this->price;
-    }
-
-    /**
-     * Set abstractService
-     *
-     * @param \LavasecoBundle\Entity\AbstractService $abstractService
-     *
-     * @return Service
-     */
-    public function setAbstractService(\LavasecoBundle\Entity\AbstractService $abstractService = null)
-    {
-        $this->abstractService = $abstractService;
-
-        return $this;
-    }
-
-    /**
-     * Get abstractService
-     *
-     * @return \LavasecoBundle\Entity\AbstractService
-     */
-    public function getAbstractService()
-    {
-        return $this->abstractService;
     }
 
     /**
@@ -187,9 +157,9 @@ class Service
      *
      * @return Service
      */
-    public function addServiceAttribute(\LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute)
+    public function addServiceDescriptors(\LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute)
     {
-        $this->serviceAttributes[] = $serviceAttribute;
+        $this->serviceDescriptors[] = $serviceAttribute;
 
         return $this;
     }
@@ -199,9 +169,9 @@ class Service
      *
      * @param \LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute
      */
-    public function removeServiceAttribute(\LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute)
+    public function removeServiceDescriptors(\LavasecoBundle\Entity\ServiceCategoryState $serviceAttribute)
     {
-        $this->serviceAttributes->removeElement($serviceAttribute);
+        $this->serviceDescriptors->removeElement($serviceAttribute);
     }
 
     /**
@@ -209,8 +179,42 @@ class Service
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getServiceAttributes()
+    public function getServiceDescriptors()
     {
-        return $this->serviceAttributes;
+        return $this->serviceDescriptors;
+    }
+
+    /**
+     * Add stateObjectRecevidService
+     *
+     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
+     *
+     * @return Service
+     */
+    public function addStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService)
+    {
+        $this->stateObjectRecevidServices[] = $stateObjectRecevidService;
+
+        return $this;
+    }
+
+    /**
+     * Remove stateObjectRecevidService
+     *
+     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
+     */
+    public function removeStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService)
+    {
+        $this->stateObjectRecevidServices->removeElement($stateObjectRecevidService);
+    }
+
+    /**
+     * Get stateObjectRecevidServices
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getStateObjectRecevidServices()
+    {
+        return $this->stateObjectRecevidServices;
     }
 }

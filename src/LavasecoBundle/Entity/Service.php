@@ -217,4 +217,28 @@ class Service
     {
         return $this->stateObjectRecevidServices;
     }
+
+    /**
+     * Add serviceDescriptor
+     *
+     * @param \LavasecoBundle\Entity\ServiceCategoryState $serviceDescriptor
+     *
+     * @return Service
+     */
+    public function addServiceDescriptor(\LavasecoBundle\Entity\ServiceCategoryState $serviceDescriptor)
+    {
+        $this->serviceDescriptors[] = $serviceDescriptor;
+
+        return $this;
+    }
+
+    /**
+     * Remove serviceDescriptor
+     *
+     * @param \LavasecoBundle\Entity\ServiceCategoryState $serviceDescriptor
+     */
+    public function removeServiceDescriptor(\LavasecoBundle\Entity\ServiceCategoryState $serviceDescriptor)
+    {
+        $this->serviceDescriptors->removeElement($serviceDescriptor);
+    }
 }

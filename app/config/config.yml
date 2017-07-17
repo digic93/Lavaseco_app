@@ -72,7 +72,10 @@ swiftmailer:
 fos_user:
     db_driver: orm
     firewall_name: main
-    user_class: LavasecoBundle\Entity\User
+    user_class: LavasecoBundle\Entity\User        
     from_email:
         address:        noreply@lavasecomodelo.com
-        sender_name:    Demo App
+        sender_name:    Lavaseco App    
+    registration:
+        confirmation:
+            enabled: true   

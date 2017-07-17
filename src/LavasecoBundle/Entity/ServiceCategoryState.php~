@@ -22,14 +22,14 @@ class ServiceCategoryState
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Service", inversedBy="serviceAttributes")
-     * @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Service", inversedBy="serviceDescriptors")
+     * @ORM\JoinColumn(name="service_id", referencedColumnName="id", nullable=false)
      */
     protected $service;
     
     /**
      * @ORM\ManyToOne(targetEntity="CategoryStateObject", inversedBy="serviceCategoryStates")
-     * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id", nullable=false)
      */
     protected $categoryStateObject;
 

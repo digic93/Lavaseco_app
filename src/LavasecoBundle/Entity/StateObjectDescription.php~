@@ -24,13 +24,13 @@ class StateObjectDescription
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=50)
+     * @ORM\Column(name="name", type="string", length=50, unique=true)
      */
     private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="CategoryStateObject", inversedBy="stateObjectDescriptions")
-     * @ORM\JoinColumn(name="category_state_object_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="category_state_object_id", referencedColumnName="id", nullable=false)
      */
     protected $categoryStateObject;
     
@@ -74,5 +74,69 @@ class StateObjectDescription
     {
         return $this->name;
     }
-}
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->stateObjectRecevidServices = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
+    /**
+     * Set categoryStateObject
+     *
+     * @param \LavasecoBundle\Entity\CategoryStateObject $categoryStateObject
+     *
+     * @return StateObjectDescription
+     */
+    public function setCategoryStateObject(\LavasecoBundle\Entity\CategoryStateObject $categoryStateObject = null)
+    {
+        $this->categoryStateObject = $categoryStateObject;
+
+        return $this;
+    }
+
+    /**
+     * Get categoryStateObject
+     *
+     * @return \LavasecoBundle\Entity\CategoryStateObject
+     */
+    public function getCategoryStateObject()
+    {
+        return $this->categoryStateObject;
+    }
+
+    /**
+     * Add stateObjectRecevidService
+     *
+     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
+     *
+     * @return StateObjectDescription
+     */
+    public function addStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService)
+    {
+        $this->stateObjectRecevidServices[] = $stateObjectRecevidService;
+
+        return $this;
+    }
+
+    /**
+     * Remove stateObjectRecevidService
+     *
+     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
+     */
+    public function removeStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService)
+    {
+        $this->stateObjectRecevidServices->removeElement($stateObjectRecevidService);
+    }
+
+    /**
+     * Get stateObjectRecevidServices
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getStateObjectRecevidServices()
+    {
+        return $this->stateObjectRecevidServices;
+    }
+}

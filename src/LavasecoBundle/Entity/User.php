@@ -41,6 +41,11 @@ class User extends BaseUser
     private $lastName;
     
     /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $phoneNumber; 
+    
+    /**
      * @ORM\OneToMany(targetEntity="Bill", mappedBy="sellerUser")
      */
     protected $saleBills;
@@ -211,5 +216,29 @@ class User extends BaseUser
     public function getBillHistories()
     {
         return $this->billHistories;
+    }
+
+    /**
+     * Set phoneNumber
+     *
+     * @param string $phoneNumber
+     *
+     * @return User
+     */
+    public function setPhoneNumber($phoneNumber)
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get phoneNumber
+     *
+     * @return string
+     */
+    public function getPhoneNumber()
+    {
+        return $this->phoneNumber;
     }
 }

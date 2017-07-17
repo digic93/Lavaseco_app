@@ -158,4 +158,45 @@ class BillDetail
     {
         return $this->service;
     }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->stateObjectRecevidServices = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add stateObjectRecevidService
+     *
+     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
+     *
+     * @return BillDetail
+     */
+    public function addStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService)
+    {
+        $this->stateObjectRecevidServices[] = $stateObjectRecevidService;
+
+        return $this;
+    }
+
+    /**
+     * Remove stateObjectRecevidService
+     *
+     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
+     */
+    public function removeStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService)
+    {
+        $this->stateObjectRecevidServices->removeElement($stateObjectRecevidService);
+    }
+
+    /**
+     * Get stateObjectRecevidServices
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getStateObjectRecevidServices()
+    {
+        return $this->stateObjectRecevidServices;
+    }
 }
