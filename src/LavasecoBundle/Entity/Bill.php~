@@ -3,7 +3,6 @@
 namespace LavasecoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Bill
@@ -11,8 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table(name="bill")
  * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\BillRepository")
  */
-class Bill
-{
+class Bill {
+
     /**
      * @var int
      *
@@ -28,6 +27,11 @@ class Bill
      * @ORM\Column(name="consecutive", type="integer", unique=true)
      */
     private $consecutive;
+
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    private $observation;
 
     /**
      * @var \DateTime
@@ -50,36 +54,35 @@ class Bill
      * @ORM\OneToMany(targetEntity="BillHistory", mappedBy="bill")
      */
     protected $billHistories;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="saleBills")
-     * @ORM\JoinColumn(name="seller_user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="seller_user_id", referencedColumnName="id", nullable=false)
      */
     protected $sellerUser;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="customerbills")
-     * @ORM\JoinColumn(name="customer_user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="customer_user_id", referencedColumnName="id", nullable=false)
      */
     protected $customerUser;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="BillState", inversedBy="bills")
-     * @ORM\JoinColumn(name="bill_state_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="bill_state_id", referencedColumnName="id", nullable=false)
      */
     protected $billState;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="PaymentAgreement", inversedBy="bills")
-     * @ORM\JoinColumn(name="payment_agreement_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="payment_agreement_id", referencedColumnName="id", nullable=false)
      */
     protected $paymentAgreement;
 
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->payDetails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->billDetails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->billHistories = new \Doctrine\Common\Collections\ArrayCollection();
@@ -90,8 +93,7 @@ class Bill
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -102,8 +104,7 @@ class Bill
      *
      * @return Bill
      */
-    public function setConsecutive($consecutive)
-    {
+    public function setConsecutive($consecutive) {
         $this->consecutive = $consecutive;
 
         return $this;
@@ -114,8 +115,7 @@ class Bill
      *
      * @return integer
      */
-    public function getConsecutive()
-    {
+    public function getConsecutive() {
         return $this->consecutive;
     }
 
@@ -126,8 +126,7 @@ class Bill
      *
      * @return Bill
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -138,8 +137,7 @@ class Bill
      *
      * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -150,8 +148,7 @@ class Bill
      *
      * @return Bill
      */
-    public function addPayDetail(\LavasecoBundle\Entity\PayDetail $payDetail)
-    {
+    public function addPayDetail(\LavasecoBundle\Entity\PayDetail $payDetail) {
         $this->payDetails[] = $payDetail;
 
         return $this;
@@ -162,8 +159,7 @@ class Bill
      *
      * @param \LavasecoBundle\Entity\PayDetail $payDetail
      */
-    public function removePayDetail(\LavasecoBundle\Entity\PayDetail $payDetail)
-    {
+    public function removePayDetail(\LavasecoBundle\Entity\PayDetail $payDetail) {
         $this->payDetails->removeElement($payDetail);
     }
 
@@ -172,8 +168,7 @@ class Bill
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPayDetails()
-    {
+    public function getPayDetails() {
         return $this->payDetails;
     }
 
@@ -184,8 +179,7 @@ class Bill
      *
      * @return Bill
      */
-    public function addBillDetail(\LavasecoBundle\Entity\BillDetail $billDetail)
-    {
+    public function addBillDetail(\LavasecoBundle\Entity\BillDetail $billDetail) {
         $this->billDetails[] = $billDetail;
 
         return $this;
@@ -196,8 +190,7 @@ class Bill
      *
      * @param \LavasecoBundle\Entity\BillDetail $billDetail
      */
-    public function removeBillDetail(\LavasecoBundle\Entity\BillDetail $billDetail)
-    {
+    public function removeBillDetail(\LavasecoBundle\Entity\BillDetail $billDetail) {
         $this->billDetails->removeElement($billDetail);
     }
 
@@ -206,8 +199,7 @@ class Bill
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getBillDetails()
-    {
+    public function getBillDetails() {
         return $this->billDetails;
     }
 
@@ -218,8 +210,7 @@ class Bill
      *
      * @return Bill
      */
-    public function addBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory)
-    {
+    public function addBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory) {
         $this->billHistories[] = $billHistory;
 
         return $this;
@@ -230,8 +221,7 @@ class Bill
      *
      * @param \LavasecoBundle\Entity\BillHistory $billHistory
      */
-    public function removeBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory)
-    {
+    public function removeBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory) {
         $this->billHistories->removeElement($billHistory);
     }
 
@@ -240,8 +230,7 @@ class Bill
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getBillHistories()
-    {
+    public function getBillHistories() {
         return $this->billHistories;
     }
 
@@ -252,8 +241,7 @@ class Bill
      *
      * @return Bill
      */
-    public function setSellerUser(\LavasecoBundle\Entity\User $sellerUser = null)
-    {
+    public function setSellerUser(\LavasecoBundle\Entity\User $sellerUser = null) {
         $this->sellerUser = $sellerUser;
 
         return $this;
@@ -264,8 +252,7 @@ class Bill
      *
      * @return \LavasecoBundle\Entity\User
      */
-    public function getSellerUser()
-    {
+    public function getSellerUser() {
         return $this->sellerUser;
     }
 
@@ -276,8 +263,7 @@ class Bill
      *
      * @return Bill
      */
-    public function setCustomerUser(\LavasecoBundle\Entity\User $customerUser = null)
-    {
+    public function setCustomerUser(\LavasecoBundle\Entity\User $customerUser = null) {
         $this->customerUser = $customerUser;
 
         return $this;
@@ -288,8 +274,7 @@ class Bill
      *
      * @return \LavasecoBundle\Entity\User
      */
-    public function getCustomerUser()
-    {
+    public function getCustomerUser() {
         return $this->customerUser;
     }
 
@@ -300,8 +285,7 @@ class Bill
      *
      * @return Bill
      */
-    public function setBillState(\LavasecoBundle\Entity\BillState $billState = null)
-    {
+    public function setBillState(\LavasecoBundle\Entity\BillState $billState = null) {
         $this->billState = $billState;
 
         return $this;
@@ -312,8 +296,7 @@ class Bill
      *
      * @return \LavasecoBundle\Entity\BillState
      */
-    public function getBillState()
-    {
+    public function getBillState() {
         return $this->billState;
     }
 
@@ -324,8 +307,7 @@ class Bill
      *
      * @return Bill
      */
-    public function setPaymentAgreement(\LavasecoBundle\Entity\PaymentAgreement $paymentAgreement = null)
-    {
+    public function setPaymentAgreement(\LavasecoBundle\Entity\PaymentAgreement $paymentAgreement = null) {
         $this->paymentAgreement = $paymentAgreement;
 
         return $this;
@@ -336,8 +318,32 @@ class Bill
      *
      * @return \LavasecoBundle\Entity\PaymentAgreement
      */
-    public function getPaymentAgreement()
-    {
+    public function getPaymentAgreement() {
         return $this->paymentAgreement;
+    }
+
+
+    /**
+     * Set observation
+     *
+     * @param string $observation
+     *
+     * @return Bill
+     */
+    public function setObservation($observation)
+    {
+        $this->observation = $observation;
+
+        return $this;
+    }
+
+    /**
+     * Get observation
+     *
+     * @return string
+     */
+    public function getObservation()
+    {
+        return $this->observation;
     }
 }
