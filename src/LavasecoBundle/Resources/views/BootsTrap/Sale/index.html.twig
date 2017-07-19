@@ -1,4 +1,4 @@
-    {% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
 
 {% block stylesheets %}
     <style>
@@ -123,7 +123,7 @@
                     <p>
                         {{ billContent.foot }}
                     </p>
-                    <button type="button" class="btn btn-success btn-block" onclick="">
+                    <button type="button" class="btn btn-success btn-block" onclick="billing();">
                         Facturar
                         <i class="fa fa-check" aria-hidden="true"></i>               
                     </button>
@@ -258,9 +258,12 @@
     <script>
         var factura = {};
         var summaryServices = {};
+
         $(document).ready(function () {
             factura["total"] = 0;
             factura["services"] = [];
+            factura["customerId"] = 0;
+            factura["observations"] = "";
             $("#quantity_service").number(true);
             $("#priceServiceImput").number(true);
             //Evento cerrar ventana modal
@@ -268,6 +271,36 @@
                 clearServicesFormImput();
             });
         });
+
+        $('#clientBill').typeahead({
+            order: "asc",
+            ajax: {
+                url: "{{ path('lavaseco_api_search_user') }}",
+                method: "POST",
+                loadingClass: "loading-circle",
+                preDispatch: function (query) {
+                    return {
+                        nameOrEmail: query
+                    };
+                },
+                preProcess: function (data) {
+                    if (data.success === false) {
+                        return false;
+                    }
+                    if (data.length === 0) {
+                        $("#addClientBill").attr('disabled', false);
+                    } else {
+                        $("#addClientBill").attr('disabled', true);
+                    }
+                    return data;
+                }
+            },
+
+            displayField: "name",
+            valueField: "id",
+            onSelect: displayResult
+        });
+
 //Functions////////////////////////////////////////////////////////        
         function itemShowModal(item) {
             var subCategoryId = $(item).data("subcategoryId");
@@ -487,46 +520,57 @@
             $('#addServiceModal').modal('hide');
         }
 
-        $('#clientBill').typeahead({
-            order: "asc",
-            ajax: {
-                url: "{{ path('lavaseco_api_search_user') }}",
-                method: "POST",
-                loadingClass: "loading-circle",
-                preDispatch: function (query) {
-                    return {
-                        nameOrEmail: query
-                    }
-                },
-                preProcess: function (data) {
-                    if (data.success === false) {// Hide the list, there was some error
-                        return false;
-                    }// We good!
-                    console.log(data);
-                    if (data.length === 0) {
-                        $("#addClientBill").attr('disabled', false);
-                    } else {
-                        $("#addClientBill").attr('disabled', true);
-                    }
-                    return data;
-                }
-            },
-
-            displayField: "name",
-            valueField: "email",
-            onSelect: displayResult
-        });
-
         function displayResult(item) {
-            var html = "<p> <strong> Nombre Cliente :</strong>"+ item.text +" </p> <p><strong> Email Cliente: </strong>"+ item.value+" </p>";                   
+            var html = "<p> <strong> Nombre Cliente: </strong>" + item.text + " <br><strong>";
             $("#infoClientBill").html(html);
-            $('.alert').show().html('You selected <strong>' + item.value + '</strong>: <strong>' + item.text + '</strong>');
+
+            $.ajax({
+                url: "{{ path('lavaseco_api_get_user') }}/" + item.value,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (user) {
+                    var html = "";
+                    if (!user) {
+                        return;
+                    }
+                    factura.userId = user.id;
+
+                    html = "<p> <strong> Nombre Cliente: </strong>" + user.firstName + " " + user.lastName + "<br>\
+                                <strong> Email Cliente: </strong>" + user.email + "<br>\
+                                <strong> numero: </strong>" + user.phoneNumber + "<br>\
+                            </p>";
+                    $("#infoClientBill").empty();
+                    $("#infoClientBill").html(html);
+                }
+            });
         }
-        
-        function signUpClient (){
+
+        function signUpClient() {
             $('#modalSignUpClient').modal('show');
         }
 
+        function billing() {
+            if (factura.customerId === 0) {
+                alert("Porfavor seleccione un cliente");
+            } else {
+                factura.observations = $("#bill_observation").val();
+                console.log(JSON.stringify(facrua));
+{#            $.ajax({
+            url: "{{ path("lavaseco_api_billing") }}",
+            method: "POST",
+            dataType: "json",
+            data: factura,
+            success: function (result) {
+                if (result.error === undefined) {
+                    alert("Error al crear el usuario");
+                }
+            }
+        });
+#}
+        }
+
+    }
     </script>
 {% endblock %}
 

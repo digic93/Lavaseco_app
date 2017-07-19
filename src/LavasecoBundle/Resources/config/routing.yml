@@ -70,3 +70,8 @@ lavaseco_api_create_user:
     path:     /api/user
     defaults: { _controller: LavasecoBundle:User:register }
     methods:  [POST]
+
+lavaseco_api_sale_billing:
+    path:     /api/sale/billing
+    defaults: { _controller: LavasecoBundle:Bill:saveBilling }
+    methods:  [POST]

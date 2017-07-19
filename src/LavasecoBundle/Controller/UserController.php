@@ -33,9 +33,11 @@ class UserController extends Controller {
         $user = $userRepository->find($userId);
 
         if (isset($user)) {
-            $userResutl ["idName"] = $user->getId();
-            $userResutl ["fisrtName"] = $user->getFirstName();
+            $userResutl ["id"] = $user->getId();
+            $userResutl ["firstName"] = $user->getFirstName();
             $userResutl ["lastName"] = $user->getLastName();
+            $userResutl ["phoneNumber"] = $user->getPhoneNumber();
+            $userResutl ["email"] = $user->getEmail();
         }
 
         return $this->json($userResutl);
@@ -51,7 +53,6 @@ class UserController extends Controller {
     }
 
     public function registerAction(Request $request) {
-        $resutl = array();
 
         if (!$this->validateUser($request)) {
             return $this->json(["error" => "Datos no validos"]);
@@ -59,9 +60,7 @@ class UserController extends Controller {
 
         $userManager = $this->get('fos_user.user_manager');
         $user = $userManager->createUser();
-        
-        
-        
+
         $user->setUsername($request->request->get('email'));
         $user->setFirstName($request->request->get('firstName'));
         $user->setLastName($request->request->get('lastName'));
@@ -72,13 +71,11 @@ class UserController extends Controller {
         $user->setEnabled(0);
         $userManager->updateUser($user);
 
-        return $this->json([
-                    "id" => $user->getId(),
+        return $this->json(["id" => $user->getId(),
                     "firstName" => $user->getFirstName(),
                     "lastName" => $user->getLastName(),
                     "phoneNumber" => $user->getPhoneNumber(),
-                    "email" => $user->getEmail(),
-        ]);
+                    "email" => $user->getEmail()]);
     }
 
     private function validateUser(Request $request) {

@@ -104,9 +104,9 @@
                 dataType: "json",
                 data: user,
                 success: function (result) {
-                    category["id"] = result.categoryId;
-                    addCategoryAtTree(category);
-                    $('#categoriesModal').modal('hide');
+                    if(result.error === undefined){
+                        alert("Error al crear el usuario");
+                    }
                 }
             });
         }
