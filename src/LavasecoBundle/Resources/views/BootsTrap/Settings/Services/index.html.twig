@@ -150,57 +150,61 @@
                     <h4 id="titleModal" class="modal-title"></h4>
                 </div>
                 <div class="modal-body">
+                    <form>
+                        <fieldset>
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label id="name_new_service" class="col-md-4 control-label" for="textinput">Nombre</label>  
+                                    <div class="col-md-4">
+                                        <input id="nameNewCategory" name="textinput" type="text" class="form-control input-md">
+                                    </div>
+                                </div>
+                                <div id="priceNewServiceImput" class="form-group">
+                                    <label id="name_new_service_price" class="col-md-4 control-label" for="textinput">Precio $</label>  
+                                    <div class="col-md-4">
+                                        <input id="priceNewService" type="text" class="form-control input-md">
 
-                    <div class="form-horizontal">
-                        <div class="form-group">
-                            <label id="name_new_service" class="col-md-4 control-label" for="textinput">Nombre</label>  
-                            <div class="col-md-4">
-                                <input id="nameNewCategory" name="textinput" type="text" class="form-control input-md" required="">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label id="description_new_service" class="col-md-4 control-label" for="textarea">Descripción</label>
+                                    <div class="col-md-4">                     
+                                        <textarea id="descriptionNewCategory" class="form-control"></textarea>
+                                    </div>
+                                </div>
+
+                                <div id="descriptors" class="form-group" style="display: none;">
+                                    <label class="col-md-4 control-label" for="checkboxes">Descriptores</label>
+                                    <div id="select_state_new_service" class="col-md-4">
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label id="image_new_service" class="col-md-4 control-label" for="filebutton">Icono o Imagen</label>
+                                    <div class="col-md-4">
+                                        <input id="filebutton" name="filebutton" class="input-file" type="file">
+                                    </div>
+                                </div>
+                                <!-- Drop Zone -->
+                                <div class="form-group">
+                                    <div class="upload-drop-zone" id="drop-zone">
+                                        Just drag and drop files here
+                                    </div>
+                                </div>
+                                <input id="typeCategory" type="hidden" value=""><br>
+                                <input id="superCategory" type="hidden" value=""><br>
 
                             </div>
-                        </div>
-                        <div id="priceNewServiceImput" class="form-group">
-                            <label id="name_new_service_price" class="col-md-4 control-label" for="textinput">Precio $</label>  
-                            <div class="col-md-4">
-                                <input id="priceNewService" name="textinput" type="text" class="form-control input-md" required="">
+                        </fieldset>
 
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label id="description_new_service" class="col-md-4 control-label" for="textarea">Descripción</label>
-                            <div class="col-md-4">                     
-                                <textarea id="descriptionNewCategory" class="form-control" id="textarea" name="textarea"></textarea>
-                            </div>
-                        </div>
-
-                        <div id="descriptors" class="form-group" style="display: none;">
-                            <label class="col-md-4 control-label" for="checkboxes">Descriptores</label>
-                            <div id="select_state_new_service" class="col-md-4">
-
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label id="image_new_service" class="col-md-4 control-label" for="filebutton">Icono o Imagen</label>
-                            <div class="col-md-4">
-                                <input id="filebutton" name="filebutton" class="input-file" type="file">
-                            </div>
-                        </div>
-                        <!-- Drop Zone -->
-                        <div class="form-group">
-                            <div class="upload-drop-zone" id="drop-zone">
-                                Just drag and drop files here
-                            </div>
-                        </div>
-                        <input id="typeCategory" type="hidden" value=""><br>
-                        <input id="superCategory" type="hidden" value=""><br>
-
-                    </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-success" onclick="saveNewCategory();">Guardar</button>
+                    <form>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                        <button  id="btnSaveCategory" type="submit" class="btn btn-success">Guardar</button>
                 </div>
             </div>
         </div>
@@ -216,10 +220,6 @@
             var serviceDescription = $(this).data('serviceDescription');
             var serviceTitle = $(this).data('serviceType') + " " + $(this).data('serviceName');
 
-//<<<<<<< btnEliminarEditar
-//            if (serviceCategory == 3) {
-//                addImputsDescriptions();
-//=======
             if (serviceName !== undefined) {
                 $("#tittle_service_category").text(serviceTitle);
                 $("#name_service_category").text(serviceName);
@@ -234,55 +234,8 @@
                 clearcCategoriesModal();
             })
         });
-        
-//<<<<<<< btnEliminarEditar
-//        function addImputsDescriptions() {
-//            //ajax
-//            //
-//            //success ajax
-//            var result = {
-//                "service":
-//                        {
-//                            "name": "Nombre servicio",
-//                            "price": "8000"
-//                        },
-//                "decriptions":
-//                        [
-//                            {
-//                                "name": "Color",
-//                                "options":
-//                                        [
-//                                            {"id": 1, "name": "Rojo"},
-//                                            {"id": 2, "name": "Amarillo"},
-//                                            {"id": 3, "name": "Azul"},
-//                                            {"id": 4, "name": "Violeta"}
-//                                        ]
-//                            },
-//                            {
-//                                "name": "Estado",
-//                                "options":
-//                                        [
-//                                            {"id": 1, "name": "Bueno"},
-//                                            {"id": 2, "name": "Desgastado"},
-//                                            {"id": 4, "name": "Dañado"}
-//                                        ]
-//                            }
-//                        ]
-//            };
-//            //omitir resutl " success: function(resutl){ .."
-//            var decriptions = result.decriptions;
-//            
-//            var tittle= "<hr> <h4 class='modal-title text-center'>Seleccione las caracteristicas</h4> <hr>";
-//            $("#select_state_new_service").append(tittle);
-//            
-//            for (var desc in decriptions) {
-//                var html = "<div class=\"col-md-2\">\
-//                            <input type='checkbox' name='service' value='"+ decriptions[desc].name +"'>\
-//                           <label class=\"control-label\">" + decriptions[desc].name + "</label>";
-//                html += "</input></div>";
-//                $("#select_state_new_service").append(html);
-//=======
-        function addCategoryButtonClickEvent(button){
+
+        function addCategoryButtonClickEvent(button) {
             var serviceName = $(button).data('serviceName');
             var serviceDescription = $(button).data('serviceDescription');
             var serviceTitle = $(button).data('serviceType') + " " + $(button).data('serviceName');
@@ -293,7 +246,7 @@
                 $("#descrip_service_category").text(serviceDescription);
             }
         }
-        
+
         function addBuntonClickEvent(button) {
             $("#descriptors").hide();
             $("#priceNewServiceImput").hide();
@@ -343,45 +296,68 @@
 
         }
 
-        function saveNewCategory() {
-            var category = {};
-            category['name'] = $("#nameNewCategory").val();
-            category['description'] = $("#descriptionNewCategory").val();
-            category['type'] = 1;
-            if ($("#typeCategory").val() !== "Categoria") {
-                category['type'] = 2;
-                category['superCategory'] = $("#superCategory").val();
-            }
+        $("#btnSaveCategory").on('click', function () {
+            var flag = validateFields();
+            alert(flag);
+            //validar
+            if (flag === true) {
+                var category = {};
+                category['name'] = $("#nameNewCategory").val();
+                category['description'] = $("#descriptionNewCategory").val();
+                category['type'] = 1;
+                if ($("#typeCategory").val() !== "Categoria") {
+                    category['type'] = 2;
+                    category['superCategory'] = $("#superCategory").val();
+                }
 
 
-            if ($("#typeCategory").val() === "Servicio") {
-                category['type'] = 3;
-                category['price'] = $("#priceNewService").val();
-                category['descriptors'] = [];
-                $(".checkboxDescriptor").each(function (index) {
-                    if ($(this).is(":checked")) {
-                        category.descriptors.push($(this).val());
+                if ($("#typeCategory").val() === "Servicio") {
+                    category['type'] = 3;
+                    category['price'] = $("#priceNewService").val();
+                    category['descriptors'] = [];
+                    $(".checkboxDescriptor").each(function (index) {
+                        if ($(this).is(":checked")) {
+                            category.descriptors.push($(this).val());
+                        }
+                    });
+                }
+
+                $.ajax({
+                    url: "{{ path("lavaseco_api_add_service_category") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: category,
+                    success: function (result) {
+                        category["id"] = result.categoryId;
+                        addCategoryAtTree(category);
+                        $('#categoriesModal').modal('hide');
                     }
                 });
             }
 
-            $.ajax({
-                url: "{{ path("lavaseco_api_add_service_category") }}",
-                method: "POST",
-                dataType: "json",
-                data: category,
-                success: function (result) {
-                    category["id"] = result.categoryId;
-                    addCategoryAtTree(category);
-                    $('#categoriesModal').modal('hide');
-                }
-            });
+        });
+
+        function validateFields() {
+            var name = $("#name_new_service").val();
+            var description = $("#descriptionNewCategory").val();
+            var precio = $("#priceNewService").val();
+ 
+            if (name === null || name.length === 0 || /^\s+$/.test(name)) {
+                $("#name_new_service").parent().attr("class", "form-group has-error has-feedback");              
+                return false;
+            }
+            
+            if (description === null || description.length === 0 || /^\s+$/.test(description)) {
+                $("#descriptionNewCategory").parent().attr("class", "form-group has-error has-feedback");
+                return false;
+            }
+            
         }
 
         function addCategoryAtTree(category) {
             var html;
             var type;
-            
+
             if (category.type === 1 || category.type === 2) {
                 type = (category.type === 1) ? "Categoria" : "Subcategoria";
                 html = addCategory(type, category);
@@ -389,7 +365,7 @@
             } else {
                 html = addService(category);
             }
-            
+
             type += ((category.superCategory !== undefined) ? "_" + category.superCategory : "");
             $("#new" + type).append(html);
 
@@ -409,8 +385,8 @@
                     "</a>\
             </li>";
         }
-        
-        function addService(category){
+
+        function addService(category) {
             return  "<li>\
                     <button type=\"button\" class=\"list-group-item\" onclick=\"addCategoryButtonClickEvent(this);\"\
                         data-service-name=\"" + category.name + "\"\
@@ -432,7 +408,7 @@
                                 data-super-category=\"" + category.id + "\">\
                             <strong>+</strong>\
                             Agregar " + subType +
-                        "</button>\
+                    "</button>\
                     </li>\
                 </ul>"
         }
