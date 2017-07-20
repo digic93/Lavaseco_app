@@ -115,8 +115,15 @@
                         <tbody id="billDetail">
                         </tbody>
                     </table>
-                    </p>
                     <hr>
+                    <div class="form-group">
+                        <label for="sel1">Acuerdo de Pago</label>
+                        <select class="form-control" id="bill_payAgreement">
+                            {% for paymentAgreement in paymentAgreements %}
+                                <option value="{{ paymentAgreement.id }}">{{ paymentAgreement.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <p> <b> Observaciones </b> </p>
                     <textarea id="bill_observation" name="bill_observation" required="required" class="form-control"></textarea>
                     <hr>
@@ -253,7 +260,7 @@
 
 {% block javascripts %}
     <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
-    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/bootstrap-typeahead.js") }}"></script>
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/bootstrap-typeahead.min.js") }}"></script>
 
     <script>
         var factura = {};
@@ -264,6 +271,8 @@
             factura["services"] = [];
             factura["customerId"] = 0;
             factura["observations"] = "";
+            factura["paymentAgreementId"] = 0;
+
             $("#quantity_service").number(true);
             $("#priceServiceImput").number(true);
             //Evento cerrar ventana modal
@@ -534,7 +543,7 @@
                     if (!user) {
                         return;
                     }
-                    factura.userId = user.id;
+                    factura.customerId = user.id;
 
                     html = "<p> <strong> Nombre Cliente: </strong>" + user.firstName + " " + user.lastName + "<br>\
                                 <strong> Email Cliente: </strong>" + user.email + "<br>\
@@ -555,22 +564,23 @@
                 alert("Porfavor seleccione un cliente");
             } else {
                 factura.observations = $("#bill_observation").val();
-                console.log(JSON.stringify(facrua));
-{#            $.ajax({
-            url: "{{ path("lavaseco_api_billing") }}",
-            method: "POST",
-            dataType: "json",
-            data: factura,
-            success: function (result) {
-                if (result.error === undefined) {
-                    alert("Error al crear el usuario");
-                }
+                factura.paymentAgreementId = $("#bill_payAgreement").val();
+                console.log(JSON.stringify(factura));
+        {#            $.ajax({
+                    url: "{{ path("lavaseco_api_billing") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: factura,
+                    success: function (result) {
+                        if (result.error === undefined) {
+                            alert("Error al crear el usuario");
+                        }
+                    }
+                });
+        #}
             }
-        });
-#}
-        }
 
-    }
+        }
     </script>
 {% endblock %}
 

@@ -23,13 +23,13 @@ class Bill {
 
     /**
      * @var int
-     *
      * @ORM\Column(name="consecutive", type="integer", unique=true)
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $consecutive;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(name="observation", type="text")
      */
     private $observation;
 

@@ -36,7 +36,7 @@ class BillDetail {
     private $price;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(name="observation", type="text")
      */
     private $observation;
 
@@ -53,16 +53,24 @@ class BillDetail {
     protected $service;
 
     /**
-     * @ORM\OneToMany(targetEntity="StateObjectRecevidService", mappedBy="billDetail")
+     * @ORM\OneToMany(targetEntity="ObjectStateReceivedService", mappedBy="billDetail")
      */
-    protected $stateObjectRecevidServices;
+    protected $objectStateReceivedService;
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->objectStateReceivedService = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -73,7 +81,8 @@ class BillDetail {
      *
      * @return BillDetail
      */
-    public function setQuantity($quantity) {
+    public function setQuantity($quantity)
+    {
         $this->quantity = $quantity;
 
         return $this;
@@ -84,7 +93,8 @@ class BillDetail {
      *
      * @return integer
      */
-    public function getQuantity() {
+    public function getQuantity()
+    {
         return $this->quantity;
     }
 
@@ -95,7 +105,8 @@ class BillDetail {
      *
      * @return BillDetail
      */
-    public function setPrice($price) {
+    public function setPrice($price)
+    {
         $this->price = $price;
 
         return $this;
@@ -106,90 +117,9 @@ class BillDetail {
      *
      * @return string
      */
-    public function getPrice() {
+    public function getPrice()
+    {
         return $this->price;
-    }
-
-    /**
-     * Set bill
-     *
-     * @param \LavasecoBundle\Entity\Bill $bill
-     *
-     * @return BillDetail
-     */
-    public function setBill(\LavasecoBundle\Entity\Bill $bill = null) {
-        $this->bill = $bill;
-
-        return $this;
-    }
-
-    /**
-     * Get bill
-     *
-     * @return \LavasecoBundle\Entity\Bill
-     */
-    public function getBill() {
-        return $this->bill;
-    }
-
-    /**
-     * Set service
-     *
-     * @param \LavasecoBundle\Entity\Service $service
-     *
-     * @return BillDetail
-     */
-    public function setService(\LavasecoBundle\Entity\Service $service = null) {
-        $this->service = $service;
-
-        return $this;
-    }
-
-    /**
-     * Get service
-     *
-     * @return \LavasecoBundle\Entity\Service
-     */
-    public function getService() {
-        return $this->service;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct() {
-        $this->stateObjectRecevidServices = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add stateObjectRecevidService
-     *
-     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
-     *
-     * @return BillDetail
-     */
-    public function addStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService) {
-        $this->stateObjectRecevidServices[] = $stateObjectRecevidService;
-
-        return $this;
-    }
-
-    /**
-     * Remove stateObjectRecevidService
-     *
-     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
-     */
-    public function removeStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService) {
-        $this->stateObjectRecevidServices->removeElement($stateObjectRecevidService);
-    }
-
-    /**
-     * Get stateObjectRecevidServices
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getStateObjectRecevidServices() {
-        return $this->stateObjectRecevidServices;
     }
 
     /**
@@ -199,7 +129,8 @@ class BillDetail {
      *
      * @return BillDetail
      */
-    public function setObservation($observation) {
+    public function setObservation($observation)
+    {
         $this->observation = $observation;
 
         return $this;
@@ -210,8 +141,90 @@ class BillDetail {
      *
      * @return string
      */
-    public function getObservation() {
+    public function getObservation()
+    {
         return $this->observation;
     }
 
+    /**
+     * Set bill
+     *
+     * @param \LavasecoBundle\Entity\Bill $bill
+     *
+     * @return BillDetail
+     */
+    public function setBill(\LavasecoBundle\Entity\Bill $bill)
+    {
+        $this->bill = $bill;
+
+        return $this;
+    }
+
+    /**
+     * Get bill
+     *
+     * @return \LavasecoBundle\Entity\Bill
+     */
+    public function getBill()
+    {
+        return $this->bill;
+    }
+
+    /**
+     * Set service
+     *
+     * @param \LavasecoBundle\Entity\Service $service
+     *
+     * @return BillDetail
+     */
+    public function setService(\LavasecoBundle\Entity\Service $service)
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * Get service
+     *
+     * @return \LavasecoBundle\Entity\Service
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+
+    /**
+     * Add objectStateReceivedService
+     *
+     * @param \LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService
+     *
+     * @return BillDetail
+     */
+    public function addObjectStateReceivedService(\LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService)
+    {
+        $this->objectStateReceivedService[] = $objectStateReceivedService;
+
+        return $this;
+    }
+
+    /**
+     * Remove objectStateReceivedService
+     *
+     * @param \LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService
+     */
+    public function removeObjectStateReceivedService(\LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService)
+    {
+        $this->objectStateReceivedService->removeElement($objectStateReceivedService);
+    }
+
+    /**
+     * Get objectStateReceivedService
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getObjectStateReceivedService()
+    {
+        return $this->objectStateReceivedService;
+    }
 }

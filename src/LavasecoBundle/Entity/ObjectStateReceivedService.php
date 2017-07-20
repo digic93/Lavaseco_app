@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * StateObjectRecevidService
  *
- * @ORM\Table(name="state_object_recevid_service")
- * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\StateObjectRecevidServiceRepository")
+ * @ORM\Table(name="object_state_received_service")
+ * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\ObjectStateReceivedServiceRepository")
  */
-class StateObjectRecevidService
+class ObjectStateReceivedService
 {
     /**
      * @var int
@@ -22,20 +22,20 @@ class StateObjectRecevidService
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Service", inversedBy="stateObjectRecevidServices")
-     * @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Service", inversedBy="objectStateReceivedService")
+     * @ORM\JoinColumn(name="service_id", referencedColumnName="id", nullable=false)
      */
     protected $service;    
 
     /**
-     * @ORM\ManyToOne(targetEntity="BillDetail", inversedBy="stateObjectRecevidServices")
-     * @ORM\JoinColumn(name="bill_detail_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="BillDetail", inversedBy="objectStateReceivedService")
+     * @ORM\JoinColumn(name="bill_detail_id", referencedColumnName="id", nullable=false)
      */
     protected $billDetail;    
 
     /**
-     * @ORM\ManyToOne(targetEntity="StateObjectDescription", inversedBy="stateObjectRecevidServices")
-     * @ORM\JoinColumn(name="state_object_description_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="StateObjectDescription", inversedBy="objectStateReceivedService")
+     * @ORM\JoinColumn(name="state_object_description_id", referencedColumnName="id", nullable=false)
      */
     protected $stateObjectDescription;    
 
