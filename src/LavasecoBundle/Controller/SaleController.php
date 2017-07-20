@@ -18,10 +18,14 @@ class SaleController extends Controller
         $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
         $serviceCagories = $serviceCategoryRepository->getFirstLevel();
         
+        $paymentAgreementRepository = $doctrineManager->getRepository("LavasecoBundle:PaymentAgreement");
+        $paymentAgreements = $paymentAgreementRepository->getAvailables();
+        
         return $this->render($configuration->getViewTheme() . ':Sale/index.html.twig', 
                 [
                     "billContent" => $billContent,
-                    "serviceCategories" => $serviceCagories
+                    "serviceCategories" => $serviceCagories,
+                    "paymentAgreements" => $paymentAgreements
                 ]);
     }
 }

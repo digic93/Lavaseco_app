@@ -10,4 +10,11 @@ namespace LavasecoBundle\Repository;
  */
 class PaymentAgreementRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getAvailables(){
+        $query = $this->createQueryBuilder('pa')
+                ->where('pa.disable = false')
+                ->getQuery();
+
+        return $query->getResult();
+    }
 }

@@ -36,15 +36,22 @@ class StateObjectDescription
     
     
     /**
-     * @ORM\OneToMany(targetEntity="StateObjectRecevidService", mappedBy="stateObjectDescription")
+     * @ORM\OneToMany(targetEntity="ObjectStateReceivedService", mappedBy="stateObjectDescription")
      */
-    protected $stateObjectRecevidServices;
+    protected $objectStateReceivedService;
 
-    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->objectStateReceivedService = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
     /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -74,13 +81,6 @@ class StateObjectDescription
     {
         return $this->name;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->stateObjectRecevidServices = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Set categoryStateObject
@@ -89,7 +89,7 @@ class StateObjectDescription
      *
      * @return StateObjectDescription
      */
-    public function setCategoryStateObject(\LavasecoBundle\Entity\CategoryStateObject $categoryStateObject = null)
+    public function setCategoryStateObject(\LavasecoBundle\Entity\CategoryStateObject $categoryStateObject)
     {
         $this->categoryStateObject = $categoryStateObject;
 
@@ -107,36 +107,36 @@ class StateObjectDescription
     }
 
     /**
-     * Add stateObjectRecevidService
+     * Add objectStateReceivedService
      *
-     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
+     * @param \LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService
      *
      * @return StateObjectDescription
      */
-    public function addStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService)
+    public function addObjectStateReceivedService(\LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService)
     {
-        $this->stateObjectRecevidServices[] = $stateObjectRecevidService;
+        $this->objectStateReceivedService[] = $objectStateReceivedService;
 
         return $this;
     }
 
     /**
-     * Remove stateObjectRecevidService
+     * Remove objectStateReceivedService
      *
-     * @param \LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService
+     * @param \LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService
      */
-    public function removeStateObjectRecevidService(\LavasecoBundle\Entity\StateObjectRecevidService $stateObjectRecevidService)
+    public function removeObjectStateReceivedService(\LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService)
     {
-        $this->stateObjectRecevidServices->removeElement($stateObjectRecevidService);
+        $this->objectStateReceivedService->removeElement($objectStateReceivedService);
     }
 
     /**
-     * Get stateObjectRecevidServices
+     * Get objectStateReceivedService
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getStateObjectRecevidServices()
+    public function getObjectStateReceivedService()
     {
-        return $this->stateObjectRecevidServices;
+        return $this->objectStateReceivedService;
     }
 }

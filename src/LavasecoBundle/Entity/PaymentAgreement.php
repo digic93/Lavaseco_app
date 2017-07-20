@@ -28,6 +28,13 @@ class PaymentAgreement
      * @ORM\Column(name="name", type="string", length=50, unique=true)
      */
     private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="disable", type="boolean")
+     */
+    private $disable;
     
     /**
      * @ORM\OneToMany(targetEntity="Bill", mappedBy="paymentAgreement")
@@ -108,5 +115,29 @@ class PaymentAgreement
     public function getBills()
     {
         return $this->bills;
+    }
+
+    /**
+     * Set disable
+     *
+     * @param string $disable
+     *
+     * @return PaymentAgreement
+     */
+    public function setDisable($disable)
+    {
+        $this->disable = $disable;
+
+        return $this;
+    }
+
+    /**
+     * Get disable
+     *
+     * @return string
+     */
+    public function getDisable()
+    {
+        return $this->disable;
     }
 }

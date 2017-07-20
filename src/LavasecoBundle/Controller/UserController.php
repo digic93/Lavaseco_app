@@ -96,7 +96,7 @@ class UserController extends Controller {
         return false;
     }
 
-    function generaPass() {
+    private function generaPass() {
         $cadena = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
         $longitudCadena = strlen($cadena);
 
