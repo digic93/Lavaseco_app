@@ -227,4 +227,8 @@ class BillDetail {
     {
         return $this->objectStateReceivedService;
     }
+    
+    public function getServiceName(){
+        return $this->getService()->getServiceName();
+    }
 }

@@ -22,44 +22,36 @@
     <div class="row">
         <!--Productos por categoria-->
         <div class="col-md-8">  
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-cubes" aria-hidden="true"></i> Servicios</h3>
-                </div>  
-                <div class="panel-body">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Buscar...">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
-                        </span>
-                    </div>
-                    <br>
-
-                    <div class="btn-group text-center" role="group">
-                        {% for serviceCategory in serviceCategories %}
-                            <button type="button" class="btn btn-default" onClick="getServiceByCategoryId({{ serviceCategory.id }});" >
-                                <img src="{{ asset( serviceCategory.img ) }}" style="width: 30px;" /> {{ serviceCategory.name }}
-                            </button>
-                        {% endfor %}        
-                    </div>
-
-                    <hr>
-                    <div id="servicesItems">
-                        {% for serviceCategory in serviceCategories %}
-                            {% for subServiceCagory in serviceCategory.subServiceCategories %}
-                                <div class="col-sm-6 col-md-4 service-itm" onclick="itemShowModal(this);"
-                                     data-subcategory-id="{{ subServiceCagory.id }}" 
-                                     data-subcategory-name="{{ subServiceCagory.name }}"
-                                     data-category-name="{{ serviceCategory.name }}">                        
-                                    <div class="thumbnail service">                            
-                                        <img src="/serviceImg/servicio.jpg" alt="img">                            
-                                        <h5 class="text-center">{{ subServiceCagory.name }}</h5>                        
-                                    </div>                    
-                                </div>
-                            {% endfor %}
-                        {% endfor %}
-                    </div>
-                </div>
+            <h3>Servicios</h3>
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Buscar...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </span>
+            </div>
+            <br>
+            <div class="btn-group text-center" role="group">
+                {% for serviceCategory in serviceCategories %}
+                    <button type="button" class="btn btn-default" onClick="getServiceByCategoryId({{ serviceCategory.id }});" >
+                        <img src="{{ asset( serviceCategory.img ) }}" style="width: 30px;" /> {{ serviceCategory.name }}
+                    </button>
+                {% endfor %}        
+            </div>
+            <hr>
+            <div id="servicesItems">
+                {% for serviceCategory in serviceCategories %}
+                    {% for subServiceCagory in serviceCategory.subServiceCategories %}
+                        <div class="col-sm-6 col-md-4 service-itm" onclick="itemShowModal(this);"
+                             data-subcategory-id="{{ subServiceCagory.id }}" 
+                             data-subcategory-name="{{ subServiceCagory.name }}"
+                             data-category-name="{{ serviceCategory.name }}">                        
+                            <div class="thumbnail service">                            
+                                <img src="/serviceImg/servicio.jpg" alt="img">                            
+                                <h5 class="text-center">{{ subServiceCagory.name }}</h5>                        
+                            </div>                    
+                        </div>
+                    {% endfor %}
+                {% endfor %}
             </div>
         </div>
 
@@ -76,8 +68,8 @@
                     <hr>
                     <p>
                         Orden: #0325-03-29<br>
-                        Cajero: {{ app.user.firstName }} {{ app.user.lastName }}<br>
-                        TV:tableta
+                        Cajero: {{ app.user.name }}<br>
+                        TV: tableta
                     </p>
                     <hr>
                     <p>
@@ -566,18 +558,18 @@
                 factura.observations = $("#bill_observation").val();
                 factura.paymentAgreementId = $("#bill_payAgreement").val();
                 console.log(JSON.stringify(factura));
-        {#            $.ajax({
-                    url: "{{ path("lavaseco_api_billing") }}",
+                $.ajax({
+                    url: "{{ path("lavaseco_api_sale_billing") }}",
                     method: "POST",
                     dataType: "json",
                     data: factura,
                     success: function (result) {
-                        if (result.error === undefined) {
-                            alert("Error al crear el usuario");
+                        if (result.error !== undefined) {
+                            alert("Error al registrar la factura");
                         }
                     }
                 });
-        #}
+
             }
 
         }

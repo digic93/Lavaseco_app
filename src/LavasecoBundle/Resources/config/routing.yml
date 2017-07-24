@@ -6,6 +6,10 @@ lavaseco_sales:
     path:     /venta
     defaults: { _controller: LavasecoBundle:Sale:index }
 
+lavaseco_orders:
+    path:     /orden
+    defaults: { _controller: LavasecoBundle:Orders:index }
+
 lavaseco_settign_bill_content:
     path:     /configuracion/factura
     defaults: { _controller: LavasecoBundle:Bill:setting }
@@ -75,3 +79,10 @@ lavaseco_api_sale_billing:
     path:     /api/sale/billing
     defaults: { _controller: LavasecoBundle:Bill:saveBilling }
     methods:  [POST]
+
+lavaseco_api_orders_tikets:
+    path:     /api/order/tiket/{billId}
+    defaults: { _controller: LavasecoBundle:Bill:getTiketByBillId, billId:0}
+    methods:  [GET]
+    requirements:
+        billId:  \d+
