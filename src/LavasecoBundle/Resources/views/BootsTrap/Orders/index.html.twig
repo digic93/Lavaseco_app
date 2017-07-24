@@ -1,0 +1,120 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+    {#    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/dataTables.bootstrap.css") }}">#}
+{% endblock %} 
+
+{% block body %} 
+    <h1>Oredenes de servicios</h1>
+    <p>
+        En esta pagina puedes ver las ordenes de los servicios y en el estado que se encuentra cada proceso.
+    </p>
+    <hr>
+    <div class="row">
+        <!--Productos por categoria-->
+        <div class="col-md-8">  
+
+            <h4>Ordenes en el Mostrador</h4>
+
+            <table id="billsTable" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Factura</th>
+                        <th>Orden</th>
+                        <th>Cliente</th>
+                        <th>Telefono</th>
+                        <th>Vendedor</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                        <tr>
+                            <td>{{ bill.id }}</td>
+                            <td>{{ bill.consecutive }}</td>
+                            <td>{{ bill.customerUser.name }}</td>
+                            <td>{{ bill.customerUser.phoneNumber }}</td>
+                            <td>{{ bill.sellerUser.name }}</td>
+                            <td>{{ bill.CreatedAtString}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-file-text" aria-hidden="true"></i> Tiket</h3>
+                </div>
+                <div class="panel-body">
+                    <h3 id="orderTiket">Orden</h3>
+                    <h5 id="billTiket">Factura</h5>
+
+                    <h6 id="dateTiket">Fecha: YYYY/MM/DD</h6>
+                    <h6 id="sellerTiket">Vendedor: XXXXXXXXXXXX</h6>
+                    <h6 id="quantityTiket"><strong>Objetos Recividos: N</strong></h6>
+                    <h6 id="priceTiket"><strong>Total: $XXXXX</strong></h6>
+                    <strong id="customerTiket">Cliente: XXXXXXXXXXXX</strong><br>
+                    <strong id="phoneNumberTiket">Numero Telefono: XXXXXXXXXXXX</strong><br>
+                    <hr>
+                    <p id="billDetailsTiket">
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            var billsTable = $('#billsTable').DataTable();
+
+            $('#billsTable tbody').on('click', 'tr', function () {
+                var data = billsTable.row(this).data();
+                getTiket(data[0]);
+            });
+        });
+
+        function getTiket(billId) {
+            $.ajax({
+                url: "{{ path('lavaseco_api_orders_tikets') }}/" + billId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (tiket) {
+                    drawTiket(tiket);
+                }
+            });
+        }
+
+        function drawTiket(tiket) {
+            $("#orderTiket").html("Orden " + tiket.consecutive);
+            $("#billTiket").html("Factura " + tiket.bill);
+            $("#dateTiket").html("Fecha: " + tiket.createdAt);
+            $("#sellerTiket").html("Vendedor: " + tiket.seller);
+            $("#quantityTiket").html("<strong>Objetos Recividos: " + $.number(tiket.billDetail.quantity) + "</strong>");
+            $("#priceTiket").html("<strong>Total: $" + $.number(tiket.billDetail.total) + "</strong>");
+            $("#customerTiket").html("Cliente: " + tiket.customer);
+            $("#phoneNumberTiket").html("Numero Telefono: " + tiket.phoneNumber);
+            drawDetails(tiket.billDetail.details);
+        }
+
+        function drawDetails(billDetails) {
+            $("#billDetailsTiket").empty();
+            for (var i in billDetails) {
+                var html = "<strong>" + billDetails[i].quantity + " x " + billDetails[i].serviceName + "</strong><br>";
+                for (var j in billDetails[i].descriptors) {
+                    html += billDetails[i].descriptors[j] + ", ";
+                }
+                html += "<strong>" + billDetails[i].observation + "</strong><br>";
+                $("#billDetailsTiket").append(html);
+            }
+        }
+    </script>
+{% endblock %}

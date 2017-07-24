@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="process_state")
  * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\ProcessStateRepository")
  */
-class ProcessState
-{
+class ProcessState {
+
     /**
      * @var int
      *
@@ -29,6 +29,11 @@ class ProcessState
     private $name;
 
     /**
+     * @ORM\OneToMany(targetEntity="Bill", mappedBy="processState")
+     */
+    protected $bills;
+
+    /**
      * @ORM\OneToMany(targetEntity="BillHistory", mappedBy="processState")
      */
     protected $billHistories;
@@ -36,8 +41,7 @@ class ProcessState
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->billHistories = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -46,8 +50,7 @@ class ProcessState
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -58,8 +61,7 @@ class ProcessState
      *
      * @return ProcessState
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -70,8 +72,7 @@ class ProcessState
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -82,8 +83,7 @@ class ProcessState
      *
      * @return ProcessState
      */
-    public function addBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory)
-    {
+    public function addBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory) {
         $this->billHistories[] = $billHistory;
 
         return $this;
@@ -94,8 +94,7 @@ class ProcessState
      *
      * @param \LavasecoBundle\Entity\BillHistory $billHistory
      */
-    public function removeBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory)
-    {
+    public function removeBillHistory(\LavasecoBundle\Entity\BillHistory $billHistory) {
         $this->billHistories->removeElement($billHistory);
     }
 
@@ -104,8 +103,8 @@ class ProcessState
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getBillHistories()
-    {
+    public function getBillHistories() {
         return $this->billHistories;
     }
+
 }

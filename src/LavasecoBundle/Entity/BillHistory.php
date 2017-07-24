@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="bill_history")
  * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\BillHistoryRepository")
  */
-class BillHistory
-{
+class BillHistory {
+
     /**
      * @var int
      *
@@ -24,48 +24,50 @@ class BillHistory
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="create_at", type="datetime")
+     * @ORM\Column(name="created_at", type="datetime")
      */
-    private $createAt;
-    
+    private $createdAt;
+
     /**
      * @ORM\ManyToOne(targetEntity="Bill", inversedBy="billHistories")
-     * @ORM\JoinColumn(name="bill_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="bill_id", referencedColumnName="id", nullable = false)
      */
     protected $bill;
 
     /**
      * @ORM\ManyToOne(targetEntity="ProcessState", inversedBy="billHistories")
-     * @ORM\JoinColumn(name="process_state_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="process_state_id", referencedColumnName="id", nullable = false)
      */
     protected $processState;
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="billHistories")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id",  nullable = false)
      */
     protected $user;
+
+    public function __construct() {
+        $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+    }
 
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
     /**
      * Set createAt
      *
-     * @param \DateTime $createAt
+     * @param \DateTime $createdAt
      *
      * @return BillHistory
      */
-    public function setCreateAt($createAt)
-    {
-        $this->createAt = $createAt;
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -75,9 +77,8 @@ class BillHistory
      *
      * @return \DateTime
      */
-    public function getCreateAt()
-    {
-        return $this->createAt;
+    public function getCreatedAt() {
+        return $this->createdAt;
     }
 
     /**
@@ -87,8 +88,7 @@ class BillHistory
      *
      * @return BillHistory
      */
-    public function setBill(\LavasecoBundle\Entity\Bill $bill = null)
-    {
+    public function setBill(\LavasecoBundle\Entity\Bill $bill = null) {
         $this->bill = $bill;
 
         return $this;
@@ -99,8 +99,7 @@ class BillHistory
      *
      * @return \LavasecoBundle\Entity\Bill
      */
-    public function getBill()
-    {
+    public function getBill() {
         return $this->bill;
     }
 
@@ -111,8 +110,7 @@ class BillHistory
      *
      * @return BillHistory
      */
-    public function setProcessState(\LavasecoBundle\Entity\ProcessState $processState = null)
-    {
+    public function setProcessState(\LavasecoBundle\Entity\ProcessState $processState = null) {
         $this->processState = $processState;
 
         return $this;
@@ -123,8 +121,7 @@ class BillHistory
      *
      * @return \LavasecoBundle\Entity\ProcessState
      */
-    public function getProcessState()
-    {
+    public function getProcessState() {
         return $this->processState;
     }
 
@@ -135,8 +132,7 @@ class BillHistory
      *
      * @return BillHistory
      */
-    public function setUser(\LavasecoBundle\Entity\User $user = null)
-    {
+    public function setUser(\LavasecoBundle\Entity\User $user = null) {
         $this->user = $user;
 
         return $this;
@@ -147,8 +143,8 @@ class BillHistory
      *
      * @return \LavasecoBundle\Entity\User
      */
-    public function getUser()
-    {
+    public function getUser() {
         return $this->user;
     }
+
 }

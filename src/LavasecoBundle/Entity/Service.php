@@ -218,4 +218,15 @@ class Service
     {
         return $this->objectStateReceivedService;
     }
+    
+    public function getServiceName(){
+        $serviceCategory = $this->getServiceCategory();
+        $superServiceCategory = $serviceCategory->getServiceCategory();
+        
+        $name = $superServiceCategory->getServiceCategory()->getName();
+        $name .= ", " . $superServiceCategory->getName();
+        $name .= " " . $serviceCategory->getName();
+        
+        return $name;
+    }
 }

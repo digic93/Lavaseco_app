@@ -10,4 +10,12 @@ namespace LavasecoBundle\Repository;
  */
 class ServiceRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getServiceByServiceCategoryId($serviceCategoryId) {
+        $query = $this->createQueryBuilder('s')
+                ->where('s.serviceCategory = :serviceCategoryId')
+                ->setParameter('serviceCategoryId', $serviceCategoryId)
+                ->getQuery();
+
+        return $query->getResult()[0];
+    }
 }

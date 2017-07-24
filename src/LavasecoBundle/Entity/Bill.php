@@ -24,7 +24,6 @@ class Bill {
     /**
      * @var int
      * @ORM\Column(name="consecutive", type="integer", unique=true)
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $consecutive;
 
@@ -74,6 +73,12 @@ class Bill {
     protected $billState;
 
     /**
+     * @ORM\ManyToOne(targetEntity="ProcessState", inversedBy="bills")
+     * @ORM\JoinColumn(name="process_state_id", referencedColumnName="id", nullable=false)
+     */
+    protected $processState;
+
+    /**
      * @ORM\ManyToOne(targetEntity="PaymentAgreement", inversedBy="bills")
      * @ORM\JoinColumn(name="payment_agreement_id", referencedColumnName="id", nullable=false)
      */
@@ -83,6 +88,7 @@ class Bill {
      * Constructor
      */
     public function __construct() {
+        $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         $this->payDetails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->billDetails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->billHistories = new \Doctrine\Common\Collections\ArrayCollection();
@@ -345,5 +351,33 @@ class Bill {
     public function getObservation()
     {
         return $this->observation;
+    }
+    
+    /**
+     * Set processState
+     *
+     * @param \LavasecoBundle\Entity\ProcessState $processState
+     *
+     * @return Bill
+     */
+    public function setProcessState(\LavasecoBundle\Entity\ProcessState $processState)
+    {
+        $this->processState = $processState;
+
+        return $this;
+    }
+
+    /**
+     * Get processState
+     *
+     * @return \LavasecoBundle\Entity\ProcessState
+     */
+    public function getProcessState()
+    {
+        return $this->processState;
+    }
+    
+    public function getCreatedAtString() {
+        return $this->createdAt->format('d/m/Y H:i');
     }
 }

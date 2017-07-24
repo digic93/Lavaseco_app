@@ -40,4 +40,103 @@ class StateObjectDescription
      */
     protected $objectStateReceivedService;
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->objectStateReceivedService = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return StateObjectDescription
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set categoryStateObject
+     *
+     * @param \LavasecoBundle\Entity\CategoryStateObject $categoryStateObject
+     *
+     * @return StateObjectDescription
+     */
+    public function setCategoryStateObject(\LavasecoBundle\Entity\CategoryStateObject $categoryStateObject)
+    {
+        $this->categoryStateObject = $categoryStateObject;
+
+        return $this;
+    }
+
+    /**
+     * Get categoryStateObject
+     *
+     * @return \LavasecoBundle\Entity\CategoryStateObject
+     */
+    public function getCategoryStateObject()
+    {
+        return $this->categoryStateObject;
+    }
+
+    /**
+     * Add objectStateReceivedService
+     *
+     * @param \LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService
+     *
+     * @return StateObjectDescription
+     */
+    public function addObjectStateReceivedService(\LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService)
+    {
+        $this->objectStateReceivedService[] = $objectStateReceivedService;
+
+        return $this;
+    }
+
+    /**
+     * Remove objectStateReceivedService
+     *
+     * @param \LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService
+     */
+    public function removeObjectStateReceivedService(\LavasecoBundle\Entity\ObjectStateReceivedService $objectStateReceivedService)
+    {
+        $this->objectStateReceivedService->removeElement($objectStateReceivedService);
+    }
+
+    /**
+     * Get objectStateReceivedService
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getObjectStateReceivedService()
+    {
+        return $this->objectStateReceivedService;
+    }
 }
