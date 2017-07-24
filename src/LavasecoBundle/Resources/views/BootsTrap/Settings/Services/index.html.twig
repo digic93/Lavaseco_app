@@ -150,61 +150,54 @@
                     <h4 id="titleModal" class="modal-title"></h4>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <fieldset>
-                            <div class="form-horizontal">
-                                <div class="form-group">
-                                    <label id="name_new_service" class="col-md-4 control-label" for="textinput">Nombre</label>  
-                                    <div class="col-md-4">
-                                        <input id="nameNewCategory" name="textinput" type="text" class="form-control input-md">
-                                    </div>
-                                </div>
-                                <div id="priceNewServiceImput" class="form-group">
-                                    <label id="name_new_service_price" class="col-md-4 control-label" for="textinput">Precio $</label>  
-                                    <div class="col-md-4">
-                                        <input id="priceNewService" type="text" class="form-control input-md">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label id="name_new_service" class="col-md-4 control-label" for="textinput">Nombre</label>  
+                            <div class="col-md-4">
+                                <input id="nameNewCategory" name="textinput" type="text" class="form-control input-md">
+                            </div>
+                        </div>
+                        <div id="priceNewServiceImput" class="form-group">
+                            <label id="name_new_service_price" class="col-md-4 control-label" for="textinput">Precio $</label>  
+                            <div class="col-md-4">
+                                <input id="priceNewService" type="text" class="form-control input-md">
+                            </div>
+                        </div>
 
-                                    </div>
-                                </div>
+                        <div class="form-group">
+                            <label id="description_new_service" class="col-md-4 control-label" for="textarea">Descripción</label>
+                            <div class="col-md-4">                     
+                                <textarea id="descriptionNewCategory" class="form-control"></textarea>
+                            </div>
+                        </div>
 
-                                <div class="form-group">
-                                    <label id="description_new_service" class="col-md-4 control-label" for="textarea">Descripción</label>
-                                    <div class="col-md-4">                     
-                                        <textarea id="descriptionNewCategory" class="form-control"></textarea>
-                                    </div>
-                                </div>
-
-                                <div id="descriptors" class="form-group" style="display: none;">
-                                    <label class="col-md-4 control-label" for="checkboxes">Descriptores</label>
-                                    <div id="select_state_new_service" class="col-md-4">
-
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label id="image_new_service" class="col-md-4 control-label" for="filebutton">Icono o Imagen</label>
-                                    <div class="col-md-4">
-                                        <input id="filebutton" name="filebutton" class="input-file" type="file">
-                                    </div>
-                                </div>
-                                <!-- Drop Zone -->
-                                <div class="form-group">
-                                    <div class="upload-drop-zone" id="drop-zone">
-                                        Just drag and drop files here
-                                    </div>
-                                </div>
-                                <input id="typeCategory" type="hidden" value=""><br>
-                                <input id="superCategory" type="hidden" value=""><br>
+                        <div id="descriptors" class="form-group" style="display: none;">
+                            <label class="col-md-4 control-label" for="checkboxes">Descriptores</label>
+                            <div id="select_state_new_service" class="col-md-4">
 
                             </div>
-                        </fieldset>
-
-                    </form>
+                        </div>
+                        <!---
+                        <div class="form-group">
+                            <label id="image_new_service" class="col-md-4 control-label" for="filebutton">Icono o Imagen</label>
+                            <div class="col-md-4">
+                                <input id="filebutton" name="filebutton" class="input-file" type="file">
+                            </div>
+                        </div>
+                        <!-- Drop Zone 
+                        <div class="form-group">
+                            <div class="upload-drop-zone" id="drop-zone">
+                                Just drag and drop files here
+                            </div>
+                        </div> -->
+                        <input id="typeCategory" type="hidden" value=""><br>
+                        <input id="superCategory" type="hidden" value=""><br>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <form>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                        <button  id="btnSaveCategory" type="submit" class="btn btn-success">Guardar</button>
+                        <button  id="btnSaveCategory" type="button" class="btn btn-success">Guardar</button>
                 </div>
             </div>
         </div>
@@ -219,14 +212,12 @@
             var serviceName = $(this).data('serviceName');
             var serviceDescription = $(this).data('serviceDescription');
             var serviceTitle = $(this).data('serviceType') + " " + $(this).data('serviceName');
-
             if (serviceName !== undefined) {
                 $("#tittle_service_category").text(serviceTitle);
                 $("#name_service_category").text(serviceName);
                 $("#descrip_service_category").text(serviceDescription);
             }
         });
-
         $(document).ready(function () {
             $("#priceNewService").number(true);
             //Evento cerrar ventana modal
@@ -234,12 +225,10 @@
                 clearcCategoriesModal();
             })
         });
-
         function addCategoryButtonClickEvent(button) {
             var serviceName = $(button).data('serviceName');
             var serviceDescription = $(button).data('serviceDescription');
             var serviceTitle = $(button).data('serviceType') + " " + $(button).data('serviceName');
-
             if (serviceName !== undefined) {
                 $("#tittle_service_category").text(serviceTitle);
                 $("#name_service_category").text(serviceName);
@@ -253,7 +242,6 @@
             $("#typeCategory").val($(button).data('serviceType'));
             $("#superCategory").val($(button).data('superCategory'));
             $("#titleModal").html("Agregar " + $(button).data('serviceType'));
-
             if ($(button).data('serviceType') === "Servicio") {
                 getImputsDescriptions();
             }
@@ -335,29 +323,45 @@
                 });
             }
 
-        });
 
+        });
         function validateFields() {
-            var name = $("#name_new_service").val();
+            var name = $("#nameNewCategory").val();
             var description = $("#descriptionNewCategory").val();
             var precio = $("#priceNewService").val();
- 
+
             if (name === null || name.length === 0 || /^\s+$/.test(name)) {
-                $("#name_new_service").parent().attr("class", "form-group has-error has-feedback");              
+                $("#nameNewCategory").focus();
                 return false;
-            }
-            
-            if (description === null || description.length === 0 || /^\s+$/.test(description)) {
-                $("#descriptionNewCategory").parent().attr("class", "form-group has-error has-feedback");
+            } else if (description === null || description.length === 0 || /^\s+$/.test(description)) {
+                $("#descriptionNewCategory").focus();
                 return false;
+            } else {
+                if ($("#typeCategory").val() === "Servicio") {
+                    if (precio === null || precio.length === 0 || /^\s+$/.test(precio) || parseInt(precio) === 0) {
+                        $("#priceNewService").focus();
+                        return false;
+                    } else {
+                        var isChecked = 0;
+                        $(".checkboxDescriptor").each(function (index) { 
+                            if ($(this).is(":checked")) {
+                                isChecked ++;
+                            } else {
+                                $(".checkboxDescriptor").focus();
+                            }
+                        });
+                        
+                        return isChecked > 0;
+                    }
+                }
+                return true;
             }
-            
+
         }
 
         function addCategoryAtTree(category) {
             var html;
             var type;
-
             if (category.type === 1 || category.type === 2) {
                 type = (category.type === 1) ? "Categoria" : "Subcategoria";
                 html = addCategory(type, category);
@@ -368,7 +372,6 @@
 
             type += ((category.superCategory !== undefined) ? "_" + category.superCategory : "");
             $("#new" + type).append(html);
-
         }
 
         function addCategory(type, category) {
