@@ -498,13 +498,16 @@
             for (var i in summaryServices.services) {
                 html +=
                         "<tr>\
-                                <td>" + summaryServices.services[i].service + "</td>\
-                                <td class=\"text-right\">" + summaryServices.services[i].quantity + "</td>\
-                                <td class=\"text-right\">$" + $.number(summaryServices.services[i].total) + "</td>\
-                            </tr>\
-                            <tr>\
-                                <td colspan=\"3\">" + getDescriptionsToString(summaryServices.services[i].descriptors) + "</td>\
-                            </tr>";
+                            <td>" + summaryServices.services[i].service + "</td>\
+                            <td class=\"text-right\">" + summaryServices.services[i].quantity + "</td>\
+                            <td class=\"text-right\">$" + $.number(summaryServices.services[i].total) + "</td>\
+                        </tr>\
+                        <tr>\
+                            <td colspan=\"3\">" + getDescriptionsToString(summaryServices.services[i].descriptors) + "</td>\
+                        </tr>\
+                        <tr>\
+                            <td colspan=\"3\"> <i> Observaciones : " + summaryServices.services[i].observations + "</i></td>\
+                        </tr>";
             }
             $("#billDetail").append(html);
         }

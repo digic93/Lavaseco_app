@@ -71,44 +71,91 @@
 
 {% block javascripts %}
     <script>
-        var valid = false
-        $("#client_email").focusout(function () {
+        var valid = false;
+        $('#client_email').focusout(function () {
             $.ajax({
                 url: "{{ path('lavaseco_api_validate_user') }}/" + $("#client_email").val(),
                 method: "GET",
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (result) {
-                    var valid = result.valid;
-                    if (!valid) {
+                    var email = $("#client_email").val();
+
+                    if (email === null || email.length === 0 || /^\s+$/.test(email)) {
+                        $("#divEmail").removeClass("has-success");
+                        $("#divEmail").addClass("has-error");
+                    } else if (!(/\S+@\S+\.\S+/.test(email))) {
                         $("#divEmail").removeClass("has-success");
                         $("#divEmail").addClass("has-error");
                     } else {
-                        $("#divEmail").removeClass("has-error");
-                        $("#divEmail").addClass("has-success");
+                        valid = result.valid;
+                        if (!valid) {
+                            $("#divEmail").removeClass("has-success");
+                            $("#divEmail").addClass("has-error");
+                        } else {
+                            $("#divEmail").removeClass("has-error");
+                            $("#divEmail").addClass("has-success");
+                        }
                     }
                 }
             });
         });
 
         function saveUser() {
-            var user = {
-                email: $("#client_email").val(),
-                firstName: $("#client_firstName").val(),
-                lastName: $("#client_lastName").val(),
-                phoneNumber: $("#client_phone_number").val(),
-            };
-            $.ajax({
-                url: "{{ path("lavaseco_api_create_user") }}",
-                method: "POST",
-                dataType: "json",
-                data: user,
-                success: function (result) {
-                    if(result.error === undefined){
-                        alert("Error al crear el usuario");
+            var flag = validateFields();
+            if (flag === true) {
+                var user = {
+                    email: $("#client_email").val(),
+                    firstName: $("#client_firstName").val(),
+                    lastName: $("#client_lastName").val(),
+                    phoneNumber: $("#client_phone_number").val()
+                };
+                $.ajax({
+                    url: "{{ path("lavaseco_api_create_user") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: user,
+                    success: function (result) {
+                        if (result.error === undefined) {
+                            alert("Error al crear el usuario");
+                            clearForm();
+                        }
                     }
-                }
-            });
+                });
+            }
         }
+
+        function validateFields() {
+            var firstName = $("#client_firstName").val();
+            var lastName = $("#client_lastName").val();
+            var phone = $("#client_phone_number").val();
+
+            if (firstName === null || firstName.length === 0 || /^\s+$/.test(firstName)) {
+                $("#client_firstName").focus();
+                return false;
+            } else if (lastName === null || lastName.length === 0 || /^\s+$/.test(lastName)) {
+                $("#client_lastName").focus();
+                return false;
+            } else if (phone === null || phone.length === 0 || /^\s+$/.test(phone)) {
+                $("#client_phone_number").focus();
+                return false;
+            } else if (isNaN(phone)) {
+                $("#client_phone_number").focus();
+                return false;
+            } else if (valid === false) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function clearForm() {
+            $("#client_email").val('');
+            $("#client_firstName").val('');
+            $("#client_lastName").val('');
+            $("#client_phone_number").val('');
+            $("#divEmail").removeClass("has-success");
+        }
+
     </script>
 {% endblock %}
