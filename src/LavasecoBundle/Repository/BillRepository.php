@@ -26,13 +26,12 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $consecutive;
     }
     
-    public function getBillsInFirstState(){
+    public function getBillsByProcessId($processId){        
         $bills = $this->createQueryBuilder('b')
                 ->where('b.processState = :processStateId')
-                ->setParameter('processStateId', 1)
+                ->setParameter('processStateId', $processId)
                 ->getQuery();
                 
         return $bills->getResult();
     }
-    
 }
