@@ -1,0 +1,138 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/timeline.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+{% endblock %} 
+
+{% block body %} 
+    <h3 >Facturas</h3>
+    <p>
+        En esta pagina puedes ver las facturas su estado y la trazabilidad del proceso.
+    </p>
+    <hr>
+    <div class="row">
+        <!--facturas-->
+        <div class="col-md-12">
+            <div class="collapse" id="collapseProcessline">
+                <div style="display:inline-block;width:100%;overflow-y:auto;">
+                    <ul class="timeline timeline-horizontal">
+                        <li class="timeline-item">
+                            <div class="timeline-badge">Hola bebe</div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4 class="timeline-title">Mussum ipsum cacilds 1</h4>
+                                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 11 hours ago via Twitter</small></p>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>Mussum ipsum </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-badge "><i class="glyphicon glyphicon-check"></i></div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4 class="timeline-title">Mussum ipsum cacilds 2</h4>
+                                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 11 hours ago via Twitter</small></p>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>Mussum ipsum </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-badge "><i class="glyphicon glyphicon-check"></i></div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4 class="timeline-title">Mussum ipsum cacilds 3</h4>
+                                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 11 hours ago via Twitter</small></p>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>Mussum ipsum </p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <!--facturas-->
+        <div class="col-md-12"> 
+            <div class="well well-sm pull-right">
+                <form class="form-inline">
+                    <button type="button" id="changeStateButton" class="btn btn-default" onclick="changeEstate();">Cobrar</button>
+                    |
+                    <div class="form-group">
+                        <select class="form-control" id="sel1">
+                            <option>Seleccione un estado </option>
+                        </select>
+                    </div>
+                </form>                
+            </div>
+
+            <table id="billsTable" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Factura</th>
+                        <th>Cliente</th>
+                        <th>Telefono</th>
+                        <th>Proceso</th>
+                        <th>Estado</th>
+                        <th>Pago</th>
+                        <th>observación</th>
+                        <th>Vendedor</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                        <tr>
+                            <td>{{ bill.id }}</td>
+                            <td>{{ bill.customerUser.name }}</td>
+                            <td>{{ bill.customerUser.phoneNumber }}</td>
+                            <td>{{ bill.processState.name}}</td>
+                            <td>{{ bill.billState.name}}</td>
+                            <td>{{ bill.paymentAgreement.name}}</td>
+                            <td>{{ bill.observation}}</td>
+                            <td>{{ bill.sellerUser.name }}</td>
+                            <td>{{ bill.CreatedAtString}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            var billsTable = $('#billsTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
+
+
+            $('#billsTable tbody').on('click', 'tr', function () {
+                var data = billsTable.row(this).data();
+
+                $(".selected").toggleClass('selected');
+
+                $(this).toggleClass('selected');
+                collapseProcessLine();
+            });
+
+        });
+
+        function collapseProcessLine() {
+            $('#collapseProcessline').collapse();
+        }
+    </script>
+{% endblock %}

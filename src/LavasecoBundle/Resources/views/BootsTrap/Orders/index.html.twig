@@ -2,20 +2,37 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
-    {#    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/dataTables.bootstrap.css") }}">#}
 {% endblock %} 
 
 {% block body %} 
-    <h1>Oredenes de servicios</h1>
+    <h3 >Oredenes de servicios{% if processState is defined %} <span class="label label-default">{{ processState.name }}</span>{% endif %}</h3>
     <p>
         En esta pagina puedes ver las ordenes de los servicios y en el estado que se encuentra cada proceso.
     </p>
     <hr>
     <div class="row">
         <!--Productos por categoria-->
-        <div class="col-md-8">  
-
-            <h4>Ordenes en el Mostrador</h4>
+        <div class="col-md-9"> 
+            <div class="well well-sm pull-right">
+                <form class="form-inline">
+                    <div class="checkbox">
+                        <label>
+                            <input  id="seletedCheckbox" type="checkbox"> Seleccionar Varios
+                        </label>
+                    </div>
+                    |
+                    <button type="button" id="changeStateButton" class="btn btn-default" onclick="changeEstate();">Cambiar de estado</button>
+                    |
+                    <div class="form-group">
+                        <select class="form-control" id="sel1">
+                            <option>Seleccione un estado </option>
+                            {% for processState in processStates%}
+                                <option value="{{ processState.id }}">{{ processState.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>                
+            </div>
 
             <table id="billsTable" class="display" cellspacing="0" width="100%">
                 <thead>
@@ -24,6 +41,7 @@
                         <th>Orden</th>
                         <th>Cliente</th>
                         <th>Telefono</th>
+                        <th>Estado</th>
                         <th>Vendedor</th>
                         <th>Fecha</th>
                     </tr>
@@ -35,6 +53,7 @@
                             <td>{{ bill.consecutive }}</td>
                             <td>{{ bill.customerUser.name }}</td>
                             <td>{{ bill.customerUser.phoneNumber }}</td>
+                            <td>{{ bill.processState.name}}</td>
                             <td>{{ bill.sellerUser.name }}</td>
                             <td>{{ bill.CreatedAtString}}</td>
                         </tr>
@@ -42,7 +61,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fa fa-file-text" aria-hidden="true"></i> Tiket</h3>
@@ -73,12 +92,29 @@
 
     <script>
         $(document).ready(function () {
-            var billsTable = $('#billsTable').DataTable();
+            var billsTable = $('#billsTable').DataTable({
+                "order": [[1, "Desc"]]
+            });
+
+            $("#seletedCheckbox").change(function () {
+                if (!this.checked) {
+                    $(".selected").toggleClass('selected');
+                }
+            });
 
             $('#billsTable tbody').on('click', 'tr', function () {
                 var data = billsTable.row(this).data();
+
+                if (!$('#seletedCheckbox').is(":checked"))
+                {
+                    $(".selected").toggleClass('selected');
+                }
+
+                $(this).toggleClass('selected');
+
                 getTiket(data[0]);
             });
+
         });
 
         function getTiket(billId) {
@@ -103,6 +139,7 @@
             $("#customerTiket").html("Cliente: " + tiket.customer);
             $("#phoneNumberTiket").html("Numero Telefono: " + tiket.phoneNumber);
             drawDetails(tiket.billDetail.details);
+            $("#billDetailsTiket").append("<hr><strong>Observaciones: </strong>" + tiket.observation);
         }
 
         function drawDetails(billDetails) {
@@ -116,5 +153,10 @@
                 $("#billDetailsTiket").append(html);
             }
         }
+
+        function changeEstate() {
+
+        }
+
     </script>
 {% endblock %}
