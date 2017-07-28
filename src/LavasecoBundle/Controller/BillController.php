@@ -12,6 +12,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class BillController extends Controller {
 
+    public function indexAction() {
+        $configuration = $this->get('lavaseco.app_configuration');
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
+
+        $bills = $billRepository->findAll();
+        
+        return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', ["bills" => $bills]);
+    }
+
     public function settingAction(Request $request) {
         $configuration = $this->get('lavaseco.app_configuration');
 
@@ -47,6 +57,8 @@ class BillController extends Controller {
         $this->saveBillDetail($bill, $request->request->get("services"));
 
         $this->saveBillHistory($bill);
+
+        //Enviar via correo electronico la factura al cliente
 
         return $this->json(["billId" => $bill->getId()]);
     }
@@ -132,7 +144,7 @@ class BillController extends Controller {
     }
 
     private function getProcessState() {
-        ////determinar el estado delproceso segun el suario que realiza la factura
+        ////determinar el estado delproceso segun el punto de venta o usuario que realiza la factura
         $doctrineManager = $this->get('doctrine')->getManager();
         $processStateRepository = $doctrineManager->getRepository("LavasecoBundle:ProcessState");
 

@@ -7,9 +7,15 @@ lavaseco_sales:
     defaults: { _controller: LavasecoBundle:Sale:index }
 
 lavaseco_orders:
-    path:     /orden
-    defaults: { _controller: LavasecoBundle:Orders:index }
+    path:     /orden/{processId}
+    defaults: { _controller: LavasecoBundle:Orders:index, processId: 0 }
+    requirements:
+        processId:  \d+
 
+lavaseco_Bills:
+    path:     /facturas
+    defaults: { _controller: LavasecoBundle:Bill:index }
+            
 lavaseco_settign_bill_content:
     path:     /configuracion/factura
     defaults: { _controller: LavasecoBundle:Bill:setting }
