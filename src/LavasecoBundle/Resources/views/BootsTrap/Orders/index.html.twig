@@ -21,8 +21,6 @@
                         </label>
                     </div>
                     |
-                    <button type="button" id="changeStateButton" class="btn btn-default" onclick="changeEstate();">Cambiar de estado</button>
-                    |
                     <div class="form-group">
                         <select class="form-control" id="sel1">
                             <option>Seleccione un estado </option>
@@ -31,6 +29,8 @@
                             {% endfor %}
                         </select>
                     </div>
+                    |
+                    <button type="button" id="changeStateButton" class="btn btn-default" onclick="changeEstate();">Cambiar de estado</button>
                 </form>                
             </div>
 
@@ -84,6 +84,39 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="changeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Cabio de Estado</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Realizar cambio de estado para las siguientes Ordenes:<br>
+                        <strong id="modalOrdersText"></strong>
+                    </p>
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="selectbasic">Estado</label>
+                            <div class="col-md-5">
+                                <select class="form-control" id="newProcessStates">
+                                    {% for processState in processStates%}
+                                        <option value="{{ processState.id }}">{{ processState.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="saveChange();">Guradar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
@@ -91,6 +124,8 @@
     <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
 
     <script>
+        var orderSelected = [[], []];
+
         $(document).ready(function () {
             var billsTable = $('#billsTable').DataTable({
                 "order": [[1, "Desc"]]
@@ -108,11 +143,17 @@
                 if (!$('#seletedCheckbox').is(":checked"))
                 {
                     $(".selected").toggleClass('selected');
+                    orderSelected[0] = [];
+                    orderSelected[1] = [];
                 }
 
                 $(this).toggleClass('selected');
 
                 getTiket(data[0]);
+
+                orderSelected[0].push(data[0]);
+                orderSelected[1].push(data[1]);
+
             });
 
         });
@@ -155,7 +196,34 @@
         }
 
         function changeEstate() {
+            if (orderSelected.length === 0) {
+                alert("Seleccione por lo menos una orden para cambiarle el estado.");
+            } else {
+                var html = "";
+                for (var i in orderSelected [1]) {
+                    html += orderSelected [1][i];
+                    html += parseInt(i) + 1 === orderSelected[1].length ? "." : ", ";
+                }
 
+                $("#modalOrdersText").empty();
+                $("#modalOrdersText").html(html);
+                $("#changeModal").modal('toggle');
+            }
+        }
+
+        function saveChange() {
+            $.ajax({
+                url: "{{ path("lavaseco_api_order_change_processState") }}",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    "processState": $("#newProcessStates").val(),
+                    "bills": orderSelected[0]
+                },
+                success: function (result) {
+                    location.reload();
+                }
+            });
         }
 
     </script>
