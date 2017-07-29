@@ -18,7 +18,7 @@
                 <div style="display:inline-block;width:100%;overflow-y:auto;">
                     <ul class="timeline timeline-horizontal">
                         <li class="timeline-item">
-                            <div class="timeline-badge">Hola bebe</div>
+                            <div class="timeline-badge"><i class="fa fa-check" aria-hidden="true"></i></div>
                             <div class="timeline-panel">
                                 <div class="timeline-heading">
                                     <h4 class="timeline-title">Mussum ipsum cacilds 1</h4>
@@ -58,7 +58,6 @@
             </div>
         </div>
     </div>
-    <hr>
     <div class="row">
         <!--facturas-->
         <div class="col-md-12"> 
@@ -80,9 +79,9 @@
                         <th>Factura</th>
                         <th>Cliente</th>
                         <th>Telefono</th>
-                        <th>Proceso</th>
-                        <th>Estado</th>
+                        <th>Estado Proceso</th>
                         <th>Pago</th>
+                        <th>Estado</th>
                         <th>observación</th>
                         <th>Vendedor</th>
                         <th>Fecha</th>
@@ -95,8 +94,8 @@
                             <td>{{ bill.customerUser.name }}</td>
                             <td>{{ bill.customerUser.phoneNumber }}</td>
                             <td>{{ bill.processState.name}}</td>
-                            <td>{{ bill.billState.name}}</td>
                             <td>{{ bill.paymentAgreement.name}}</td>
+                            <td>{{ bill.billState.name}}</td>
                             <td>{{ bill.observation}}</td>
                             <td>{{ bill.sellerUser.name }}</td>
                             <td>{{ bill.CreatedAtString}}</td>

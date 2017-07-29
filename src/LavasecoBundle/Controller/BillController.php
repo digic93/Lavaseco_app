@@ -83,7 +83,7 @@ class BillController extends Controller {
         $bill->setCustomerUser($this->getUserbyId($customerUserId));
         $bill->setObservation($observation);
         $bill->setPaymentAgreement($paymentAgreement);
-        $bill->setBillState($this->getBillState());
+        $bill->setBillState($this->getBillState($paymentAgreement));
         $bill->setProcessState($this->getProcessState());
         $bill->setConsecutive($this->getBillConsecutive());
 
@@ -136,11 +136,11 @@ class BillController extends Controller {
         $em->flush();
     }
 
-    private function getBillState() {
+    private function getBillState($paymentAgreement) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billStateRepository = $doctrineManager->getRepository("LavasecoBundle:BillState");
 
-        return $billStateRepository->find(1);
+        return $billStateRepository->find(($paymentAgreement->getId() == 1 )?2 : 1);
     }
 
     private function getProcessState() {

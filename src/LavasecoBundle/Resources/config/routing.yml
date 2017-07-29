@@ -92,3 +92,8 @@ lavaseco_api_orders_tikets:
     methods:  [GET]
     requirements:
         billId:  \d+
+        
+lavaseco_api_order_change_processState:
+    path:     /api/order/next/processState
+    defaults: { _controller: LavasecoBundle:Orders:changeProcessState }
+    methods:  [POST]
