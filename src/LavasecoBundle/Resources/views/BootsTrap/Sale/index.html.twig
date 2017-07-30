@@ -76,7 +76,7 @@
                     <div class="well input-group">
                         <input id="clientBill" type="text" class="form-control" placeholder="Buscar Cliente..." autocomplete="off" />
                         <span class="input-group-btn">
-                            <button id="addClientBill" class="btn btn-secondary" type="button"  onclick="signUpClient()">
+                            <button id="addClientBill" class="btn btn-secondary" type="button"  onclick="signUpClient();">
                                 <i class="fa fa-user-plus" aria-hidden="true"></i>
                             </button>
                         </span>
@@ -367,7 +367,7 @@
                 }
             },
 
-            displayField: "name",
+            displayField: "data",
             valueField: "id",
             onSelect: displayResult
         });
@@ -412,7 +412,7 @@
                                 <select id=\"description_" + idDescription + "\" class=\"form-control imputDescription\">\
                                     <option data-id=\"0\" data-name=\"\" value=\"0\">seleccione una opción ....</option>";
             for (var key in options)
-                html += "<option value=\"" + options[key].name + "\" data-id=\"" + options[key].id + "\" data-name=\"" + options[key].name + "\" >" + options[key].name + "</option>"
+                html += "<option value=\"" + options[key].name + "\" data-id=\"" + options[key].id + "\" data-name=\"" + options[key].name + "\" >" + options[key].name + "</option>";
             html += "</select></div></div>";
             $("#imputsDescriptions").append(html);
         }
@@ -442,7 +442,7 @@
         }
 
         function addOptionsServicesSelectImput(service) {
-            var html = "<option value=\"" + service.name + "\" data-id=\"" + service.id + "\" data-name=\"" + service.name + "\">" + service.name + "</option>"
+            var html = "<option value=\"" + service.name + "\" data-id=\"" + service.id + "\" data-name=\"" + service.name + "\">" + service.name + "</option>";
             $("#servicesSelectImput").append(html);
         }
 
@@ -491,8 +491,8 @@
                         <td class=\"text-right\">$" + summaryService.total + "</td>\
                         <td>\
                             <div class=\"btn-group btn-group-xs\" role=\"group\">\
-                                <button type='button' onclick=\"editServiceSummary(" + summaryService.idSummaryService + ")\" class='btn btn-primary'>Editar</button>\
-                                <button type='button' onclick=\"deleteServiceSummary(" + summaryService.idSummaryService + ")\" class='btn btn-danger'>Eliminar</button>\
+                                <button type='button' onclick=\"editServiceSummary(" + summaryService.idSummaryService + ");\" class='btn btn-primary'>Editar</button>\
+                                <button type='button' onclick=\"deleteServiceSummary(" + summaryService.idSummaryService + ");\" class='btn btn-danger'>Eliminar</button>\
                             </div>\
                         </td>\
                     </tr>");
@@ -507,7 +507,7 @@
                     $("#servicesSelectImput").val(summaryServices.services[i].service);
                     for (var j in summaryServices.services[i].descriptors) {
                         var index = summaryServices.services[i].descriptors.indexOf(summaryServices.services[i].descriptors[j]);
-                        $("#description_" + index).val(summaryServices.services[i].descriptors[j].name)
+                        $("#description_" + index).val(summaryServices.services[i].descriptors[j].name);
                     }
 
                     var indice = summaryServices.services.indexOf(summaryServices.services[i]); // obtenemos el indice
@@ -517,9 +517,12 @@
         }
 
         function deleteServiceSummary(idService) {
+            summaryServices.total -= parseInt(summaryServices.services[idService].total.replace(",",""));
             summaryServices.services.splice(idService, 1); // 1 es la cantidad de elemento a eliminar
-            console.log(summaryServices.services);
+            
             $("#summaryDetail").empty();
+            $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
+
             if (summaryServices.services.length > 0) {
                 for (i in summaryServices.services) {
                     addRowTable(summaryServices.services[i]);
@@ -626,33 +629,36 @@
 
         function billing() {
             if (factura.customerId === 0) {
-                alert("Porfavor seleccione un cliente");
-            } else {
-                var flag = updateChange();
-                if (flag === true) {
-                    factura.observations = $("#bill_observation").val();
-                    factura.paymentAgreementId = $("#bill_payAgreement").val();
-                    factura.cashReceived = $("#cashReceived").val();
-                    factura.change = $("#change").val();
-                    console.log(JSON.stringify(factura));
-                    $.ajax({
-                        url: "{{ path("lavaseco_api_sale_billing") }}",
-                        method: "POST",
-                        dataType: "json",
-                        data: factura,
-                        success: function (result) {
-                            if (result.error !== undefined) {
-                                alert("Error al registrar la factura");
-                            }
-                            else{
-                                $('#wayToPay').modal('hide');
-                            }
-                        }
-                    });
-                }else{
-                    alert("Verifique el dinero dado por el cliente");
+                if(!confirm("¿Desea facturar sin seleccionar un cliente?")){
+                    return;
                 }
             }
+            
+            if (updateChange()) {
+                factura.observations = $("#bill_observation").val();
+                factura.paymentAgreementId = $("#bill_payAgreement").val();
+                factura.cashReceived = $("#cashReceived").val();
+                factura.change = $("#change").val();
+                
+                $.ajax({
+                    url: "{{ path("lavaseco_api_sale_billing") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: factura,
+                    success: function (result) {
+                        if (result.error !== undefined) {
+                            alert("Error al registrar la factura");
+                        } else {
+                            alert("Facturado con exito");
+                            $('#wayToPay').modal('hide');
+                            location.reload();
+                        }
+                    }
+                });
+            } else {
+                alert("Verifique el dinero dado por el cliente");
+            }
+
         }
 
         function wayToPay() {
@@ -662,7 +668,7 @@
         }
 
         function loadWayPay(payment) {
-            var html = "<option value=\"" + payment.name + "\" data-id=\"" + payment.id + "\" data-name=\"" + payment.name + "\">" + payment.name + "</option>"
+            var html = "<option value=\"" + payment.name + "\" data-id=\"" + payment.id + "\" data-name=\"" + payment.name + "\">" + payment.name + "</option>";
             $("#selectWayToPay").append(html);
         }
 
