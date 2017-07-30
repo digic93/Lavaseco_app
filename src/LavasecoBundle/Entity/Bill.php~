@@ -353,6 +353,30 @@ class Bill {
         return $this->observation;
     }
     
+    /**
+     * Set processState
+     *
+     * @param \LavasecoBundle\Entity\ProcessState $processState
+     *
+     * @return Bill
+     */
+    public function setProcessState(\LavasecoBundle\Entity\ProcessState $processState)
+    {
+        $this->processState = $processState;
+
+        return $this;
+    }
+
+    /**
+     * Get processState
+     *
+     * @return \LavasecoBundle\Entity\ProcessState
+     */
+    public function getProcessState()
+    {
+        return $this->processState;
+    }
+    
     public function getCreatedAtString() {
         return $this->createdAt->format('d/m/Y H:i');
     }

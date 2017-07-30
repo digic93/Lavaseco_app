@@ -22,6 +22,11 @@ class BillHistory {
     private $id;
 
     /**
+     * @ORM\Column(name="observation", type="text")
+     */
+    private $observation;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
@@ -48,6 +53,7 @@ class BillHistory {
 
     public function __construct() {
         $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+        $this->setObservation("Sin Observaciones");
     }
 
     /**
@@ -147,4 +153,32 @@ class BillHistory {
         return $this->user;
     }
 
+
+    /**
+     * Set observation
+     *
+     * @param string $observation
+     *
+     * @return BillHistory
+     */
+    public function setObservation($observation)
+    {
+        $this->observation = $observation;
+
+        return $this;
+    }
+
+    /**
+     * Get observation
+     *
+     * @return string
+     */
+    public function getObservation()
+    {
+        return $this->observation;
+    }
+
+    public function getCreatedAtString() {
+        return $this->createdAt->format('d/m/Y H:i');
+    }
 }
