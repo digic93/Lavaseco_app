@@ -14,14 +14,14 @@
         }
 
     </style>
-{% endblock %} 
+{% endblock %}
 
-{% block body %} 
+{% block body %}
     <h1>Ventas</h1>
     <hr>
     <div class="row">
         <!--Productos por categoria-->
-        <div class="col-md-8">  
+        <div class="col-md-8">
             <h3>Servicios</h3>
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Buscar...">
@@ -35,20 +35,20 @@
                     <button type="button" class="btn btn-default" onClick="getServiceByCategoryId({{ serviceCategory.id }});" >
                         <img src="{{ asset( serviceCategory.img ) }}" style="width: 30px;" /> {{ serviceCategory.name }}
                     </button>
-                {% endfor %}        
+                {% endfor %}
             </div>
             <hr>
             <div id="servicesItems">
                 {% for serviceCategory in serviceCategories %}
                     {% for subServiceCagory in serviceCategory.subServiceCategories %}
                         <div class="col-sm-6 col-md-4 service-itm" onclick="itemShowModal(this);"
-                             data-subcategory-id="{{ subServiceCagory.id }}" 
+                             data-subcategory-id="{{ subServiceCagory.id }}"
                              data-subcategory-name="{{ subServiceCagory.name }}"
-                             data-category-name="{{ serviceCategory.name }}">                        
-                            <div class="thumbnail service">                            
-                                <img src="/serviceImg/servicio.jpg" alt="img">                            
-                                <h5 class="text-center">{{ subServiceCagory.name }}</h5>                        
-                            </div>                    
+                             data-category-name="{{ serviceCategory.name }}">
+                            <div class="thumbnail service">
+                                <img src="/serviceImg/servicio.jpg" alt="img">
+                                <h5 class="text-center">{{ subServiceCagory.name }}</h5>
+                            </div>
                         </div>
                     {% endfor %}
                 {% endfor %}
@@ -81,7 +81,7 @@
                             </button>
                         </span>
                     </div>
-                    <div id="infoClientBill" class="form-group"></div>      
+                    <div id="infoClientBill" class="form-group"></div>
                     </p>
                     <hr>
                     <p>
@@ -112,7 +112,7 @@
                         <label for="sel1">Acuerdo de Pago</label>
                         <select class="form-control" id="bill_payAgreement">
                             {% for paymentAgreement in paymentAgreements %}
-                                <option value="{{ paymentAgreement.id }}">{{ paymentAgreement.name }}</option>
+                                <option value="{{ paymentAgreement.id }}" data-name="{{ paymentAgreement.name }}">{{ paymentAgreement.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -124,14 +124,14 @@
                     </p>
                     <button type="button" class="btn btn-success btn-block" onclick="wayToPay();">
                         Facturar
-                        <i class="fa fa-check" aria-hidden="true"></i>               
+                        <i class="fa fa-check" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!--Modal Window-->  
+    <!--Modal Window-->
     <div id="addServiceModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -159,7 +159,7 @@
                                             <input id="priceServiceImput" type="text" class="form-control text-center" value="">
                                         </div>
                                     </div>
-                                </div>  
+                                </div>
 
                                 <div class="form-group">
                                     <label id="name_service" class="control-label col-md-5">Cantidad</label>
@@ -225,7 +225,7 @@
             </div>
         </div>
     </div>
-    <!--end Modal Window-->  
+    <!--end Modal Window-->
 
     <!-- Modal -->
     <div id="modalSignUpClient" class="modal fade" role="dialog">
@@ -240,11 +240,7 @@
                 <div class="modal-body">
                     {% include 'LavasecoBundle:BootsTrap:Settings/Users/userForm.html.twig' %}
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
             </div>
-
         </div>
     </div>
 
@@ -256,60 +252,48 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Elegir Forma de Pago</h4>
+                    <h4 class="modal-title">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <label id="paymentTittle"></label>
+                    </h4>
                 </div>
-                <div class="modal-body">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">
-                                <i class="fa fa-credit-card-alt" aria-hidden="true"></i> 
-                                <i class="fa fa-money" aria-hidden="true"></i>
-                                <i class="fa fa-cc-visa" aria-hidden="true"></i>
-                                <i class="fa fa-cc-diners-club" aria-hidden="true"></i>
-                                Forma de Pago
-                            </h3>
+                <div class="modal-body col-md-10 col-md-offset-1">
+                    <div>
+                        <div class="form-group">
+                            <p>Forma de Pago</p>
+                            <div class="input-group" id="specificWayPay">
+                                <select id="selectWayToPay" onChange="" class="form-control">
+                                </select>
+                            </div>
                         </div>
-                        <div class="panel-body">
+                        <hr>
 
-                            <div class="form-group">
-                                <p>Forma de Pago</p>
-                                <div class="input-group" id="specificWayPay">
-                                    <select id="selectWayToPay" onChange="" class="form-control">
-                                    </select>
-                                </div>
+                        <div class="form-group">
+                            <div id="divTotalBill"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <p>Dinero Recibido<span class="req">*</span></p>
+                            <div class="input-group" id="divCashReceived">
+                                <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                <input class="form-control" id="cashReceived" type="text" autocomplete="off" onkeyup="updateChange();"/>
                             </div>
+                        </div>
 
-                            <hr>
-
-                            <div class="form-group">
-                                <div id="divTotalBill"></div>
+                        <div class="form-group">
+                            <p>Vueltas</p>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                <input class="form-control" id="change" type="text" autocomplete="off" disabled/>
                             </div>
-
-                            <div class="form-group">
-                                <p>Dinero Recibido<span class="req">*</span></p>
-                                <div class="input-group" id="divCashReceived">
-                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
-                                    <input class="form-control" id="cashReceived" type="text" autocomplete="off" onchange="updateChange();"/> 
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <p>Vueltas</p>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
-                                    <input class="form-control" id="change" type="text" autocomplete="off" disabled/> 
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit"  onclick="billing();" class="btn btn-success"/>Guardar</button>
+                    <button type="submit"  onclick="billing();" class="btn btn-success"/>Cobrar</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -372,7 +356,7 @@
             onSelect: displayResult
         });
 
-//Functions////////////////////////////////////////////////////////        
+//Functions////////////////////////////////////////////////////////
         function itemShowModal(item) {
             var subCategoryId = $(item).data("subcategoryId");
             var categories = $(item).data("categoryName") + ", " + $(item).data("subcategoryName");
@@ -517,9 +501,9 @@
         }
 
         function deleteServiceSummary(idService) {
-            summaryServices.total -= parseInt(summaryServices.services[idService].total.replace(",",""));
+            summaryServices.total -= parseInt(summaryServices.services[idService].total.replace(",", ""));
             summaryServices.services.splice(idService, 1); // 1 es la cantidad de elemento a eliminar
-            
+
             $("#summaryDetail").empty();
             $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
 
@@ -629,17 +613,17 @@
 
         function billing() {
             if (factura.customerId === 0) {
-                if(!confirm("¿Desea facturar sin seleccionar un cliente?")){
+                if (!confirm("¿Desea facturar sin seleccionar un cliente?")) {
                     return;
                 }
             }
-            
+
             if (updateChange()) {
                 factura.observations = $("#bill_observation").val();
                 factura.paymentAgreementId = $("#bill_payAgreement").val();
                 factura.cashReceived = $("#cashReceived").val();
                 factura.change = $("#change").val();
-                
+
                 $.ajax({
                     url: "{{ path("lavaseco_api_sale_billing") }}",
                     method: "POST",
@@ -658,13 +642,19 @@
             } else {
                 alert("Verifique el dinero dado por el cliente");
             }
+            
 
         }
 
         function wayToPay() {
-            $('#wayToPay').modal('show');
-            $('#divTotalBill').html("<p class='text-right'><strong>Total Factura: $" + $.number(factura.total) + "</strong></p>");
-            addWayToPay();
+            var paymentAgreement = $('#bill_payAgreement').val();
+            if (paymentAgreement === "3") {
+                $('#paymentTittle').text('Cobro ' + $('#bill_payAgreement option:selected').data('name'));
+                $('#wayToPay').modal('show');
+                $('#divTotalBill').html("<p class='text-right'><strong>Total Factura: $" + $.number(factura.total) + "</strong></p>");
+                addWayToPay();
+            }
+            
         }
 
         function loadWayPay(payment) {
