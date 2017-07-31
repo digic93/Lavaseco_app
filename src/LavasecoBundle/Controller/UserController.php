@@ -8,20 +8,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class UserController extends Controller {
 
     public function searchAction(Request $request) {
-        $usersResutl = array();
-        $doctrineManager = $this->get('doctrine')->getManager();
-        $userRepository = $doctrineManager->getRepository("LavasecoBundle:User");
+        $usersByName = $this->getUsersByName($request->request->get('nameOrEmail'));
+        $usersByEmail = $this->getUsersByEmail($request->request->get('nameOrEmail'));
+        $usersByPhoneNumber = $this->getUsersByPhoneNumber($request->request->get('nameOrEmail'));
 
-        $users = $userRepository->getUserByNameOrEmail($request->request->get('nameOrEmail'));
-
-        foreach ($users as $user) {
-            $usersResutl [] = [
-                "id" => $user->getId(),
-                "name" => $user->getFirstName() . " " . $user->getLastName(),
-                "email" => $user->getEmail()
-            ];
-        }
-
+        $usersResutl = $usersByName + $usersByPhoneNumber + $usersByEmail;
+        
         return $this->json($usersResutl);
     }
 
@@ -109,6 +101,55 @@ class UserController extends Controller {
             $pass .= substr($cadena, $pos, 1);
         }
         return $pass;
+    }
+
+    private function getUsersByName($name) {
+        $usersResutl = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $userRepository = $doctrineManager->getRepository("LavasecoBundle:User");
+        $users = $userRepository->getUsersByName($name);
+
+        foreach ($users as $user) {
+            $usersResutl [] = [
+                "id" => $user->getId(),
+                "data" => $user->getFirstName() . " " . $user->getLastName()
+            ];
+        }
+        
+        return $usersResutl;
+    }
+    
+    private function getUsersByEmail($email) {
+        $usersResutl = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $userRepository = $doctrineManager->getRepository("LavasecoBundle:User");
+        $users = $userRepository->getUsersByEmail($email);
+
+        foreach ($users as $user) {
+            $usersResutl [] = [
+                "id" => $user->getId(),
+                "data" => $user->getEmail()
+            ];
+        }
+
+        return $usersResutl;
+    }
+
+    private function getUsersByPhoneNumber($phoneNumber) {
+        $usersResutl = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $userRepository = $doctrineManager->getRepository("LavasecoBundle:User");
+        $users = $userRepository->getUsersByPhoneNumber($phoneNumber);
+
+
+        foreach ($users as $user) {
+            $usersResutl [] = [
+                "id" => $user->getId(),
+                "data" => $user->getPhoneNumber()
+            ];
+        }
+
+        return $usersResutl;
     }
 
 }

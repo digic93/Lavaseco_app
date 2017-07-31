@@ -18,7 +18,7 @@ class BillController extends Controller {
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
 
         $bills = $billRepository->findAll();
-        
+
         return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', ["bills" => $bills]);
     }
 
@@ -68,6 +68,28 @@ class BillController extends Controller {
         return $this->json($this->getTiket($bill));
     }
 
+    public function getHistoryByBillIdAction($billId) {
+        $resutl = array();
+        $resutl["histories"] = array();
+
+        $bill = $this->getBillById($billId);
+        $billHistories = $bill->getBillHistories();
+        
+        $resutl["bill"] = $bill->getId();
+        $resutl["order"] = $bill->getConsecutive();
+        
+        foreach ($billHistories as $billHistory) {
+            $resutl["histories"][] = [
+                "processState" => $billHistory->getProcessState()->getName(),
+                "createdAt" => $billHistory->getCreatedAtString(),
+                "user" => $billHistory->getUser()->getName(),
+                "observation" => $billHistory->getObservation()
+            ];
+        }
+        
+        return $this->json($resutl);
+    }
+
     private function getBillContentById($billContentId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billContentRepository = $doctrineManager->getRepository("LavasecoBundle:BillContent");
@@ -106,8 +128,9 @@ class BillController extends Controller {
             $billDetail->setObservation($service["observations"]);
 
             $em->persist($billDetail);
-
-            $this->saveObjectStateReceivedService($serviceObj, $billDetail, $service["descriptors"]);
+            if(isset($service["descriptors"])){
+                $this->saveObjectStateReceivedService($serviceObj, $billDetail, $service["descriptors"]);
+            }
         }
     }
 
@@ -140,7 +163,7 @@ class BillController extends Controller {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billStateRepository = $doctrineManager->getRepository("LavasecoBundle:BillState");
 
-        return $billStateRepository->find(($paymentAgreement->getId() == 1 )?2 : 1);
+        return $billStateRepository->find(($paymentAgreement->getId() == 1 ) ? 2 : 1);
     }
 
     private function getProcessState() {
@@ -198,8 +221,8 @@ class BillController extends Controller {
             "bill" => $bill->getId(),
             "consecutive" => $bill->getConsecutive(),
             "seller" => $bill->getSellerUser()->getName(),
-            "customer" => $bill->getCustomerUser()->getName(),
-            "phoneNumber" => $bill->getCustomerUser()->getPhoneNumber(),
+            "customer" => ($bill->getCustomerUser())?$bill->getCustomerUser()->getName():"No se Registro Cliente",
+            "phoneNumber" => ($bill->getCustomerUser())?$bill->getCustomerUser()->getPhoneNumber():"No se Registro Cliente",
             "observation" => $bill->getObservation(),
             "createdAt" => $bill->getCreatedAtString(),
             "billDetail" => $this->getItemsBill($bill)

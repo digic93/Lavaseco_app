@@ -22,8 +22,8 @@
                     </div>
                     |
                     <div class="form-group">
-                        <select class="form-control" id="sel1">
-                            <option>Seleccione un estado </option>
+                        <select id="processStateUpdate" class="form-control" onchange="updateUrl(this);">
+                            <option value="0" selected>Todos los estados</option>
                             {% for processState in processStates%}
                                 <option value="{{ processState.id }}">{{ processState.name }}</option>
                             {% endfor %}
@@ -51,8 +51,8 @@
                         <tr>
                             <td>{{ bill.id }}</td>
                             <td>{{ bill.consecutive }}</td>
-                            <td>{{ bill.customerUser.name }}</td>
-                            <td>{{ bill.customerUser.phoneNumber }}</td>
+                            <td>{{ bill.customerUser.name | default("No se Registro Cliente")}}</td>
+                            <td>{{ bill.customerUser.phoneNumber | default("No se Registro Cliente")}}</td>
                             <td>{{ bill.processState.name}}</td>
                             <td>{{ bill.sellerUser.name }}</td>
                             <td>{{ bill.CreatedAtString}}</td>
@@ -155,7 +155,8 @@
                 orderSelected[1].push(data[1]);
 
             });
-
+            
+            updateSelectUpdaateUrl();
         });
 
         function getTiket(billId) {
@@ -224,6 +225,23 @@
                     location.reload();
                 }
             });
+        }
+
+        function updateUrl(processState) {
+            if ($(processState).val() === "0") {
+                window.location = "{{ path("lavaseco_orders") }}";
+            } else {
+                window.location = "{{ path("lavaseco_orders") }}/" + $(processState).val();
+            }
+        }
+        
+        function updateSelectUpdaateUrl(){
+            var url = window.location.href;    
+            var urlArray = url.split("/");
+            
+            if(urlArray.length > 4){
+                $("#processStateUpdate").val(parseInt(urlArray[4]));
+            }
         }
 
     </script>

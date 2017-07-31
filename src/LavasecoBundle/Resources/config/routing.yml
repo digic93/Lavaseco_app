@@ -73,7 +73,7 @@ lavaseco_api_get_user:
 
 lavaseco_api_validate_user:
     path:     /api/user/{email}
-    defaults: { _controller: LavasecoBundle:User:validateEmail, email:''}
+    defaults: { _controller: LavasecoBundle:User:validateEmail, email: ''}
     methods:  [GET]
         
 lavaseco_api_create_user:
@@ -88,12 +88,19 @@ lavaseco_api_sale_billing:
 
 lavaseco_api_orders_tikets:
     path:     /api/order/tiket/{billId}
-    defaults: { _controller: LavasecoBundle:Bill:getTiketByBillId, billId:0}
+    defaults: { _controller: LavasecoBundle:Bill:getTiketByBillId, billId: 0 }
     methods:  [GET]
     requirements:
         billId:  \d+
-        
+
 lavaseco_api_order_change_processState:
     path:     /api/order/next/processState
     defaults: { _controller: LavasecoBundle:Orders:changeProcessState }
-    methods:  [POST]
+    methods:  [POST] 
+        
+lavaseco_api_bill_history:
+    path:     /api/bill/history/{billId}
+    defaults: { _controller: LavasecoBundle:Bill:getHistoryByBillId, billId: 0 }
+    methods:  [GET]
+    requirements:
+        billId:  \d+

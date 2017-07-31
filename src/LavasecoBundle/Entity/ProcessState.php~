@@ -107,4 +107,38 @@ class ProcessState {
         return $this->billHistories;
     }
 
+
+    /**
+     * Add bill
+     *
+     * @param \LavasecoBundle\Entity\Bill $bill
+     *
+     * @return ProcessState
+     */
+    public function addBill(\LavasecoBundle\Entity\Bill $bill)
+    {
+        $this->bills[] = $bill;
+
+        return $this;
+    }
+
+    /**
+     * Remove bill
+     *
+     * @param \LavasecoBundle\Entity\Bill $bill
+     */
+    public function removeBill(\LavasecoBundle\Entity\Bill $bill)
+    {
+        $this->bills->removeElement($bill);
+    }
+
+    /**
+     * Get bills
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBills()
+    {
+        return $this->bills;
+    }
 }

@@ -22,4 +22,34 @@ class UserRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
 
+    public function getUsersByName($name) {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb->where($qb->expr()->like('u.firstName', ':name'))
+                ->orWhere($qb->expr()->like('u.lastName', ':name'))
+                ->setParameter('name', '%' . $name . '%')
+                ->getQuery();
+
+        return $query->getResult();
+    }
+
+    public function getUsersByEmail($email) {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb->where($qb->expr()->like('u.email', ':email'))
+                ->setParameter('email', '%' . $email . '%')
+                ->getQuery();
+
+        return $query->getResult();
+    }
+
+    public function getUsersByPhoneNumber($phoneNumber) {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb->where($qb->expr()->like('u.phoneNumber', ':phoneNumber'))
+                ->setParameter('phoneNumber', '%' . $phoneNumber . '%')
+                ->getQuery();
+
+        return $query->getResult();
+    }
 }

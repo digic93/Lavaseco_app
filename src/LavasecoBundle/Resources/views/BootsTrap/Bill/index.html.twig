@@ -15,44 +15,9 @@
         <!--facturas-->
         <div class="col-md-12">
             <div class="collapse" id="collapseProcessline">
+                <h5 id="titleLineTime"></h5>
                 <div style="display:inline-block;width:100%;overflow-y:auto;">
-                    <ul class="timeline timeline-horizontal">
-                        <li class="timeline-item">
-                            <div class="timeline-badge"><i class="fa fa-check" aria-hidden="true"></i></div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Mussum ipsum cacilds 1</h4>
-                                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 11 hours ago via Twitter</small></p>
-                                </div>
-                                <div class="timeline-body">
-                                    <p>Mussum ipsum </p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="timeline-item">
-                            <div class="timeline-badge "><i class="glyphicon glyphicon-check"></i></div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Mussum ipsum cacilds 2</h4>
-                                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 11 hours ago via Twitter</small></p>
-                                </div>
-                                <div class="timeline-body">
-                                    <p>Mussum ipsum </p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="timeline-item">
-                            <div class="timeline-badge "><i class="glyphicon glyphicon-check"></i></div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Mussum ipsum cacilds 3</h4>
-                                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 11 hours ago via Twitter</small></p>
-                                </div>
-                                <div class="timeline-body">
-                                    <p>Mussum ipsum </p>
-                                </div>
-                            </div>
-                        </li>
+                    <ul  id="listLineTime" class="timeline timeline-horizontal">
                     </ul>
                 </div>
             </div>
@@ -81,7 +46,7 @@
                         <th>Telefono</th>
                         <th>Estado Proceso</th>
                         <th>Pago</th>
-                        <th>Estado</th>
+                        <th>Estado Factura</th>
                         <th>observación</th>
                         <th>Vendedor</th>
                         <th>Fecha</th>
@@ -91,10 +56,10 @@
                     {% for bill in bills %}
                         <tr>
                             <td>{{ bill.id }}</td>
-                            <td>{{ bill.customerUser.name }}</td>
-                            <td>{{ bill.customerUser.phoneNumber }}</td>
+                            <td>{{ bill.customerUser.name | default("No se Registro Cliente")}}</td>
+                            <td>{{ bill.customerUser.phoneNumber | default("No se Registro Cliente")}}</td>
                             <td>{{ bill.processState.name}}</td>
-                            <td>{{ bill.paymentAgreement.name}}</td>
+                            <td>{{ bill.paymentAgreement.name }}</td>
                             <td>{{ bill.billState.name}}</td>
                             <td>{{ bill.observation}}</td>
                             <td>{{ bill.sellerUser.name }}</td>
@@ -118,20 +83,52 @@
                 "order": [[0, "Desc"]]
             });
 
-
             $('#billsTable tbody').on('click', 'tr', function () {
                 var data = billsTable.row(this).data();
 
                 $(".selected").toggleClass('selected');
 
                 $(this).toggleClass('selected');
-                collapseProcessLine();
-            });
 
+                collapseProcessLine(data[0]);
+            });
         });
 
-        function collapseProcessLine() {
-            $('#collapseProcessline').collapse();
+        function collapseProcessLine(billId) {
+
+            $.ajax({
+                url: "{{ path('lavaseco_api_bill_history') }}/" + billId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (billHistories) {
+
+                    $("#listLineTime").empty();
+                    $("#titleLineTime").html("Factura: " + billHistories.bill + ", orden: " + billHistories.order);
+                    for (var i in billHistories.histories) {
+                        addProcesHistory(billHistories.histories[i]);
+                    }
+
+                    $('#collapseProcessline').collapse();
+                    window.scrollTo(0, 0);
+                }
+            });
+        }
+        function addProcesHistory(billHistory) {
+            var html = "<li class=\"timeline-item\">\
+                            <div class=\"timeline-badge\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i></div>\
+                            <div class=\"timeline-panel\">\
+                                <div class=\"timeline-heading\">\
+                                    <h4 class=\"timeline-title\">" + billHistory.processState + "</h4>\
+                                    <p><small class=\"text-muted\"><i class=\"glyphicon glyphicon-time\"></i> Fecha: " + billHistory.createdAt + "</small></p>\
+                                    <p><small class=\"text-muted\"><i class=\"fa fa-user-o\" aria-hidden=\"true\"></i></i> Usuario: " + billHistory.user + "</small></p>\
+                                </div>\
+                                <div class=\"timeline-body\">\
+                                    <p>" + billHistory.observation + "</p>\
+                                </div>\
+                            </div>\
+                        </li>";
+            $("#listLineTime").append(html);
         }
     </script>
 {% endblock %}
