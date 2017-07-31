@@ -131,6 +131,15 @@
                     <h4>Descripcion:</h4>
                     <p id="descrip_service_category">...</p>
                     <hr>
+                    <h4>Precio Unitario: $
+                        <label id="price_service_category"></label>
+                    </h4> 
+                    
+                    <hr>
+                    <h4>Descriptores</h4> 
+                    <div id="descriptors_service_category"></div>
+                    
+                    <hr>
                     <div class="btn-group pull-right" role="group">
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#categoriesModal" 
                                 onclick="updateServiceCategory();">Modificar</button>
@@ -223,18 +232,8 @@
             //Evento cerrar ventana modal
             $('#categoriesModal').on('hidden.bs.modal', function (e) {
                 clearcCategoriesModal();
-            })
+            });
         });
-        function addCategoryButtonClickEvent(button) {
-            var serviceName = $(button).data('serviceName');
-            var serviceDescription = $(button).data('serviceDescription');
-            var serviceTitle = $(button).data('serviceType') + " " + $(button).data('serviceName');
-            if (serviceName !== undefined) {
-                $("#tittle_service_category").text(serviceTitle);
-                $("#name_service_category").text(serviceName);
-                $("#descrip_service_category").text(serviceDescription);
-            }
-        }
 
         function addBuntonClickEvent(button) {
             $("#descriptors").hide();
@@ -286,7 +285,6 @@
 
         $("#btnSaveCategory").on('click', function () {
             var flag = validateFields();
-            alert(flag);
             //validar
             if (flag === true) {
                 var category = {};
@@ -297,7 +295,6 @@
                     category['type'] = 2;
                     category['superCategory'] = $("#superCategory").val();
                 }
-
 
                 if ($("#typeCategory").val() === "Servicio") {
                     category['type'] = 3;
@@ -343,14 +340,14 @@
                         return false;
                     } else {
                         var isChecked = 0;
-                        $(".checkboxDescriptor").each(function (index) { 
+                        $(".checkboxDescriptor").each(function (index) {
                             if ($(this).is(":checked")) {
-                                isChecked ++;
+                                isChecked++;
                             } else {
                                 $(".checkboxDescriptor").focus();
                             }
                         });
-                        
+
                         return isChecked > 0;
                     }
                 }
@@ -367,7 +364,9 @@
                 html = addCategory(type, category);
                 html += addButtonAgregar(type, category);
             } else {
+                type = ("Servicio");
                 html = addService(category);
+                html += addButtonAgregar(type, category);
             }
 
             type += ((category.superCategory !== undefined) ? "_" + category.superCategory : "");
@@ -411,9 +410,9 @@
                                 data-super-category=\"" + category.id + "\">\
                             <strong>+</strong>\
                             Agregar " + subType +
-                    "</button>\
-                    </li>\
-                </ul>"
+                            "</button>\
+                        </li>\
+                    </ul>";
         }
 
         function getCategoryicon(type) {
@@ -431,6 +430,53 @@
             $("#nameNewCategory").val("");
             $("#descriptionNewCategory").val("");
             $("#priceNewService").val("")
+        }
+
+        function addCategoryButtonClickEvent(button) {
+
+            var data = getSpecificCategoryService();
+            if (data.name !== undefined) {
+                $("#tittle_service_category").text(data.type);
+                $("#name_service_category").text(data.name);
+                $("#descrip_service_category").text(data.description);
+                
+                if(data.type === "Servicio"){
+                    $("#price_service_category").text($.number(data.price));                
+                    
+                    var html = "<ul>";
+                    for (var desc in data["descriptors"]) {
+                        html += "<li>"+data.descriptors[desc].name+"</li>";
+                    }
+                    html += "</ul>";
+                    $("#descriptors_service_category").html(html);  
+                }
+                else{
+                   $("#price_service_category").text("No Disponble");
+                   $("#descriptors_service_category").html("No Disponible");
+                }
+            }
+        }
+
+        function getSpecificCategoryService() {
+            var result = {
+                "service":
+                        {
+                            "id": 3,
+                            "name": "Camisa",
+                            "type": "Servicio",
+                            "description": "Lavado de todo tipo de camisas",
+                            "supraCategory": "Lavado",
+                            "superCategory": "Prenda Sencilla",
+                            "price": 2000,
+                            "descriptors": [
+                                {"name": "Color"},
+                                {"name": "Estado"},
+                                {"name": "Tamaño"}
+                            ]
+                        }
+            };
+
+            return result.service;
         }
 
     </script>

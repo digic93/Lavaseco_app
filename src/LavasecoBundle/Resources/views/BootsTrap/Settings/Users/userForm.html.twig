@@ -7,71 +7,74 @@
 
 <div class="row">
     <div class="col-md-10 col-md-offset-1">  
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Registro de Datos Personales</h3>
+        <div class="form-group">
+            <div id="divName" class="form-group">
+                <p>Nombres<span class="req">*</span></p>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                    <input class="form-control" id="client_firstName" type="text" required autocomplete="off" />
+                </div>
+                <span id="helpBlockName" class="help-block"></span>
             </div>
-            <div class="panel-body">
 
-                <div class="form-group">
-                    <p>Nombres<span class="req">*</span></p>
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
-                        <input class="form-control" id="client_firstName" type="text" required autocomplete="off" />
-                    </div>
+            <div id="divLastName" class="form-group">
+                <p>Apellidos<span class="req">*</span></p>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                    <input class="form-control" id="client_lastName" type="text"required autocomplete="off"/>
                 </div>
-
-                <div class="form-group">
-                    <p>Apellidos<span class="req">*</span></p>
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
-                        <input class="form-control" id="client_lastName" type="text"required autocomplete="off"/>
-                    </div>                     
-                </div>
-
-                <div id="divEmail" class="form-group">
-                    <label  class="control-label">Email<span class="req">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
-                        <input class="form-control" id="client_email" type="email" o required autocomplete="off"/>
-                    </div>                  
-                </div>
-
-                <div class="form-group">
-                    <p>Numero Telefono<span class="req">*</span></p>
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i></span>
-                        <input class="form-control" id="client_phone_number" type="text"required autocomplete="off"/>
-                    </div> 
-                </div>
-
-                <!--pasar al formulario de confirmacion
-                                <div class="form-group">
-                                    <p>Contraseña<span class="req">*</span></p>
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
-                                        <input class="form-control" id="client_psw" type="password"required autocomplete="off"/>
-                                    </div>
-                                </div>
-                
-                                <div class="form-group">
-                                    <p>Confirmar Contraseña<span class="req">*</span></p>
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
-                                        <input class="form-control" id="client_confirmPsw" type="password"required autocomplete="off"/>
-                
-                                    </div>
-                                </div>
-                -->
-                <button type="submit"  onclick="saveUser();" class="btn btn-success btn-block"/>Guardar</button>
+                <span id="helpBlockLastName" class="help-block"></span>
             </div>
+
+            <div id="divEmail" class="form-group">
+                <label  class="control-label">Email<span class="req">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+                    <input class="form-control" id="client_email" type="email" o required autocomplete="off"/>
+                </div>
+                <span id="helpBlockEmail" class="help-block"></span>
+            </div>
+
+            <div id="divPhone" class="form-group">
+                <p>Numero Telefono<span class="req">*</span></p>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i></span>
+                    <input class="form-control" id="client_phone_number" type="number" required autocomplete="off"/>
+                </div>
+                <span id="helpBlockPhone" class="help-block"></span>
+            </div>
+
+            <!--pasar al formulario de confirmacion
+                            <div class="form-group">
+                                <p>Contraseña<span class="req">*</span></p>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                                    <input class="form-control" id="client_psw" type="password"required autocomplete="off"/>
+                                </div>
+                            </div>
+            
+                            <div class="form-group">
+                                <p>Confirmar Contraseña<span class="req">*</span></p>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                                    <input class="form-control" id="client_confirmPsw" type="password"required autocomplete="off"/>
+            
+                                </div>
+                            </div>
+            -->
+            <button type="submit"  onclick="saveUser();" class="btn btn-success btn-block"/>Guardar</button>
         </div>
     </div>
+</div>
 </div>
 
 {% block javascripts %}
     <script>
         var valid = false;
+        var validName = false;
+        var validLastName = false;
+        var validPhone = false;
+
         $('#client_email').focusout(function () {
             $.ajax({
                 url: "{{ path('lavaseco_api_validate_user') }}/" + $("#client_email").val(),
@@ -84,21 +87,73 @@
                     if (email === null || email.length === 0 || /^\s+$/.test(email)) {
                         $("#divEmail").removeClass("has-success");
                         $("#divEmail").addClass("has-error");
+                        $("#helpBlockEmail").text("Campo Obligatorio");
                     } else if (!(/\S+@\S+\.\S+/.test(email))) {
                         $("#divEmail").removeClass("has-success");
                         $("#divEmail").addClass("has-error");
+                        $("#helpBlockEmail").text("Campo No Valido");
                     } else {
                         valid = result.valid;
                         if (!valid) {
                             $("#divEmail").removeClass("has-success");
                             $("#divEmail").addClass("has-error");
+                            $("#helpBlockEmail").text("Este Email ya esta registrado");
                         } else {
                             $("#divEmail").removeClass("has-error");
                             $("#divEmail").addClass("has-success");
+                            $("#helpBlockEmail").text("");
                         }
                     }
                 }
             });
+        });
+
+        $('#client_firstName').focusout(function () {
+            var firstName = $("#client_firstName").val();
+
+            if (firstName === null || firstName.length === 0 || /^\s+$/.test(firstName)) {
+                $("#divName").removeClass("has-success");
+                $("#divName").addClass("has-error");
+                $("#helpBlockName").text("Campo Obligatorio");
+                validName = false;
+            } else {
+                $("#divName").addClass("has-success");
+                $("#divName").removeClass("has-error");
+                $("#helpBlockName").text("");
+                validName = true;
+            }
+        });
+
+        $('#client_lastName').focusout(function () {
+            var lastName = $("#client_lastName").val();
+
+            if (lastName === null || lastName.length === 0 || /^\s+$/.test(lastName)) {
+                $("#divLastName").removeClass("has-success");
+                $("#divLastName").addClass("has-error");
+                $("#helpBlockLastName").text("Campo Obligatorio");
+                validLastName = false;
+            } else {
+                $("#divLastName").addClass("has-success");
+                $("#divLastName").removeClass("has-error");
+                $("#helpBlockLastName").text("");
+                validLastName = true;
+            }
+        });
+
+        $('#client_phone_number').focusout(function () {
+            var phone = $("#client_phone_number").val();
+
+            if (phone === null || phone.length === 0 || /^\s+$/.test(phone)) {
+                $("#divPhone").removeClass("has-success");
+                $("#divPhone").addClass("has-error");
+                $("#helpBlockPhone").text("Campo Obligatorio");
+                validPhone = false;
+            } else {
+                $("#divPhone").addClass("has-success");
+                $("#divPhone").removeClass("has-error");
+                $("#helpBlockPhone").text("");
+                validPhone = true;
+            }
         });
 
         function saveUser() {
@@ -126,21 +181,12 @@
         }
 
         function validateFields() {
-            var firstName = $("#client_firstName").val();
-            var lastName = $("#client_lastName").val();
-            var phone = $("#client_phone_number").val();
 
-            if (firstName === null || firstName.length === 0 || /^\s+$/.test(firstName)) {
-                $("#client_firstName").focus();
+            if (validName === false) {
                 return false;
-            } else if (lastName === null || lastName.length === 0 || /^\s+$/.test(lastName)) {
-                $("#client_lastName").focus();
+            } else if (validLastName === false) {
                 return false;
-            } else if (phone === null || phone.length === 0 || /^\s+$/.test(phone)) {
-                $("#client_phone_number").focus();
-                return false;
-            } else if (isNaN(phone)) {
-                $("#client_phone_number").focus();
+            } else if (validPhone === false) {
                 return false;
             } else if (valid === false) {
                 return false;
@@ -155,6 +201,9 @@
             $("#client_lastName").val('');
             $("#client_phone_number").val('');
             $("#divEmail").removeClass("has-success");
+            $("#divPhone").removeClass("has-success");
+            $("#divName").removeClass("has-success");
+            $("#divLastName").removeClass("has-success");
         }
 
     </script>
