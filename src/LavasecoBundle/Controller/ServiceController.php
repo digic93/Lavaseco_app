@@ -41,9 +41,7 @@ class ServiceController extends Controller {
         $servicesResponse = array();
         $servicesResponse ["decriptions"] = array();
 
-        $doctrineManager = $this->get('doctrine')->getManager();
-        $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
-        $serviceCategory = $serviceCategoryRepository->find($serviceCategoryId);
+        $serviceCategory = getServiceCategoryById($serviceCategoryId);
 
         $service = $serviceCategory->getServices()[0];
 
@@ -103,10 +101,55 @@ class ServiceController extends Controller {
         return $this->json(["categoryId" => $serviceCategory->getId()]);
     }
 
+//
+//    "service":
+//                        {
+//                            "id": 3,
+//                            "name": "Camisa",
+//                            "type": "Servicio",
+//                            "description": "Lavado de todo tipo de camisas",
+//                            "supraCategory": "Lavado",
+//                            "superCategory": "Prenda Sencilla",
+//                            "price": 2000,
+//                            "descriptors": [
+//                                {"name": "Color"},
+//                                {"name": "Estado"},
+//                                {"name": "Tamaño"}
+//                            ]
+//                        }
+//            };
+
+    public function getServiceCategoryIdAction($serviceCategoryId) {
+        $serviceCategory = $this->getServiceCategoryById($serviceCategoryId);
+
+        $services = $serviceCategory->getServices();
+
+        $type = (count($services)) ? "Servicio" : (($serviceCategory->getServiceCategory()) ? "Subcategoria" : "Categoria");
+
+        $serviceCategoryResult = [
+            "id" => $serviceCategory->getId(),
+            "name" => $serviceCategory->getFullName(),
+            "type" => $type,
+            "description" => $serviceCategory->getDescription(),
+        ];
+
+        if (count($services)) {
+            $serviceCategoryResult ["price"] = $services[0]->getPrice();
+            $StateObjectDescriptions = $services[0]->getServiceDescriptors();
+
+            $serviceCategoryResult ["descriptors"] = array();
+            foreach ($StateObjectDescriptions as $StateObjectDescription) {
+                $serviceCategoryResult ["descriptors"] [] = ["name" => $StateObjectDescription->getCategoryStateObject()->getName()];
+            }
+        }
+
+        return $this->json($serviceCategoryResult);
+    }
+
     private function addService($price, $descriptors, $serviceCategory) {
         $service = new Service();
         $em = $this->get('doctrine')->getManager();
-            
+
         $service->setPrice($price);
         $service->setServiceCategory($serviceCategory);
         $em->persist($service);
@@ -149,4 +192,10 @@ class ServiceController extends Controller {
         return $descriptorResutl;
     }
 
+    private function getServiceCategoryById($serviceCategoryId) {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
+
+        return $serviceCategoryRepository->find($serviceCategoryId);
+    }
 }

@@ -52,8 +52,7 @@
                                class="list-group-item" 
                                role="button" data-toggle="collapse" href="#Categoria_{{ serviceCagory.id }}" 
                                aria-expanded="false" aria-controls="Categoria_{{ serviceCagory.id }}"
-                               data-service-name="{{ serviceCagory.name }}"
-                               data-service-description="{{ serviceCagory.description }}"
+                               data-service-id="{{ serviceCagory.id }}"
                                data-service-type="Categoria">
                                 <i class="fa fa-list-ul" aria-hidden="true"></i>
                                 {{ serviceCagory.name }}
@@ -65,8 +64,7 @@
                                            class="list-group-item" 
                                            role="button" data-toggle="collapse" href="#Subcategoria_{{ subServiceCategory.id }}" 
                                            aria-expanded="false" aria-controls="Subcategoria_{{ subServiceCategory.id }}" 
-                                           data-service-name="{{ subServiceCategory.name }}"
-                                           data-service-description="{{ subServiceCategory.description }}"
+                                           data-service-id="{{ subServiceCategory.id }}"
                                            data-service-type="Subcategoria">
                                             <strong>&#8226;</strong>
                                             {{ subServiceCategory.name }}
@@ -75,8 +73,7 @@
                                             {% for service in subServiceCategory.subServiceCategories %}
                                                 <li>
                                                     <button type="button" class="list-group-item" onclick="addCategoryButtonClickEvent(this);"
-                                                            data-service-name="{{ service.name }}"
-                                                            data-service-description="{{ service.description }}"
+                                                            data-service-id="{{ service.id }}"
                                                             data-service-type="Servicio">{{ service.name }}
                                                     </button>
                                                 </li>
@@ -131,15 +128,14 @@
                     <h4>Descripcion:</h4>
                     <p id="descrip_service_category">...</p>
                     <hr>
-                    <h4>Precio Unitario: $
-                        <label id="price_service_category"></label>
-                    </h4> 
-                    
-                    <hr>
-                    <h4>Descriptores</h4> 
-                    <div id="descriptors_service_category"></div>
-                    
-                    <hr>
+                    <div id="serviceData" >                    
+                        <h4>Precio Unitario: $
+                            <span id="price_service_category"></span>
+                        </h4> 
+                        <h4>Descriptores:</h4> 
+                        <div id="descriptors_service_category"></div>
+                        <hr>
+                    </div>
                     <div class="btn-group pull-right" role="group">
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#categoriesModal" 
                                 onclick="updateServiceCategory();">Modificar</button>
@@ -217,22 +213,52 @@
     <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
     <script>
 
-        $(".categroy").on('click', function () {
-            var serviceName = $(this).data('serviceName');
-            var serviceDescription = $(this).data('serviceDescription');
-            var serviceTitle = $(this).data('serviceType') + " " + $(this).data('serviceName');
-            if (serviceName !== undefined) {
-                $("#tittle_service_category").text(serviceTitle);
-                $("#name_service_category").text(serviceName);
-                $("#descrip_service_category").text(serviceDescription);
-            }
-        });
         $(document).ready(function () {
             $("#priceNewService").number(true);
             //Evento cerrar ventana modal
             $('#categoriesModal').on('hidden.bs.modal', function (e) {
                 clearcCategoriesModal();
             });
+            
+            $("#serviceData").hide();
+        });
+
+        $("#btnSaveCategory").on('click', function () {
+            var flag = validateFields();
+            //validar
+            if (flag === true) {
+                var category = {};
+                category['name'] = $("#nameNewCategory").val();
+                category['description'] = $("#descriptionNewCategory").val();
+                category['type'] = 1;
+                if ($("#typeCategory").val() !== "Categoria") {
+                    category['type'] = 2;
+                    category['superCategory'] = $("#superCategory").val();
+                }
+
+                if ($("#typeCategory").val() === "Servicio") {
+                    category['type'] = 3;
+                    category['price'] = $("#priceNewService").val();
+                    category['descriptors'] = [];
+                    $(".checkboxDescriptor").each(function (index) {
+                        if ($(this).is(":checked")) {
+                            category.descriptors.push($(this).val());
+                        }
+                    });
+                }
+
+                $.ajax({
+                    url: "{{ path("lavaseco_api_add_service_category") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: category,
+                    success: function (result) {
+                        category["id"] = result.categoryId;
+                        addCategoryAtTree(category);
+                        $('#categoriesModal').modal('hide');
+                    }
+                });
+            }
         });
 
         function addBuntonClickEvent(button) {
@@ -283,45 +309,6 @@
 
         }
 
-        $("#btnSaveCategory").on('click', function () {
-            var flag = validateFields();
-            //validar
-            if (flag === true) {
-                var category = {};
-                category['name'] = $("#nameNewCategory").val();
-                category['description'] = $("#descriptionNewCategory").val();
-                category['type'] = 1;
-                if ($("#typeCategory").val() !== "Categoria") {
-                    category['type'] = 2;
-                    category['superCategory'] = $("#superCategory").val();
-                }
-
-                if ($("#typeCategory").val() === "Servicio") {
-                    category['type'] = 3;
-                    category['price'] = $("#priceNewService").val();
-                    category['descriptors'] = [];
-                    $(".checkboxDescriptor").each(function (index) {
-                        if ($(this).is(":checked")) {
-                            category.descriptors.push($(this).val());
-                        }
-                    });
-                }
-
-                $.ajax({
-                    url: "{{ path("lavaseco_api_add_service_category") }}",
-                    method: "POST",
-                    dataType: "json",
-                    data: category,
-                    success: function (result) {
-                        category["id"] = result.categoryId;
-                        addCategoryAtTree(category);
-                        $('#categoriesModal').modal('hide');
-                    }
-                });
-            }
-
-
-        });
         function validateFields() {
             var name = $("#nameNewCategory").val();
             var description = $("#descriptionNewCategory").val();
@@ -379,7 +366,7 @@
                 <a href=\"#" + id + "\" class=\"list-group-item\" onclick=\"addCategoryButtonClickEvent(this);\"\
                    role=\"button\" data-toggle=\"collapse\" href=\"#" + id + "\"\
                    aria-expanded=\"false\" aria-controls=\"" + id + "\"\
-                   data-service-name=\"" + category.id + "\"\
+                   data-service-id=\"" + category.id + "\"\
                    data-service-description=\"" + category.description + "\"\
                    data-service-type=\"" + type + "\">"
                     + getCategoryicon(type)
@@ -391,8 +378,7 @@
         function addService(category) {
             return  "<li>\
                     <button type=\"button\" class=\"list-group-item\" onclick=\"addCategoryButtonClickEvent(this);\"\
-                        data-service-name=\"" + category.name + "\"\
-                        data-service-description=\"" + category.description + "\"\
+                        data-service-id=\"" + category.id + "\"\
                         data-service-type=\"Servicio\">" + category.name + "\
                     </button>\
                 </li>";
@@ -410,7 +396,7 @@
                                 data-super-category=\"" + category.id + "\">\
                             <strong>+</strong>\
                             Agregar " + subType +
-                            "</button>\
+                    "</button>\
                         </li>\
                     </ul>";
         }
@@ -429,56 +415,37 @@
         function clearcCategoriesModal() {
             $("#nameNewCategory").val("");
             $("#descriptionNewCategory").val("");
-            $("#priceNewService").val("")
+            $("#priceNewService").val("");
         }
 
         function addCategoryButtonClickEvent(button) {
+            $.ajax({
+                url: "{{ path('lavaseco_api_service_category') }}/" + $(button).data('serviceId'),
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    $("#serviceData").hide();
+                    if (data.name !== undefined) {
+                        $("#tittle_service_category").text(data.type);
+                        $("#name_service_category").text(data.name);
+                        $("#descrip_service_category").text(data.description);
 
-            var data = getSpecificCategoryService();
-            if (data.name !== undefined) {
-                $("#tittle_service_category").text(data.type);
-                $("#name_service_category").text(data.name);
-                $("#descrip_service_category").text(data.description);
-                
-                if(data.type === "Servicio"){
-                    $("#price_service_category").text($.number(data.price));                
-                    
-                    var html = "<ul>";
-                    for (var desc in data["descriptors"]) {
-                        html += "<li>"+data.descriptors[desc].name+"</li>";
-                    }
-                    html += "</ul>";
-                    $("#descriptors_service_category").html(html);  
-                }
-                else{
-                   $("#price_service_category").text("No Disponble");
-                   $("#descriptors_service_category").html("No Disponible");
-                }
-            }
-        }
+                        if (data.type === "Servicio") {
+                            $("#price_service_category").text($.number(data.price));
 
-        function getSpecificCategoryService() {
-            var result = {
-                "service":
-                        {
-                            "id": 3,
-                            "name": "Camisa",
-                            "type": "Servicio",
-                            "description": "Lavado de todo tipo de camisas",
-                            "supraCategory": "Lavado",
-                            "superCategory": "Prenda Sencilla",
-                            "price": 2000,
-                            "descriptors": [
-                                {"name": "Color"},
-                                {"name": "Estado"},
-                                {"name": "Tamaño"}
-                            ]
+                            var html = "<ul>";
+                            for (var desc in data["descriptors"]) {
+                                html += "<li>" + data.descriptors[desc].name + "</li>";
+                            }
+                            html += "</ul>";
+                            $("#descriptors_service_category").html(html);
+                            $("#serviceData").show();
                         }
-            };
-
-            return result.service;
+                    }
+                }
+            });
         }
-
     </script>
 {% endblock %}
 

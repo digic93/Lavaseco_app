@@ -420,7 +420,7 @@
         //Id category 2do nivel
         function addServicesSelectImput(categoryId) {
             $.ajax({
-                url: "{{ path('lavaseco_api_service_category') }}/" + categoryId,
+                url: "{{ path('lavaseco_api_sale_service_category') }}/" + categoryId,
                 method: "GET",
                 contentType: 'application/json',
                 dataType: 'json',

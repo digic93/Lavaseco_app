@@ -241,4 +241,18 @@ class ServiceCategory
     {
         return $this->serviceCategory;
     }
+    
+    public function getFullName(){
+        if($this->getServiceCategory()){
+            $superCategory = $this->getServiceCategory();
+            if($superCategory->getServiceCategory()){
+                return $superCategory->getServiceCategory()->getName() . " " .
+                        $superCategory->getName() . ", " . $this->getName();
+            } else {
+                return $superCategory->getName() . " " . $this->getName();
+            }
+        } else {
+            return $this->getName();
+        }
+    }
 }
