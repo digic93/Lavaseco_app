@@ -17,7 +17,17 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Ventas</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Ventas</h1>
+        </div>
+        <div class="col-md-4 text-right">
+            <button id="closeSalePoint" class="btn btn-danger" type="button" onclick="closeSalePoint();">
+                <i class="fa fa-lock" aria-hidden="true"></i>
+                Cierre de Caja
+            </button>
+        </div> 
+    </div>  
     <hr>
     <div class="row">
         <!--Productos por categoria-->
@@ -294,6 +304,31 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal alert Close Sale Point -->
+    <div id="modalAlert" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        Confirmación Cierre de Caja
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>En este momento va a cerrar la caja, recuerde que este proceso es irreversible. ¿Realmente desea cerrar?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Aceptar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -611,50 +646,54 @@
             $('#modalSignUpClient').modal('show');
         }
 
+        function ajaxSaleBill() {
+            factura.observations = $("#bill_observation").val();
+            factura.paymentAgreementId = $("#bill_payAgreement").val();
+            $.ajax({
+                url: "{{ path("lavaseco_api_sale_billing") }}",
+                method: "POST",
+                dataType: "json",
+                data: factura,
+                success: function (result) {
+                    if (result.error !== undefined) {
+                        alert("Error al registrar la factura");
+                    } else {
+                        alert("Facturado con exito");
+                        $('#wayToPay').modal('hide');
+                        location.reload();
+                    }
+                }
+            });
+        }
+
         function billing() {
             if (factura.customerId === 0) {
                 if (!confirm("¿Desea facturar sin seleccionar un cliente?")) {
                     return;
                 }
             }
-
             if (updateChange()) {
-                factura.observations = $("#bill_observation").val();
-                factura.paymentAgreementId = $("#bill_payAgreement").val();
                 factura.cashReceived = $("#cashReceived").val();
                 factura.change = $("#change").val();
-
-                $.ajax({
-                    url: "{{ path("lavaseco_api_sale_billing") }}",
-                    method: "POST",
-                    dataType: "json",
-                    data: factura,
-                    success: function (result) {
-                        if (result.error !== undefined) {
-                            alert("Error al registrar la factura");
-                        } else {
-                            alert("Facturado con exito");
-                            $('#wayToPay').modal('hide');
-                            location.reload();
-                        }
-                    }
-                });
+                ajaxSaleBill();
             } else {
                 alert("Verifique el dinero dado por el cliente");
             }
-            
-
         }
 
         function wayToPay() {
             var paymentAgreement = $('#bill_payAgreement').val();
-            if (paymentAgreement === "3") {
+            if (paymentAgreement === "4") {
+                factura.cashReceived = 0;
+                factura.change = 0;
+                ajaxSaleBill();
+            } else {
                 $('#paymentTittle').text('Cobro ' + $('#bill_payAgreement option:selected').data('name'));
                 $('#wayToPay').modal('show');
                 $('#divTotalBill').html("<p class='text-right'><strong>Total Factura: $" + $.number(factura.total) + "</strong></p>");
                 addWayToPay();
             }
-            
+
         }
 
         function loadWayPay(payment) {
@@ -689,6 +728,9 @@
             }
         }
 
+        function closeSalePoint() {
+            $("#modalAlert").modal('show')
+        }
     </script>
 {% endblock %}
 
