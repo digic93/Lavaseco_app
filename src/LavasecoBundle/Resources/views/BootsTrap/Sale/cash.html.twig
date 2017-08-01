@@ -1,0 +1,90 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+    {#    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/dataTables.bootstrap.css") }}">#}
+{% endblock %} 
+
+{% block body %} 
+
+    <h1>Caja</h1>
+    <p>
+        Apertura o Cierre de Caja según el turno    
+    </p>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Form Tipo descriptor-->
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title" id="cashPointTittle">Apertura/Cierre de Caja</h3>
+                </div>
+                <div class="panel-body">
+                    <!-- Form Tipo descriptor-->
+                    <fieldset>
+                        <!-- Text input-->
+                        <div class="form-group">
+                            <label id="" class="col-md-4 control-label" for="textinput"></label>  
+                            <div class="col-md-5">
+                                <input id="balanceInCash" type="text"/>
+                            </div>
+                        </div>
+
+                        <!-- Button -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="singlebutton"></label>
+                            <div class="col-md-4">
+                                <button class="btn btn-success" type="button">
+                                    <i class="fa fa-unlock" aria-hidden="true"></i>
+                                    Apertura de Caja
+                                </button>
+                                <button class="btn btn-danger" type="button">
+                                    <i class="fa fa-lock" aria-hidden="true"></i>
+                                    Cierre de Caja
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <h3>Transacciones Registradas en el Turno</h3>
+            <hr>
+
+            <table id="transactionTable" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Información Punto de Venta</th>
+                        <th>Tipo Transaccion</th>
+                        <th>Monto</th>
+                        <th>Fecha Transacción</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>               
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#transactionTable').DataTable();
+        });
+    </script>
+{% endblock %}
