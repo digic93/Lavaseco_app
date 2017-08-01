@@ -15,6 +15,7 @@
     <div class="row">
         <div class="col-md-12">
             <!-- Form Tipo descriptor-->
+            {{ form_start(formCategoryStateObject, {'attr': {'class': 'form-horizontal'} }) }}
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title" id="cashPointTittle">Apertura/Cierre de Caja</h3>
@@ -24,9 +25,10 @@
                     <fieldset>
                         <!-- Text input-->
                         <div class="form-group">
-                            <label id="" class="col-md-4 control-label" for="textinput"></label>  
+                            {{ form_errors(formCategoryStateObject.state) }}
+                            <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(formCategoryStateObject.state, 'Tipo Descriptor') }}</label>  
                             <div class="col-md-5">
-                                <input id="balanceInCash" type="text"/>
+                                {{ form_widget(formCategoryStateObject.balance, {'attr': {'class': 'form-control  input-md'} }) }}
                             </div>
                         </div>
 
@@ -34,48 +36,55 @@
                         <div class="form-group">
                             <label class="col-md-4 control-label" for="singlebutton"></label>
                             <div class="col-md-4">
-                                <button class="btn btn-success" type="button">
-                                    <i class="fa fa-unlock" aria-hidden="true"></i>
-                                    Apertura de Caja
-                                </button>
-                                <button class="btn btn-danger" type="button">
-                                    <i class="fa fa-lock" aria-hidden="true"></i>
-                                    Cierre de Caja
-                                </button>
+                                {% if data.state %}
+                                    <button class="btn btn-success" type="button">
+                                        <i class="fa fa-unlock" aria-hidden="true"></i>
+                                        Apertura de Caja
+                                    </button>
+                                {% else %}   
+                                    <button class="btn btn-danger" type="button">
+                                        <i class="fa fa-lock" aria-hidden="true"></i>
+                                        Cierre de Caja
+                                    </button>
+                                {% endif %}  
                             </div>
                         </div>
                     </fieldset>
 
                 </div>
             </div>
+            {{ form_end(formCategoryStateObject) }}
         </div>
+        
+        {% if data.transactions %}
+            <div class="col-md-12">
+                <h3>Transacciones Registradas en el Turno</h3>
+                <hr>
 
-        <div class="col-md-12">
-            <h3>Transacciones Registradas en el Turno</h3>
-            <hr>
-
-            <table id="transactionTable" class="display" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th>Información Punto de Venta</th>
-                        <th>Tipo Transaccion</th>
-                        <th>Monto</th>
-                        <th>Fecha Transacción</th>
-                        <th>Descripción</th>
-                    </tr>
-                </thead>
-                <tbody>               
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-
-                </tbody>
-            </table>
-        </div>
+                <table id="transactionTable" class="display" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Información Punto de Venta</th>
+                            <th>Tipo Transaccion</th>
+                            <th>Monto</th>
+                            <th>Fecha Transacción</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        {% for ObjectTransaction in ObjectTransactions %}
+                            <tr>
+                                <td>{{ ObjectTransaction.salePoint }}</td>
+                                <td>{{ ObjectTransaction.typeTransaction }}</td>
+                                <td>{{ ObjectTransaction.payment }}</td>
+                                <td>{{ ObjectTransaction.createdAt }}</td>
+                                <td>{{ ObjectTransaction.description }}</td>
+                            </tr>
+                        {% endfor %}       
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 
