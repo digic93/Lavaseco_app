@@ -60,6 +60,11 @@ class User extends BaseUser
      */
     protected $billHistories;
 
+    /**
+     * @ORM\OneToMany(targetEntity="CashTransaction", mappedBy="user")
+     */
+    protected $cashTransactions;
+    
     public function __construct() {
         parent::__construct();
         
@@ -245,4 +250,38 @@ class User extends BaseUser
     public function getName(){
         return $this->getFirstName() . " " . $this->getLastName();
     } 
+
+    /**
+     * Add cashTransaction
+     *
+     * @param \LavasecoBundle\Entity\CashTransaction $cashTransaction
+     *
+     * @return User
+     */
+    public function addCashTransaction(\LavasecoBundle\Entity\CashTransaction $cashTransaction)
+    {
+        $this->cashTransactions[] = $cashTransaction;
+
+        return $this;
+    }
+
+    /**
+     * Remove cashTransaction
+     *
+     * @param \LavasecoBundle\Entity\CashTransaction $cashTransaction
+     */
+    public function removeCashTransaction(\LavasecoBundle\Entity\CashTransaction $cashTransaction)
+    {
+        $this->cashTransactions->removeElement($cashTransaction);
+    }
+
+    /**
+     * Get cashTransactions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCashTransactions()
+    {
+        return $this->cashTransactions;
+    }
 }

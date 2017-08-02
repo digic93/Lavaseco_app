@@ -1,0 +1,62 @@
+<?php
+
+namespace LavasecoBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * CashTransaction
+ *
+ * @ORM\Table(name="cash_transaction")
+ * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\CashTransactionRepository")
+ */
+class CashTransaction {
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="payment", type="decimal", precision=10, scale=0)
+     */
+    private $payment;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255)
+     */
+    private $description;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="turn", type="integer")
+     */
+    private $turn;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="cashTransactions")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id",  nullable = false)
+     */
+    protected $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="TypeTransaction", inversedBy="cashTransactions")
+     * @ORM\JoinColumn(name="type_transaction_id", referencedColumnName="id",  nullable = false)
+     */
+    protected $typeTransaction;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="SalePoint", inversedBy="cashTransactions")
+     * @ORM\JoinColumn(name="sale_point_id", referencedColumnName="id",  nullable = false)
+     */
+    protected $salePoint;
+}
