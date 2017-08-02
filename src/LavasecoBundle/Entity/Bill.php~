@@ -62,7 +62,7 @@ class Bill {
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="customerbills")
-     * @ORM\JoinColumn(name="customer_user_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="customer_user_id", referencedColumnName="id")
      */
     protected $customerUser;
 

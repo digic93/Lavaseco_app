@@ -108,6 +108,13 @@
                                 </select>
                             </div>
                         </div>
+                        <!-- Textarea -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="textarea">Observaciones</label>
+                            <div class="col-md-5">                     
+                                <textarea id="observationProccess" class="form-control" id="textarea" name="textarea"></textarea>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -155,7 +162,7 @@
                 orderSelected[1].push(data[1]);
 
             });
-            
+
             updateSelectUpdaateUrl();
         });
 
@@ -218,8 +225,9 @@
                 method: "POST",
                 dataType: "json",
                 data: {
+                    "bills": orderSelected[0],
                     "processState": $("#newProcessStates").val(),
-                    "bills": orderSelected[0]
+                    "observation": $("#observationProccess").val()
                 },
                 success: function (result) {
                     location.reload();
@@ -234,12 +242,12 @@
                 window.location = "{{ path("lavaseco_orders") }}/" + $(processState).val();
             }
         }
-        
-        function updateSelectUpdaateUrl(){
-            var url = window.location.href;    
+
+        function updateSelectUpdaateUrl() {
+            var url = window.location.href;
             var urlArray = url.split("/");
-            
-            if(urlArray.length > 4){
+
+            if (urlArray.length > 4) {
                 $("#processStateUpdate").val(parseInt(urlArray[4]));
             }
         }

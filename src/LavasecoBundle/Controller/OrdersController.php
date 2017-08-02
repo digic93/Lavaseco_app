@@ -32,12 +32,13 @@ class OrdersController extends Controller {
     }
 
     public function changeProcessStateAction(Request $request){
-        $processStateId = $request->request->get('processState');
         $billIds = $request->request->get('bills');
+        $observation = $request->request->get('observation');
+        $processStateId = $request->request->get('processState');
         
         $processState = $this->getProcessStateById($processStateId);
         
-        $this->changeProcessState($billIds, $processState);
+        $this->changeProcessState($billIds, $processState, $observation);
         
         return $this->json(["result" => true]);
     }
@@ -50,7 +51,7 @@ class OrdersController extends Controller {
         return $processStateRepository->find($processStateId);
     }
     
-    private function changeProcessState($billIds, $processState){
+    private function changeProcessState($billIds, $processState, $observation){
         $doctrineManager = $this->get('doctrine')->getManager();
         
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
@@ -61,17 +62,20 @@ class OrdersController extends Controller {
             
             $doctrineManager->persist($bill);
             
-            $this->saveBillHistory($bill, $processState);
+            $this->saveBillHistory($bill, $processState, $observation);
         }
     }
     
-    private function saveBillHistory($bill, $processState){
+    private function saveBillHistory($bill, $processState, $observation){
         $doctrineManager = $this->get('doctrine')->getManager();
         
         $billHistory = new BillHistory();
         $billHistory->setBill($bill);
         $billHistory->setProcessState($processState);
         $billHistory->setUser($this->getUser());
+        if($observation != ""){
+            $billHistory->setObservation($observation);
+        }
         
         $doctrineManager->persist($billHistory);
         $doctrineManager->flush();

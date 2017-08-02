@@ -1,0 +1,84 @@
+<?php
+
+namespace LavasecoBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * SalePoint
+ *
+ * @ORM\Table(name="sale_point")
+ * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\SalePointRepository")
+ */
+class SalePoint {
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=50, unique=true)
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="balance", type="decimal", precision=10, scale=0)
+     */
+    private $balance;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime")
+     */
+    private $updatedAt;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="turn", type="integer")
+     */
+    private $turn;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="bill_consecutive", type="integer")
+     */
+    private $billConsecutive;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_open", type="boolean")
+     */
+    private $isOpen;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_active", type="boolean")
+     */
+    private $isActive;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CashTransaction", mappedBy="salePoint")
+     */
+    protected $cashTransactions;
+}

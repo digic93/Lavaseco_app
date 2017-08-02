@@ -41,7 +41,7 @@ class ServiceController extends Controller {
         $servicesResponse = array();
         $servicesResponse ["decriptions"] = array();
 
-        $serviceCategory = getServiceCategoryById($serviceCategoryId);
+        $serviceCategory = $this->getServiceCategoryById($serviceCategoryId);
 
         $service = $serviceCategory->getServices()[0];
 
