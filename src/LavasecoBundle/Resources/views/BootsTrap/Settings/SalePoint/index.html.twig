@@ -6,15 +6,15 @@
 
 {% block body %} 
 
-    <h1>Caja</h1>
+    <h1>Punto de Venta</h1>
     <p>
-        Apertura o Cierre de Caja según el turno    
+        Descripción de los puntos de venta     
     </p>
     <hr>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-8 col-md-offset-2">
             <!-- Form Tipo descriptor-->
-            {{ form_start(formSalePointObject, {'attr': {'class': 'form-horizontal'} }) }}
+            {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title" id="title">Creación Punto de Venta</h3>
@@ -24,10 +24,10 @@
                     <fieldset>
                         <!-- Text input-->
                         <div class="form-group">
-                            {{ form_errors(formSalePointObject.name) }}
-                            <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(formSalePointObject.name, 'Nombre del Punto de Venta') }}</label>  
+                            {{ form_errors(form.name) }}
+                            <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.name, 'Nombre del Punto de Venta') }}</label>  
                             <div class="col-md-5">
-                                {{ form_widget(formSalePointObject.name, {'attr': {'class': 'form-control  input-md'} }) }}
+                                {{ form_widget(form.name, {'attr': {'class': 'form-control  input-md'} }) }}
                             </div>
                         </div>
 
@@ -44,7 +44,7 @@
                     </fieldset>
                 </div>
             </div>
-            {{ form_end(formCategoryStateObject) }}
+            {{ form_end(form) }}
         </div>
 
         <div class="col-md-12">
@@ -58,11 +58,9 @@
                         <th>Ubicación</th>
                         <th>Teléfono</th>
                         <th>Habilitado</th>
-                        <th>Cant de Dispositivos Asociados</th>
-                        <th></th>
                         <th>Fecha Apertura</th>
                         <th>Creador</th>
-                        
+
                     </tr>
                 </thead>
                 <tbody> 
@@ -71,29 +69,17 @@
                         <td>Calle 14 # 2 - 19</td>
                         <td>2111111</td>
                         <td>true</td>
-                        <td>2</td>
-                        <td></td>
                         <td>02/08/2017</td>
                         <td>Karen Vanessa Angulo</td>
                     </tr>
-                      
-                    {% for objectSalePoint in objectSalePoints %}
-                        <tr>
-                            <td>{{ objectSalePoint.name }}</td>
-                            <td>{{ objectSalePoint.location }}</td>
-                            <td>{{ objectSalePoint.phone }}</td>
-                            <td>{{ objectSalePoint.enabled }}</td>
-                            <td>{{ objectSalePoint.associatedDevices }}</td>
-                            <td>{{ objectSalePoint.creationDate }}</td>
-                            <td>{{ objectSalePoint.userCreator }}</td>
-                        </tr>
-                    {% endfor %}       
+
+                    
                 </tbody>
             </table>
         </div>
     </div>
 
-       
+
 {% endblock %}
 
 {% block javascripts %}
@@ -101,8 +87,12 @@
 
     <script>
         $(document).ready(function () {
-            $("#transactionTable").DataTable();
-            
+            var table = $("#transactionTable").DataTable();
+
+            $('#transactionTable tbody').on('click', 'tr', function () {
+                var data = table.row(this).data();
+                alert('You clicked on ' + data[0] + '\'s row');
+            });
         });
     </script>
 {% endblock %}
