@@ -43,6 +43,13 @@ class CashTransaction {
     private $turn;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     */
+    private $createdAt;
+
+    /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="cashTransactions")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id",  nullable = false)
      */
@@ -64,14 +71,12 @@ class CashTransaction {
         $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
     }
 
-
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -82,8 +87,7 @@ class CashTransaction {
      *
      * @return CashTransaction
      */
-    public function setPayment($payment)
-    {
+    public function setPayment($payment) {
         $this->payment = $payment;
 
         return $this;
@@ -94,8 +98,7 @@ class CashTransaction {
      *
      * @return string
      */
-    public function getPayment()
-    {
+    public function getPayment() {
         return $this->payment;
     }
 
@@ -106,8 +109,7 @@ class CashTransaction {
      *
      * @return CashTransaction
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -118,8 +120,7 @@ class CashTransaction {
      *
      * @return string
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -130,8 +131,7 @@ class CashTransaction {
      *
      * @return CashTransaction
      */
-    public function setTurn($turn)
-    {
+    public function setTurn($turn) {
         $this->turn = $turn;
 
         return $this;
@@ -142,8 +142,7 @@ class CashTransaction {
      *
      * @return integer
      */
-    public function getTurn()
-    {
+    public function getTurn() {
         return $this->turn;
     }
 
@@ -154,8 +153,7 @@ class CashTransaction {
      *
      * @return CashTransaction
      */
-    public function setUser(\LavasecoBundle\Entity\User $user)
-    {
+    public function setUser(\LavasecoBundle\Entity\User $user) {
         $this->user = $user;
 
         return $this;
@@ -166,8 +164,7 @@ class CashTransaction {
      *
      * @return \LavasecoBundle\Entity\User
      */
-    public function getUser()
-    {
+    public function getUser() {
         return $this->user;
     }
 
@@ -178,8 +175,7 @@ class CashTransaction {
      *
      * @return CashTransaction
      */
-    public function setTypeTransaction(\LavasecoBundle\Entity\TypeTransaction $typeTransaction)
-    {
+    public function setTypeTransaction(\LavasecoBundle\Entity\TypeTransaction $typeTransaction) {
         $this->typeTransaction = $typeTransaction;
 
         return $this;
@@ -190,11 +186,34 @@ class CashTransaction {
      *
      * @return \LavasecoBundle\Entity\TypeTransaction
      */
-    public function getTypeTransaction()
-    {
+    public function getTypeTransaction() {
         return $this->typeTransaction;
     }
 
+        /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return SalePoint
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }    
+    
     /**
      * Set salePoint
      *
@@ -202,8 +221,7 @@ class CashTransaction {
      *
      * @return CashTransaction
      */
-    public function setSalePoint(\LavasecoBundle\Entity\SalePoint $salePoint)
-    {
+    public function setSalePoint(\LavasecoBundle\Entity\SalePoint $salePoint) {
         $this->salePoint = $salePoint;
 
         return $this;
@@ -214,8 +232,8 @@ class CashTransaction {
      *
      * @return \LavasecoBundle\Entity\SalePoint
      */
-    public function getSalePoint()
-    {
+    public function getSalePoint() {
         return $this->salePoint;
     }
+
 }

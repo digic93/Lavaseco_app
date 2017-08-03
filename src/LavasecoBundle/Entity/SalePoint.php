@@ -31,6 +31,13 @@ class SalePoint {
     /**
      * @var string
      *
+     * @ORM\Column(name="device_id", type="string", length=50, unique=true, nullable= true)
+     */
+    private $deviceId;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="balance", type="decimal", precision=10, scale=0)
      */
     private $balance;
@@ -81,12 +88,14 @@ class SalePoint {
      * @ORM\OneToMany(targetEntity="CashTransaction", mappedBy="salePoint")
      */
     protected $cashTransactions;
+
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
+        $this->setTurn(1);
         $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+        $this->setUpdatedAt();
         $this->cashTransactions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -95,8 +104,7 @@ class SalePoint {
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -107,8 +115,7 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -119,8 +126,7 @@ class SalePoint {
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -131,8 +137,7 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setBalance($balance)
-    {
+    public function setBalance($balance) {
         $this->balance = $balance;
 
         return $this;
@@ -143,8 +148,7 @@ class SalePoint {
      *
      * @return string
      */
-    public function getBalance()
-    {
+    public function getBalance() {
         return $this->balance;
     }
 
@@ -155,8 +159,7 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -167,8 +170,7 @@ class SalePoint {
      *
      * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -179,9 +181,8 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
+    public function setUpdatedAt() {
+        $this->updatedAt = new \DateTime(date('Y-m-d H:i:s'));
 
         return $this;
     }
@@ -191,8 +192,7 @@ class SalePoint {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
@@ -203,8 +203,7 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setTurn($turn)
-    {
+    public function setTurn($turn) {
         $this->turn = $turn;
 
         return $this;
@@ -215,8 +214,7 @@ class SalePoint {
      *
      * @return integer
      */
-    public function getTurn()
-    {
+    public function getTurn() {
         return $this->turn;
     }
 
@@ -227,8 +225,7 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setBillConsecutive($billConsecutive)
-    {
+    public function setBillConsecutive($billConsecutive) {
         $this->billConsecutive = $billConsecutive;
 
         return $this;
@@ -239,8 +236,7 @@ class SalePoint {
      *
      * @return integer
      */
-    public function getBillConsecutive()
-    {
+    public function getBillConsecutive() {
         return $this->billConsecutive;
     }
 
@@ -251,8 +247,7 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setIsOpen($isOpen)
-    {
+    public function setIsOpen($isOpen) {
         $this->isOpen = $isOpen;
 
         return $this;
@@ -263,8 +258,7 @@ class SalePoint {
      *
      * @return boolean
      */
-    public function getIsOpen()
-    {
+    public function getIsOpen() {
         return $this->isOpen;
     }
 
@@ -275,8 +269,7 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setIsActive($isActive)
-    {
+    public function setIsActive($isActive) {
         $this->isActive = $isActive;
 
         return $this;
@@ -287,8 +280,7 @@ class SalePoint {
      *
      * @return boolean
      */
-    public function getIsActive()
-    {
+    public function getIsActive() {
         return $this->isActive;
     }
 
@@ -299,8 +291,7 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function addCashTransaction(\LavasecoBundle\Entity\CashTransaction $cashTransaction)
-    {
+    public function addCashTransaction(\LavasecoBundle\Entity\CashTransaction $cashTransaction) {
         $this->cashTransactions[] = $cashTransaction;
 
         return $this;
@@ -311,8 +302,7 @@ class SalePoint {
      *
      * @param \LavasecoBundle\Entity\CashTransaction $cashTransaction
      */
-    public function removeCashTransaction(\LavasecoBundle\Entity\CashTransaction $cashTransaction)
-    {
+    public function removeCashTransaction(\LavasecoBundle\Entity\CashTransaction $cashTransaction) {
         $this->cashTransactions->removeElement($cashTransaction);
     }
 
@@ -321,8 +311,34 @@ class SalePoint {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getCashTransactions()
-    {
+    public function getCashTransactions() {
         return $this->cashTransactions;
     }
+
+    /**
+     * Set deviceId
+     *
+     * @param string $deviceId
+     *
+     * @return SalePoint
+     */
+    public function setDeviceId($deviceId) {
+        $this->deviceId = $deviceId;
+
+        return $this;
+    }
+
+    /**
+     * Get deviceId
+     *
+     * @return string
+     */
+    public function getDeviceId() {
+        return $this->deviceId;
+    }
+    
+    public function setNextTurn(){
+        $this->turn += 1;
+    }
+
 }

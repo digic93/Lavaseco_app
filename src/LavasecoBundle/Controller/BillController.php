@@ -5,8 +5,8 @@ namespace LavasecoBundle\Controller;
 use LavasecoBundle\Entity\Bill;
 use LavasecoBundle\Entity\BillDetail;
 use LavasecoBundle\Entity\BillHistory;
-use LavasecoBundle\Entity\ObjectStateReceivedService;
 use LavasecoBundle\Form\BillContentType;
+use LavasecoBundle\Entity\ObjectStateReceivedService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
