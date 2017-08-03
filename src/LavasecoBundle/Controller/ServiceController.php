@@ -101,24 +101,6 @@ class ServiceController extends Controller {
         return $this->json(["categoryId" => $serviceCategory->getId()]);
     }
 
-//
-//    "service":
-//                        {
-//                            "id": 3,
-//                            "name": "Camisa",
-//                            "type": "Servicio",
-//                            "description": "Lavado de todo tipo de camisas",
-//                            "supraCategory": "Lavado",
-//                            "superCategory": "Prenda Sencilla",
-//                            "price": 2000,
-//                            "descriptors": [
-//                                {"name": "Color"},
-//                                {"name": "Estado"},
-//                                {"name": "Tamaño"}
-//                            ]
-//                        }
-//            };
-
     public function getServiceCategoryIdAction($serviceCategoryId) {
         $serviceCategory = $this->getServiceCategoryById($serviceCategoryId);
 

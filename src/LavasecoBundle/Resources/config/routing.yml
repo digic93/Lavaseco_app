@@ -6,6 +6,10 @@ lavaseco_sales:
     path:     /venta
     defaults: { _controller: LavasecoBundle:Sale:index }
 
+lavaseco_cash:
+    path:     /venta/caja
+    defaults: { _controller: LavasecoBundle:CashTransaction:index }
+
 lavaseco_orders:
     path:     /orden/{processId}
     defaults: { _controller: LavasecoBundle:Orders:index, processId: 0 }
@@ -31,6 +35,10 @@ lavaseco_settign_service_categories:
 lavaseco_settign_users:
     path:     /configuracion/usuarios
     defaults: { _controller: LavasecoBundle:User:create }
+
+lavaseco_settign_sale_point:
+    path:     /configuracion/puntoventa
+    defaults: { _controller: LavasecoBundle:SalePoint:index }
 
 #Ajax Service-------------------------------------------------------------------        
 lavaseco_api_service_category:
@@ -111,3 +119,13 @@ lavaseco_api_bill_history:
     methods:  [GET]
     requirements:
         billId:  \d+
+        
+lavaseco_api_sale_point:
+    path:     /api/sale/point
+    defaults: { _controller: LavasecoBundle:SalePoint:register }
+    methods:  [POST]
+
+lavaseco_api_sale_point_active:
+    path:     /api/sale/point/active
+    defaults: { _controller: LavasecoBundle:SalePoint:getSalePoint }
+    methods:  [POST]

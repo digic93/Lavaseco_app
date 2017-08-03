@@ -22,6 +22,10 @@
             <h1>Ventas</h1>
         </div>
         <div class="col-md-4 text-right">
+            <button class="btn btn-warning" type="button" onclick="withdrawCash();">
+                <i class="fa fa-money" aria-hidden="true"></i>
+                Retiros de Caja
+            </button>
             <button id="closeSalePoint" class="btn btn-danger" type="button" onclick="closeSalePoint();">
                 <i class="fa fa-lock" aria-hidden="true"></i>
                 Cierre de Caja
@@ -79,7 +83,7 @@
                     <p>
                         Orden: #0325-03-29<br>
                         Cajero: {{ app.user.name }}<br>
-                        TV: tableta
+                        PV: {{ app.session.get('salePoint').name }}
                     </p>
                     <hr>
                     <p>

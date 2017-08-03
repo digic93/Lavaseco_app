@@ -66,5 +66,45 @@ class TypeTransaction
     {
         return $this->name;
     }
-}
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->cashTransactions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
+    /**
+     * Add cashTransaction
+     *
+     * @param \LavasecoBundle\Entity\CashTransaction $cashTransaction
+     *
+     * @return TypeTransaction
+     */
+    public function addCashTransaction(\LavasecoBundle\Entity\CashTransaction $cashTransaction)
+    {
+        $this->cashTransactions[] = $cashTransaction;
+
+        return $this;
+    }
+
+    /**
+     * Remove cashTransaction
+     *
+     * @param \LavasecoBundle\Entity\CashTransaction $cashTransaction
+     */
+    public function removeCashTransaction(\LavasecoBundle\Entity\CashTransaction $cashTransaction)
+    {
+        $this->cashTransactions->removeElement($cashTransaction);
+    }
+
+    /**
+     * Get cashTransactions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCashTransactions()
+    {
+        return $this->cashTransactions;
+    }
+}

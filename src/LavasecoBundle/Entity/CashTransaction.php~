@@ -43,6 +43,13 @@ class CashTransaction {
     private $turn;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     */
+    private $createdAt;
+
+    /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="cashTransactions")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id",  nullable = false)
      */
@@ -59,4 +66,174 @@ class CashTransaction {
      * @ORM\JoinColumn(name="sale_point_id", referencedColumnName="id",  nullable = false)
      */
     protected $salePoint;
+
+    public function __construct() {
+        $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Set payment
+     *
+     * @param string $payment
+     *
+     * @return CashTransaction
+     */
+    public function setPayment($payment) {
+        $this->payment = $payment;
+
+        return $this;
+    }
+
+    /**
+     * Get payment
+     *
+     * @return string
+     */
+    public function getPayment() {
+        return $this->payment;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return CashTransaction
+     */
+    public function setDescription($description) {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * Set turn
+     *
+     * @param integer $turn
+     *
+     * @return CashTransaction
+     */
+    public function setTurn($turn) {
+        $this->turn = $turn;
+
+        return $this;
+    }
+
+    /**
+     * Get turn
+     *
+     * @return integer
+     */
+    public function getTurn() {
+        return $this->turn;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \LavasecoBundle\Entity\User $user
+     *
+     * @return CashTransaction
+     */
+    public function setUser(\LavasecoBundle\Entity\User $user) {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \LavasecoBundle\Entity\User
+     */
+    public function getUser() {
+        return $this->user;
+    }
+
+    /**
+     * Set typeTransaction
+     *
+     * @param \LavasecoBundle\Entity\TypeTransaction $typeTransaction
+     *
+     * @return CashTransaction
+     */
+    public function setTypeTransaction(\LavasecoBundle\Entity\TypeTransaction $typeTransaction) {
+        $this->typeTransaction = $typeTransaction;
+
+        return $this;
+    }
+
+    /**
+     * Get typeTransaction
+     *
+     * @return \LavasecoBundle\Entity\TypeTransaction
+     */
+    public function getTypeTransaction() {
+        return $this->typeTransaction;
+    }
+
+        /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return SalePoint
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }    
+    
+    /**
+     * Set salePoint
+     *
+     * @param \LavasecoBundle\Entity\SalePoint $salePoint
+     *
+     * @return CashTransaction
+     */
+    public function setSalePoint(\LavasecoBundle\Entity\SalePoint $salePoint) {
+        $this->salePoint = $salePoint;
+
+        return $this;
+    }
+
+    /**
+     * Get salePoint
+     *
+     * @return \LavasecoBundle\Entity\SalePoint
+     */
+    public function getSalePoint() {
+        return $this->salePoint;
+    }
+
 }

@@ -29,8 +29,55 @@
                 {% block body %}{% endblock %}
             </div>
         </div>
-
-        <script src="{{ asset("BootsTrapTheme/js/bootstrap.min.js") }}"></script>
-    {% block javascripts %}{% endblock %}
+        {#  0 si el usuario es  administrador y hay un punto de venta que regustrar #}
+        {% if app.session.get('salePoint') == "0" %}
+            <script>
+                var device = localStorage.getItem("device") || generateUUID();
+            
+                $.ajax({
+                    url: "{{ path("lavaseco_api_sale_point") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: {
+                        "device": device
+                    },
+                    success: function (result) {
+                        if(result.succes){
+                            localStorage.setItem("device", result.divace);
+                            alert("Este dispositivo es activo como punto de venta " + result.name);
+                        }
+{#                        location.reload();#}
+                    }
+                });
+            
+                function generateUUID() {
+                    var d = new Date().getTime();
+                    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                        var r = (d + Math.random()*16)%16 | 0;
+                        d = Math.floor(d/16);
+                        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+                    });
+                    return uuid;
+                };
+            </script>
+            
+        {#   1 para verificar si  el  dispositivo tiene uuid  #}
+        {% elseif app.session.get('salePoint') == "1" %}
+            <script>
+                $.ajax({
+                    url: "{{ path("lavaseco_api_sale_point_active") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: {
+                        "device": localStorage.getItem("device")
+                    },
+                    success: function (result) {
+                    }
+                });
+            </script>
+        {% endif %}
+        
+        <script src="{{ asset("BootsTrapTheme/js/bootstrap.min.js") }}"></script>        
+        {% block javascripts %}{% endblock %}
     </body>
 </html>

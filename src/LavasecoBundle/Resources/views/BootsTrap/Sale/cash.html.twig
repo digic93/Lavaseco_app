@@ -6,57 +6,58 @@
 
 {% block body %} 
 
-    <h1>Caja</h1>
+    <h1>Caja {{ app.session.get('salePoint').name }}</h1>
     <p>
-        Apertura o Cierre de Caja según el turno    
+        {% if title == "Apertura" %}
+            Para realizar ventas primero tienes que iniciar el turno.   
+        {% endif %}
+
     </p>
     <hr>
     <div class="row">
         <div class="col-md-12">
             <!-- Form Tipo descriptor-->
-            {{ form_start(formCategoryStateObject, {'attr': {'class': 'form-horizontal'} }) }}
-            <div class="panel panel-primary">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title" id="cashPointTittle">Apertura/Cierre de Caja</h3>
+                    <h3 class="panel-title" id="cashPointTittle">{{ title }} de Caja</h3>
                 </div>
                 <div class="panel-body">
-                    <!-- Form Tipo descriptor-->
-                    <fieldset>
-                        <!-- Text input-->
-                        <div class="form-group">
-                            {{ form_errors(formCategoryStateObject.state) }}
-                            <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(formCategoryStateObject.state, 'Tipo Descriptor') }}</label>  
-                            <div class="col-md-5">
-                                {{ form_widget(formCategoryStateObject.balance, {'attr': {'class': 'form-control  input-md'} }) }}
+                    {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
+                        <fieldset>
+                            <!-- Text input-->
+                            <div class="form-group">
+                                {{ form_errors(form.payment) }}
+                                <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.payment, 'Saldo') }}</label>  
+                                <div class="col-md-5">
+                                        <div class="input-group">
+                                            <div class="input-group-addon">$</div>
+                                            {{ form_widget(form.payment, {'attr': {'class': 'form-control  input-md'} }) }}
+                                        </div>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Button -->
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="singlebutton"></label>
-                            <div class="col-md-4">
-                                {% if data.is_open is false%}
-                                    <button class="btn btn-success" type="button">
-                                        <i class="fa fa-unlock" aria-hidden="true"></i>
-                                        Apertura de Caja
-                                    </button>
-                                {% else %}
-                                    <button class="btn btn-warning" type="button" onclick="withdrawCash();">
-                                        <i class="fa fa-money" aria-hidden="true"></i>
-                                        Retiros de Caja
-                                    </button>
-                                    <button class="btn btn-danger" type="button">
-                                        <i class="fa fa-lock" aria-hidden="true"></i>
-                                        Cierre de Caja
-                                    </button>
-                                {% endif %}  
+                            <div class="form-group">
+                                {{ form_errors(form.description) }}
+                                <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.description, 'Concepto') }}</label>  
+                                <div class="col-md-5" >
+                                    {{ form_widget(form.description, {'attr': {'class': 'form-control  input-md', 'disabled': editObservations } }) }}
+                                </div>
                             </div>
-                        </div>
-                    </fieldset>
 
+                            <!-- Button -->
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="singlebutton"></label>
+                                <div class="col-md-5 pull-right">
+                                    <button type="submit" class="btn {% if title == "Cierre" %} btn-warnig {% else %} btn-success {% endif %}" style="margin-left: 13px;" type="button">
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        {{ title }} de Caja
+                                    </button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    {{ form_end(form) }}
                 </div>
             </div>
-            {{ form_end(formCategoryStateObject) }}
         </div>
 
         {% if data.transactions is defined %}
@@ -90,54 +91,16 @@
         {% endif %}
     </div>
 
-    <!-- Modal -->
-    <div id="modalWithdrawCash" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <i class="fa fa-money" aria-hidden="true"></i>
-                    <h4 class="modal-title">Registro de Retiro de Dinero en Efectivo</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="col-md-10 col-md-offset-1">  
-                        <div class="form-group">
-                            <div id="divBalance" class="form-group">
-                                <p>Monto a Retirar<span class="req">*</span></p>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-usd" aria-hidden="true"></i></span>
-                                    <input class="form-control" id="balanceWithdrawCash" type="text" required autocomplete="off" />
-                                </div>
-                                <span id="helpBlockName" class="help-block"></span>
-                            </div>
-
-                            <div id="divLastName" class="form-group">
-                                <p>Descripción<span class="req">*</span></p>
-                                <div class="input-group">
-                                    <textarea id="descriptionWithdrawCash" class="form-control" required autocomplete="off"> </textarea>
-                                </div>
-                                <span id="helpBlockLastName" class="help-block"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="submitWithdrawals" type="button" class="btn btn-success" data-dismiss="modal" onclick="">Generar Transacción</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>    
 {% endblock %}
 
 {% block javascripts %}
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
     <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
 
     <script>
         $(document).ready(function () {
             $("#transactionTable").DataTable();
-            $("#balanceWithdrawCash").number(true);
+            $("#lavasecobundle_cashtransaction_payment").number(true);
         });
 
         function withdrawCash() {
