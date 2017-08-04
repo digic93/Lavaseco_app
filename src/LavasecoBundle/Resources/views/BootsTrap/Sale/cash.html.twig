@@ -48,7 +48,7 @@
                             <div class="form-group">
                                 <label class="col-md-4 control-label" for="singlebutton"></label>
                                 <div class="col-md-5 pull-right">
-                                    <button type="submit" class="btn {% if title == "Cierre" %} btn-warnig {% else %} btn-success {% endif %}" style="margin-left: 13px;" type="button">
+                                    <button type="submit" class="btn {% if title == "Cierre" %} btn-danger {% else %} btn-success {% endif %}" style="margin-left: 13px;" type="button">
                                         <i class="fa fa-check" aria-hidden="true"></i>
                                         {{ title }} de Caja
                                     </button>
@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        {% if data.transactions is defined %}
+        {% if cashTransactions %}
             <div class="col-md-12">
                 <h3>Transacciones Registradas en el Turno</h3>
                 <hr>
@@ -68,21 +68,21 @@
                 <table id="transactionTable" class="display" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th>Información Punto de Venta</th>
-                            <th>Tipo Transaccion</th>
+                            <th>usuario</th>
                             <th>Monto</th>
-                            <th>Fecha Transacción</th>
+                            <th>Tipo Transaccion</th>
                             <th>Descripción</th>
+                            <th>Fecha Transacción</th>
                         </tr>
                     </thead>
                     <tbody> 
-                        {% for ObjectTransaction in ObjectTransactions %}
+                        {% for cashTransaction in cashTransactions %}
                             <tr>
-                                <td>{{ ObjectTransaction.salePoint }}</td>
-                                <td>{{ ObjectTransaction.typeTransaction }}</td>
-                                <td>{{ ObjectTransaction.payment }}</td>
-                                <td>{{ ObjectTransaction.createdAt }}</td>
-                                <td>{{ ObjectTransaction.description }}</td>
+                                <td>{{ cashTransaction.user.name }}</td>
+                                <td>${{ cashTransaction.payment }}</td>
+                                <td>{{ cashTransaction.typeTransaction.name }}</td>
+                                <td>{{ cashTransaction.description }}</td>
+                                <td>{{ cashTransaction.createdAtString }}</td>
                             </tr>
                         {% endfor %}       
                     </tbody>
@@ -102,13 +102,9 @@
             $("#transactionTable").DataTable();
             $("#lavasecobundle_cashtransaction_payment").number(true);
         });
-
-        function withdrawCash() {
-            $("#modalWithdrawCash").modal('show');
-            
-        }
-        function saveTransactionwithdrawCash() {
-            //ajax
+        
+        function getPayment(payment, tdPayment){
+            $(tdPayment).html("$" + $.number(payment,true));
         }
     </script>
 {% endblock %}

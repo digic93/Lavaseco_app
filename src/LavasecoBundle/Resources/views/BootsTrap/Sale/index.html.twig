@@ -271,34 +271,36 @@
                         <label id="paymentTittle"></label>
                     </h4>
                 </div>
-                <div class="modal-body col-md-10 col-md-offset-1">
-                    <div>
-                        <div class="form-group">
-                            <p>Forma de Pago</p>
-                            <div class="input-group" id="specificWayPay">
-                                <select id="selectWayToPay" onChange="" class="form-control">
-                                </select>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-10 col-md-offset-1">
+                            <div class="form-group">
+                                <p>Forma de Pago</p>
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectWayToPay" onChange="" class="form-control">
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <hr>
+                            <hr>
 
-                        <div class="form-group">
-                            <div id="divTotalBill"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <p>Dinero Recibido<span class="req">*</span></p>
-                            <div class="input-group" id="divCashReceived">
-                                <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
-                                <input class="form-control" id="cashReceived" type="text" autocomplete="off" onkeyup="updateChange();"/>
+                            <div class="form-group">
+                                <div id="divTotalBill"></div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <p>Vueltas</p>
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
-                                <input class="form-control" id="change" type="text" autocomplete="off" disabled/>
+                            <div class="form-group">
+                                <p>Dinero Recibido<span class="req">*</span></p>
+                                <div class="input-group" id="divCashReceived">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="cashReceived" type="text" autocomplete="off" onkeyup="updateChange();"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <p>Vueltas</p>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="change" type="text" autocomplete="off" disabled/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -328,7 +330,7 @@
                     <p>En este momento va a cerrar la caja, recuerde que este proceso es irreversible. ¿Realmente desea cerrar?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Aceptar</button>
+                    <a href="{{ path('lavaseco_cash') }}" class="btn btn-success" >Aceptar</a>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                 </div>
             </div>
@@ -687,7 +689,7 @@
 
         function wayToPay() {
             var paymentAgreement = $('#bill_payAgreement').val();
-            if (paymentAgreement === "4") {
+            if (paymentAgreement === "2") {//2 es el id del metodo de contra entrega
                 factura.cashReceived = 0;
                 factura.change = 0;
                 ajaxSaleBill();
@@ -706,15 +708,18 @@
         }
 
         function addWayToPay() {
-            //ajax
-            var result = {"payment":
-                        [
-                            {"id": 1, "name": "Efectivo"}
-                        ]
-            };
-            for (var i in result.payment) {
-                loadWayPay(result.payment[i]);
-            }
+            $("#selectWayToPay").empty();
+            $.ajax({
+                url: "{{ path('lavaseco_api_pay_method') }}",
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (payMethods) {
+                    for (var i in payMethods) {
+                        loadWayPay(payMethods[i]);
+                    }
+                }
+            });
         }
 
         function updateChange() {
@@ -733,7 +738,7 @@
         }
 
         function closeSalePoint() {
-            $("#modalAlert").modal('show')
+            $("#modalAlert").modal('show');
         }
     </script>
 {% endblock %}

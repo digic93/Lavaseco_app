@@ -129,3 +129,8 @@ lavaseco_api_sale_point_active:
     path:     /api/sale/point/active
     defaults: { _controller: LavasecoBundle:SalePoint:getSalePoint }
     methods:  [POST]
+    
+lavaseco_api_pay_method:
+    path:     /api/pay/method
+    defaults: { _controller: LavasecoBundle:Bill:getPayMethod }
+    methods:  [GET]
