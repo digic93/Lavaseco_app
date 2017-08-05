@@ -10,4 +10,27 @@ namespace LavasecoBundle\Repository;
  */
 class CashTransactionRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getFninalBalance($salePointId,$turn){
+        $start = $this->getTotalByTypeTransaction($salePointId,$turn, 1);
+        $intput = $this->getTotalByTypeTransaction($salePointId,$turn, 3);
+        $output = $this->getTotalByTypeTransaction($salePointId,$turn, 4);
+        return $start + $intput - $output;
+    }
+    
+    private function getTotalByTypeTransaction($salePointId,$turn, $typeTransactionId){
+        
+        $total = $this->createQueryBuilder('ct')
+                ->select('SUM(ct.payment) AS total')
+                ->where('ct.salePoint = :salePoint')
+                ->andWhere('ct.turn= :turn')
+                ->andWhere('ct.typeTransaction= :typeTransactionId')
+                ->groupBy('ct.turn')
+                ->setParameter('turn', $turn)
+                ->setParameter('salePoint', $salePointId)
+                ->setParameter('typeTransactionId', $typeTransactionId)
+                ->getQuery();
+         
+        
+        return $total->getScalarResult()[0]['total'];
+    }
 }
