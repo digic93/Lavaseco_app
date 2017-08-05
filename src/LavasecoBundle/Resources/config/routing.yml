@@ -7,8 +7,10 @@ lavaseco_sales:
     defaults: { _controller: LavasecoBundle:Sale:index }
 
 lavaseco_cash:
-    path:     /venta/caja
-    defaults: { _controller: LavasecoBundle:CashTransaction:index }
+    path:     /venta/caja/{egress}
+    defaults: { _controller: LavasecoBundle:CashTransaction:index, egress: 0 }
+    requirements:
+        egress:  \d+
 
 lavaseco_orders:
     path:     /orden/{processId}

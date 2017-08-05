@@ -9,14 +9,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class CashTransactionController extends Controller {
 
-    public function indexAction(Request $request) {
+    public function indexAction($egress, Request $request) {
         $salePoint = $this->getSalePoint();
         $configuration = $this->get('lavaseco.app_configuration');
         $description = (!$salePoint->getIsOpen()) ? "Apertura de caja" : "Cierre de caja";
 
         $cashTransaction = new CashTransaction();
-        $cashTransaction->setPayment($this->calculateBalance($salePoint));
-        $cashTransaction->setDescription($description);
+        if ($egress == 0) {
+            $cashTransaction->setPayment($this->calculateBalance($salePoint));
+            $cashTransaction->setDescription($description);
+        }
 
         $form = $this->createForm(CashTransactionType::class, $cashTransaction);
 
@@ -24,20 +26,23 @@ class CashTransactionController extends Controller {
         if ($form->isSubmitted() && $form->isValid()) {
             $cashTransaction = $form->getData();
             // se envia negado por que aun no se actualiza el punto de venta, y determnia el tipo de transaccion realizada
-            $typeTransaction = $this->getTypeTransaction(!$salePoint->getIsOpen());
-            $this->saveCashTransaction($cashTransaction, $salePoint, $description, $typeTransaction);
-            $this->updateSalePoint($salePoint, $cashTransaction->getPayment());
-
+            $typeTransaction = $this->getTypeTransaction(($egress == 0) ? !$salePoint->getIsOpen() : null);
+            $this->saveCashTransaction($cashTransaction, $salePoint, ($egress == 0)?$description:null, $typeTransaction);
+            if ($egress == 0) {
+                $this->updateSalePoint($salePoint, $cashTransaction->getPayment());
+            }
+            $em = $this->get('doctrine')->getManager();
+            $em->flush();
             $this->get('session')->set('salePoint', $salePoint);
-
-            return $this->redirectToRoute(($salePoint->getIsOpen()) ? 'lavaseco_sales' : 'lavaseco_homepage');
+            $redirect = ($egress == 0 ) ? (($salePoint->getIsOpen()) ? 'lavaseco_sales' : 'lavaseco_homepage') : 'lavaseco_sales';
+            return $this->redirectToRoute($redirect);
         }
 
         return $this->render($configuration->getViewTheme() . ':Sale/cash.html.twig', [
                     "form" => $form->createView(),
-                    "editObservations" => true,
-                    "title" => ($salePoint->getIsOpen()) ? "Cierre" : "Apertura",
-                    "cashTransactions" => $this->getCashTransactions()   
+                    "editObservations" => $egress,
+                    "title" => ($salePoint->getIsOpen()) ? ($egress == "1") ? "Egreso" : "Cierre" : "Apertura",
+                    "cashTransactions" => ($egress == 0) ? $this->getCashTransactions() : null
         ]);
     }
 
@@ -47,7 +52,9 @@ class CashTransactionController extends Controller {
         $cashTransaction->setTurn($salePoint->getTurn());
         $cashTransaction->setSalePoint($salePoint);
         $cashTransaction->setUser($this->getUser());
-        $cashTransaction->setDescription($description);
+        if($description != null){
+            $cashTransaction->setDescription($description);
+        }
         $cashTransaction->setTypeTransaction($typeTransaction);
 
         $em->persist($cashTransaction);
@@ -55,6 +62,7 @@ class CashTransactionController extends Controller {
 
     private function updateSalePoint(&$salePoint, $balance) {
         $em = $this->get('doctrine')->getManager();
+
         $salePoint->setIsOpen(!$salePoint->getIsOpen());
         $salePoint->setUpdatedAt();
 
@@ -65,14 +73,13 @@ class CashTransactionController extends Controller {
         }
 
         $em->persist($salePoint);
-        $em->flush();
 
         return $salePoint;
     }
 
     private function calculateBalance($salePoint) {
         if ($salePoint->getIsOpen()) {
-            $balance = 200;
+            return $this->getBalance($salePoint);
         } else {
             $balance = $salePoint->getBalance();
         }
@@ -99,14 +106,21 @@ class CashTransactionController extends Controller {
 
         return $typeTransactionRepository->find($typeTransactionId);
     }
-    
-    private function getCashTransactions(){
+
+    private function getCashTransactions() {
         $salePoint = $this->get('session')->get('salePoint');
         $em = $this->get('doctrine')->getManager();
 
         $cashTransactionRepository = $em->getRepository("LavasecoBundle:CashTransaction");
 
         return $cashTransactionRepository->findByTurn($salePoint->getTurn());
+    }
+    
+    private function getBalance($salePoint){
+        $em = $this->get('doctrine')->getManager();
+        $cashTransactionRepository = $em->getRepository("LavasecoBundle:CashTransaction");
+        
+        return $cashTransactionRepository->getFninalBalance($salePoint->getId(),$salePoint->getTurn());
     }
 
 }

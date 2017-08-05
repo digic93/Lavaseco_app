@@ -100,11 +100,12 @@
     <script>
         $(document).ready(function () {
             $("#transactionTable").DataTable();
-            $("#lavasecobundle_cashtransaction_payment").number(true);
+            //$("#lavasecobundle_cashtransaction_payment").number(true);
         });
-        
-        function getPayment(payment, tdPayment){
-            $(tdPayment).html("$" + $.number(payment,true));
-        }
+
+
+    {% if editObservations == "1" %}
+        $( "#lavasecobundle_cashtransaction_description" ).prop( "disabled", false );
+    {% endif%}
     </script>
 {% endblock %}
