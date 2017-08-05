@@ -50,21 +50,21 @@
         <div class="col-md-12">
             <h3>Puntos de Venta Registrados</h3>
             <hr>
-
-            <table id="transactionTable" class="display" cellspacing="0" width="100%">
+            <table id="salePointTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Ubicación</th>
                         <th>Teléfono</th>
                         <th>Habilitado</th>
                         <th>Fecha Apertura</th>
                         <th>Creador</th>
-
                     </tr>
                 </thead>
                 <tbody> 
                     <tr>
+                        <td>1</td>
                         <td>Lavaseco App</td>
                         <td>Calle 14 # 2 - 19</td>
                         <td>2111111</td>
@@ -72,9 +72,15 @@
                         <td>02/08/2017</td>
                         <td>Karen Vanessa Angulo</td>
                     </tr>
-
-                    
                 </tbody>
+            </table>
+        </div>
+        <div class="col-md-12" id="divTableTransactions">
+            <h3 id="titleTransaction"></h3>
+            <hr>
+            <table id="tableTransactions" class="display" cellspacing="0" width="100%">
+                <thead></thead>
+                <tbody></tbody>
             </table>
         </div>
     </div>
@@ -87,12 +93,65 @@
 
     <script>
         $(document).ready(function () {
-            var table = $("#transactionTable").DataTable();
-
-            $('#transactionTable tbody').on('click', 'tr', function () {
+            var table = $("#salePointTable").DataTable();
+            
+            $('#salePointTable tbody').on('click', 'tr', function () {
+                $("#tableTransactions thead").html("");
+                $("#tableTransactions tbody").html("");
+                
                 var data = table.row(this).data();
-                alert('You clicked on ' + data[0] + '\'s row');
+                alert('You clicked on ' + data[1] + '\'s row');
+                //ajax
+                /*$.ajax({
+                 url: data[0],
+                 method: "GET",
+                 contentType: 'application/json',
+                 dataType: 'json',
+                 success:
+                 });*/
+                var result = {"transactions":
+                            [
+                                {
+                                    "id": 1,
+                                    "type_transaction": "Ingreso",
+                                    "payment": 30000,
+                                    "createdAt": "10/04/2017",
+                                    "description": "Factura No. 13564, lavado de cobijas",
+                                    "user": "Diego Castro"
+                                },
+                                {
+                                    "id": 2,
+                                    "type_transaction": "Egreso",
+                                    "payment": 5500,
+                                    "createdAt": "11/04/2017",
+                                    "description": "Compra de jabón de ropa",
+                                    "user": "Diego Castro"
+                                },
+                                {
+                                    "id": 3,
+                                    "type_transaction": "Egreso",
+                                    "payment": 2300,
+                                    "createdAt": "11/04/2017",
+                                    "description": "Compra de Ganchos de Ropa",
+                                    "user": "Diego Castro"
+                                }
+                            ]
+                };
+                
+                $("#titleTransaction").text("Transacciones por Punto de Ventax");
+                var html = "<tr><td>ID</td><td>Tipo de Transacción</td><td>Monto</td><td>Fecha de Creación</td><td>Descripción</td><td>Vendedor</td></tr>";
+                $("#tableTransactions thead").append(html);
+                for (var i in result.transactions) {
+                    createTableTransaction(result.transactions[i]);
+                }
             });
         });
+
+        function createTableTransaction(transaction) {
+            var html = "<tr><td>\""+ transaction.id +"\"</td><td>\""+ transaction.type_transaction +"\"</td>\
+                        <td>\""+ transaction.payment +"\"</td><td>\""+ transaction.createdAt +"\"</td>\
+                        <td>\""+ transaction.description +"\"</td><td>\""+ transaction.user +"\"</td></tr>";
+            $("#tableTransactions tbody").append(html);
+        }
     </script>
 {% endblock %}
