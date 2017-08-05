@@ -38,16 +38,19 @@ class PayDetail
     
     /**
      * @ORM\ManyToOne(targetEntity="Bill", inversedBy="payDetails")
-     * @ORM\JoinColumn(name="bill_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="bill_id", referencedColumnName="id", nullable=false)
      */
     protected $bill;
     
     /**
      * @ORM\ManyToOne(targetEntity="PayMethod", inversedBy="payDetails")
-     * @ORM\JoinColumn(name="pay_method_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="pay_method_id", referencedColumnName="id", nullable=false)
      */
     protected $payMethod;
  
+    public function __construct() {
+        $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+    }
 
     /**
      * Get id

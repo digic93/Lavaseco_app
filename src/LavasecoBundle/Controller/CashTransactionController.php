@@ -36,7 +36,8 @@ class CashTransactionController extends Controller {
         return $this->render($configuration->getViewTheme() . ':Sale/cash.html.twig', [
                     "form" => $form->createView(),
                     "editObservations" => true,
-                    "title" => ($salePoint->getIsOpen()) ? "Cierre" : "Apertura"
+                    "title" => ($salePoint->getIsOpen()) ? "Cierre" : "Apertura",
+                    "cashTransactions" => $this->getCashTransactions()   
         ]);
     }
 
@@ -97,6 +98,15 @@ class CashTransactionController extends Controller {
         }
 
         return $typeTransactionRepository->find($typeTransactionId);
+    }
+    
+    private function getCashTransactions(){
+        $salePoint = $this->get('session')->get('salePoint');
+        $em = $this->get('doctrine')->getManager();
+
+        $cashTransactionRepository = $em->getRepository("LavasecoBundle:CashTransaction");
+
+        return $cashTransactionRepository->findByTurn($salePoint->getTurn());
     }
 
 }

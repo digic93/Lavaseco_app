@@ -236,4 +236,7 @@ class CashTransaction {
         return $this->salePoint;
     }
 
+    public function getCreatedAtString() {
+        return $this->createdAt->format('d/m/Y H:i');
+    }
 }

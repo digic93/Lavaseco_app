@@ -3,9 +3,11 @@
 namespace LavasecoBundle\Controller;
 
 use LavasecoBundle\Entity\Bill;
+use LavasecoBundle\Entity\PayDetail;
 use LavasecoBundle\Entity\BillDetail;
 use LavasecoBundle\Entity\BillHistory;
 use LavasecoBundle\Form\BillContentType;
+use LavasecoBundle\Entity\CashTransaction;
 use LavasecoBundle\Entity\ObjectStateReceivedService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -47,17 +49,22 @@ class BillController extends Controller {
     }
 
     public function saveBillingAction(Request $request) {
-        $customerUserId = $request->request->get("customerId");
+        $payment = $request->request->get("total");
+        $payMethodId = 1; //$request->request->get("paymenthod");
         $observation = $request->request->get("observations");
-
+        $customerUserId = $request->request->get("customerId");
+                
         $paymentAgreement = $this->getPaymentAgreementById($request->request->get("paymentAgreementId"));
 
         $bill = $this->saveBilling($customerUserId, $observation, $paymentAgreement);
-
         $this->saveBillDetail($bill, $request->request->get("services"));
-
+        
+        if($payMethodId != 2){
+            $this->savePayDetail($payMethodId ,$payment, $bill);
+        }
+        
         $this->saveBillHistory($bill);
-
+        //asignacion de puntos al cliente
         //Enviar via correo electronico la factura al cliente
 
         return $this->json(["billId" => $bill->getId()]);
@@ -74,10 +81,10 @@ class BillController extends Controller {
 
         $bill = $this->getBillById($billId);
         $billHistories = $bill->getBillHistories();
-        
+
         $resutl["bill"] = $bill->getId();
         $resutl["order"] = $bill->getConsecutive();
-        
+
         foreach ($billHistories as $billHistory) {
             $resutl["histories"][] = [
                 "processState" => $billHistory->getProcessState()->getName(),
@@ -86,7 +93,24 @@ class BillController extends Controller {
                 "observation" => $billHistory->getObservation()
             ];
         }
-        
+
+        return $this->json($resutl);
+    }
+
+    public function getPayMethodAction() {
+        $resutl = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $payMethodRepository = $doctrineManager->getRepository("LavasecoBundle:PayMethod");
+
+        $payMethods = $payMethodRepository->findAll();
+
+        foreach ($payMethods as $payMethod) {
+            $resutl [] = [
+                "id" => $payMethod->getId(),
+                "name" => $payMethod->getName()
+            ];
+        }
+
         return $this->json($resutl);
     }
 
@@ -128,7 +152,7 @@ class BillController extends Controller {
             $billDetail->setObservation($service["observations"]);
 
             $em->persist($billDetail);
-            if(isset($service["descriptors"])){
+            if (isset($service["descriptors"])) {
                 $this->saveObjectStateReceivedService($serviceObj, $billDetail, $service["descriptors"]);
             }
         }
@@ -158,7 +182,39 @@ class BillController extends Controller {
         $em->persist($billHistory);
         $em->flush();
     }
+    
+    private function savePayDetail($payMethodId, $payment, $bill){
+        $em = $this->get('doctrine')->getManager();
+        
+        $payMethod = $this->getPayMethodById($payMethodId);
+        
+        $payDeatil = new PayDetail();        
+        $payDeatil->setBill($bill);
+        $payDeatil->setPayment($payment);
+        $payDeatil->setPayMethod($payMethod);
+        
+        if($payMethod->getId() == 1){ //si el pago es en efectivo registra movieento en la caja
+            $this->saveCashTransaction($payment, $bill);
+        }
+        
+        $em->persist($payDeatil);
+    }
 
+    private function saveCashTransaction($payment, $bill, $abono = false){
+        $em = $this->get('doctrine')->getManager();
+        $salePoint = $this->getSalePoint();
+        
+        $cashTransaction = new CashTransaction();
+        $cashTransaction->setPayment($payment);
+        $cashTransaction->setUser($this->getUser());
+        $cashTransaction->setSalePoint($salePoint);
+        $cashTransaction->setTurn($salePoint->getTurn());
+        $cashTransaction->setTypeTransaction($this->getTypeTransactionById(3));//3 es el id de tipo de transaccion ingreso
+        $cashTransaction->setDescription(($abono)? "Abono":"Pago" ." Facura " . $bill->getId());
+        
+        $em->persist($cashTransaction);
+    }
+    
     private function getBillState($paymentAgreement) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billStateRepository = $doctrineManager->getRepository("LavasecoBundle:BillState");
@@ -188,6 +244,13 @@ class BillController extends Controller {
         return $userRepository->find($userId);
     }
 
+    private function getPayMethodById($payMethodById){
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $payMethodRepository = $doctrineManager->getRepository("LavasecoBundle:PayMethod");
+
+        return $payMethodRepository->find($payMethodById);
+    }
+    
     private function getPaymentAgreementById($paymentAgreementId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $paymentAgreementRepository = $doctrineManager->getRepository("LavasecoBundle:PaymentAgreement");
@@ -221,8 +284,8 @@ class BillController extends Controller {
             "bill" => $bill->getId(),
             "consecutive" => $bill->getConsecutive(),
             "seller" => $bill->getSellerUser()->getName(),
-            "customer" => ($bill->getCustomerUser())?$bill->getCustomerUser()->getName():"No se Registro Cliente",
-            "phoneNumber" => ($bill->getCustomerUser())?$bill->getCustomerUser()->getPhoneNumber():"No se Registro Cliente",
+            "customer" => ($bill->getCustomerUser()) ? $bill->getCustomerUser()->getName() : "No se Registro Cliente",
+            "phoneNumber" => ($bill->getCustomerUser()) ? $bill->getCustomerUser()->getPhoneNumber() : "No se Registro Cliente",
             "observation" => $bill->getObservation(),
             "createdAt" => $bill->getCreatedAtString(),
             "billDetail" => $this->getItemsBill($bill)
@@ -258,5 +321,22 @@ class BillController extends Controller {
         }
         return $descriptors;
     }
+    
+    private function getSalePoint() {
+        $salePoint = $this->get('session')->get('salePoint');
+        $em = $this->get('doctrine')->getManager();
 
+        $salePointRepository = $em->getRepository("LavasecoBundle:SalePoint");
+
+        return $salePointRepository->find($salePoint->getId());
+    }
+    
+    private function getTypeTransactionById($typeTransactionId) {
+        $em = $this->get('doctrine')->getManager();
+        $typeTransactionRepository = $em->getRepository("LavasecoBundle:TypeTransaction");
+
+        
+        return $typeTransactionRepository->find($typeTransactionId);
+    }
+    
 }
