@@ -94,8 +94,12 @@ class SalePoint {
      */
     public function __construct() {
         $this->setTurn(1);
-        $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+        $this->setBalance(0);
         $this->setUpdatedAt();
+        $this->setIsOpen(false);
+        $this->setIsActive(false);
+        $this->setBillConsecutive(1);
+        $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         $this->cashTransactions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -341,4 +345,12 @@ class SalePoint {
         $this->turn += 1;
     }
 
+    public function getCreatedAtString() {
+        return $this->createdAt->format('d/m/Y H:i');
+    }
+
+    public function getUpdateAtString() {
+        return $this->updatedAt->format('d/m/Y H:i');
+    }
+    
 }
