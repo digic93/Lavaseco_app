@@ -1,0 +1,159 @@
+<?php
+
+namespace LavasecoBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Loyalty
+ *
+ * @ORM\Table(name="loyalty")
+ * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\LoyaltyRepository")
+ */
+class Loyalty
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="startPoint", type="integer")
+     */
+    private $startPoint;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="depositPercent", type="float")
+     */
+    private $depositPercent;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="uponDeliveryPercent", type="float")
+     */
+    private $uponDeliveryPercent;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="advancePercent", type="float")
+     */
+    private $advancePercent;
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set startPoint
+     *
+     * @param integer $startPoint
+     *
+     * @return Loyalty
+     */
+    public function setStartPoint($startPoint)
+    {
+        $this->startPoint = $startPoint;
+
+        return $this;
+    }
+
+    /**
+     * Get startPoint
+     *
+     * @return int
+     */
+    public function getStartPoint()
+    {
+        return $this->startPoint;
+    }
+
+    /**
+     * Set depositPercent
+     *
+     * @param float $depositPercent
+     *
+     * @return Loyalty
+     */
+    public function setDepositPercent($depositPercent)
+    {
+        $this->depositPercent = $depositPercent;
+
+        return $this;
+    }
+
+    /**
+     * Get depositPercent
+     *
+     * @return float
+     */
+    public function getDepositPercent()
+    {
+        return $this->depositPercent;
+    }
+
+    /**
+     * Set uponDeliveryPercent
+     *
+     * @param float $uponDeliveryPercent
+     *
+     * @return Loyalty
+     */
+    public function setUponDeliveryPercent($uponDeliveryPercent)
+    {
+        $this->uponDeliveryPercent = $uponDeliveryPercent;
+
+        return $this;
+    }
+
+    /**
+     * Get uponDeliveryPercent
+     *
+     * @return float
+     */
+    public function getUponDeliveryPercent()
+    {
+        return $this->uponDeliveryPercent;
+    }
+
+    /**
+     * Set advancePercent
+     *
+     * @param float $advancePercent
+     *
+     * @return Loyalty
+     */
+    public function setAdvancePercent($advancePercent)
+    {
+        $this->advancePercent = $advancePercent;
+
+        return $this;
+    }
+
+    /**
+     * Get advancePercent
+     *
+     * @return float
+     */
+    public function getAdvancePercent()
+    {
+        return $this->advancePercent;
+    }
+}
+

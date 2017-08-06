@@ -42,6 +42,10 @@ lavaseco_settign_sale_point:
     path:     /configuracion/puntoventa
     defaults: { _controller: LavasecoBundle:SalePoint:index }
 
+lavaseco_settign_loyalty:
+    path:     /configuracion/fidelidad
+    defaults: { _controller: LavasecoBundle:Loyalty:index }
+
 #Ajax Service-------------------------------------------------------------------        
 lavaseco_api_service_category:
     path:     /api/service/category/{serviceCategoryId}
