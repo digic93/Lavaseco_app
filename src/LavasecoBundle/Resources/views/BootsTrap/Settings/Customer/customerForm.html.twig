@@ -1,0 +1,176 @@
+<style> 
+    .req {
+        margin:2px;
+        color:#1ab188;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">  
+        <form>
+            <div class="form-group">
+                <div id="divName" class="form-group">
+                    <label  class="control-label">Nombre<span class="req">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                        <input class="form-control" id="client_name" type="text" required autocomplete="off" />
+                    </div>
+                    <span id="helpBlockName" class="help-block"></span>
+                </div>
+
+                <div id="divEmail" class="form-group">
+                    <label  class="control-label">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+                        <input class="form-control" id="client_email" type="email" o required autocomplete="off"/>
+                    </div>
+                    <span id="helpBlockEmail" class="help-block"></span>
+                </div>
+
+                <div id="divPhone" class="form-group">
+                    <label  class="control-label">Numero Telefono</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i></span>
+                        <input class="form-control" id="client_phone_number" type="number" required autocomplete="off"/>
+                    </div>
+                    <span id="helpBlockPhone" class="help-block"></span>
+                </div>
+
+                <div id="divAddress" class="form-group">
+                    <label  class="control-label">Dirección</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                        <input class="form-control" id="client_address" type="text"required autocomplete="off"/>
+                    </div>
+                    <span id="helpBlockLastName" class="help-block"></span>
+                </div>
+                <!--pasar al formulario de confirmacion
+                                <div class="form-group">
+                                    <p>Contraseña<span class="req">*</span></p>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                                        <input class="form-control" id="client_psw" type="password"required autocomplete="off"/>
+                                    </div>
+                                </div>
+                
+                                <div class="form-group">
+                                    <p>Confirmar Contraseña<span class="req">*</span></p>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                                        <input class="form-control" id="client_confirmPsw" type="password"required autocomplete="off"/>
+                
+                                    </div>
+                                </div>
+                -->
+                <button type="button"  onclick="saveUser();" class="btn btn-success btn-block"/>Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+{% block javascripts %}
+    <script>
+        var valid = false;
+        var validName = false;
+        var validLastName = false;
+        var validPhone = false;
+
+        $('#client_email').focusout(function () {
+            if ($("#client_email").val() !== "")
+                $.ajax({
+                    url: "{{ path('lavaseco_api_validate_customer') }}/" + $("#client_email").val(),
+                    method: "GET",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (result) {
+                        var email = $("#client_email").val();
+
+                        if (email === null || email.length === 0 || /^\s+$/.test(email)) {
+                            $("#divEmail").removeClass("has-success");
+                            $("#divEmail").addClass("has-error");
+                            $("#helpBlockEmail").text("Campo Obligatorio");
+                        } else if (!(/\S+@\S+\.\S+/.test(email))) {
+                            $("#divEmail").removeClass("has-success");
+                            $("#divEmail").addClass("has-error");
+                            $("#helpBlockEmail").text("Campo No Valido");
+                        } else {
+                            valid = result.valid;
+                            if (!valid) {
+                                $("#divEmail").removeClass("has-success");
+                                $("#divEmail").addClass("has-error");
+                                $("#helpBlockEmail").text("Este Email ya esta registrado");
+                            } else {
+                                $("#divEmail").removeClass("has-error");
+                                $("#divEmail").addClass("has-success");
+                                $("#helpBlockEmail").text("");
+                            }
+                        }
+                    }
+                });
+        });
+
+        $('#client_name').focusout(function () {
+            var name = $("#client_name").val();
+
+            if (name === null || name.length === 0 || /^\s+$/.test(name)) {
+                $("#divName").removeClass("has-success");
+                $("#divName").addClass("has-error");
+                $("#helpBlockName").text("Campo Obligatorio");
+                validName = false;
+            } else {
+                $("#divName").addClass("has-success");
+                $("#divName").removeClass("has-error");
+                $("#helpBlockName").text("");
+                validName = true;
+            }
+        });
+
+
+        function saveUser() {
+            if (validName) {
+                var user = {
+                    "name": $("#client_name").val()
+                };
+                if ($("#client_email").val() !== "") {
+                    user["email"] = $("#client_email").val();
+                }
+                if ($("#client_address").val() !== "") {
+                    user["address"] = $("#client_address").val();
+                }
+                if ($("#client_phone_number").val() !== "") {
+                    user["phoneNumber"] = $("#client_phone_number").val();
+                }
+
+
+                $.ajax({
+                    url: "{{ path("lavaseco_api_create_customer") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: user,
+                    success: function (result) {
+                        alert("Cliente " + result.name + " Creado con exito");
+                        clearForm();
+                    },
+                    error: function () {
+                        alert("Error al registrar el cliente");
+                    }
+                });
+            } else {
+                alert("El campo Nombre es Obligatorio");
+            }
+        }
+
+        function clearForm() {
+            $("#client_email").val('');
+            $("#client_name").val('');
+            $("#client_address").val('');
+            $("#client_phone_number").val('');
+            $("#divEmail").removeClass("has-success");
+            $("#divPhone").removeClass("has-success");
+            $("#divName").removeClass("has-success");
+            $("#divAddress").removeClass("has-success");
+        }
+
+    </script>
+{% endblock %}

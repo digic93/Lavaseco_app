@@ -51,11 +51,6 @@ class User extends BaseUser
     protected $saleBills;
     
     /**
-     * @ORM\OneToMany(targetEntity="Bill", mappedBy="customerUser")
-     */
-    protected $customerbills;
-    
-    /**
      * @ORM\OneToMany(targetEntity="BillHistory", mappedBy="user")
      */
     protected $billHistories;

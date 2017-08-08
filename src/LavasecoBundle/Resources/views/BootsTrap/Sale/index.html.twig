@@ -252,7 +252,7 @@
                     <h4 class="modal-title">Registro de Clientes</h4>
                 </div>
                 <div class="modal-body">
-                    {% include 'LavasecoBundle:BootsTrap:Settings/Users/userForm.html.twig' %}
+                    {% include 'LavasecoBundle:BootsTrap:Settings/Customer/customerForm.html.twig' %}
                 </div>
             </div>
         </div>
@@ -371,7 +371,7 @@
         $('#clientBill').typeahead({
             order: "asc",
             ajax: {
-                url: "{{ path('lavaseco_api_search_user') }}",
+                url: "{{ path('lavaseco_api_search_customer') }}",
                 method: "POST",
                 loadingClass: "loading-circle",
                 preDispatch: function (query) {
@@ -627,7 +627,7 @@
             $("#infoClientBill").html(html);
 
             $.ajax({
-                url: "{{ path('lavaseco_api_get_user') }}/" + item.value,
+                url: "{{ path('lavaseco_api_get_customer') }}/" + item.value,
                 method: "GET",
                 contentType: 'application/json',
                 dataType: 'json',
@@ -638,10 +638,14 @@
                     }
                     factura.customerId = user.id;
 
-                    html = "<p> <strong> Nombre Cliente: </strong>" + user.firstName + " " + user.lastName + "<br>\
-                                <strong> Email Cliente: </strong>" + user.email + "<br>\
-                                <strong> numero: </strong>" + user.phoneNumber + "<br>\
-                            </p>";
+                    html = "<p> <strong> Nombre Cliente: </strong>" + user.name + "<br>";
+                    if(user.email !== null)
+                        html += "<strong> Email Cliente: </strong>" + user.email + "<br>";
+                    if(user.phoneNumber !== null)
+                        html += "<strong> numero: </strong>" + user.phoneNumber + "<br>";
+
+                    html += "<strong> Puntos Acumulados: </strong>" + user.points + "<br></p>";
+                    
                     $("#infoClientBill").empty();
                     $("#infoClientBill").html(html);
                 }

@@ -88,11 +88,23 @@ class SalePoint {
      * @ORM\OneToMany(targetEntity="CashTransaction", mappedBy="salePoint")
      */
     protected $cashTransactions;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Bill", mappedBy="salePoint")
+     */
+    protected $bills;
 
+    
     /**
      * Constructor
      */
     public function __construct() {
+        $this->setTurn(1);
+        $this->setBalance(0);
+        $this->setUpdatedAt();
+        $this->setIsOpen(false);
+        $this->setIsActive(false);
+        $this->setBillConsecutive(1);
         $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         $this->cashTransactions = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -179,8 +191,8 @@ class SalePoint {
      *
      * @return SalePoint
      */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
+    public function setUpdatedAt() {
+        $this->updatedAt = new \DateTime(date('Y-m-d H:i:s'));
 
         return $this;
     }
@@ -334,5 +346,51 @@ class SalePoint {
     public function getDeviceId() {
         return $this->deviceId;
     }
+    
+    public function setNextTurn(){
+        $this->turn += 1;
+    }
 
+    public function getCreatedAtString() {
+        return $this->createdAt->format('d/m/Y H:i');
+    }
+
+    public function getUpdateAtString() {
+        return $this->updatedAt->format('d/m/Y H:i');
+    }
+    
+
+    /**
+     * Add bill
+     *
+     * @param \LavasecoBundle\Entity\Bill $bill
+     *
+     * @return SalePoint
+     */
+    public function addBill(\LavasecoBundle\Entity\Bill $bill)
+    {
+        $this->bills[] = $bill;
+
+        return $this;
+    }
+
+    /**
+     * Remove bill
+     *
+     * @param \LavasecoBundle\Entity\Bill $bill
+     */
+    public function removeBill(\LavasecoBundle\Entity\Bill $bill)
+    {
+        $this->bills->removeElement($bill);
+    }
+
+    /**
+     * Get bills
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBills()
+    {
+        return $this->bills;
+    }
 }
