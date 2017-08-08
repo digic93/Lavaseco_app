@@ -88,7 +88,13 @@ class SalePoint {
      * @ORM\OneToMany(targetEntity="CashTransaction", mappedBy="salePoint")
      */
     protected $cashTransactions;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Bill", mappedBy="salePoint")
+     */
+    protected $bills;
 
+    
     /**
      * Constructor
      */
@@ -353,4 +359,38 @@ class SalePoint {
         return $this->updatedAt->format('d/m/Y H:i');
     }
     
+
+    /**
+     * Add bill
+     *
+     * @param \LavasecoBundle\Entity\Bill $bill
+     *
+     * @return SalePoint
+     */
+    public function addBill(\LavasecoBundle\Entity\Bill $bill)
+    {
+        $this->bills[] = $bill;
+
+        return $this;
+    }
+
+    /**
+     * Remove bill
+     *
+     * @param \LavasecoBundle\Entity\Bill $bill
+     */
+    public function removeBill(\LavasecoBundle\Entity\Bill $bill)
+    {
+        $this->bills->removeElement($bill);
+    }
+
+    /**
+     * Get bills
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBills()
+    {
+        return $this->bills;
+    }
 }

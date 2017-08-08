@@ -52,19 +52,26 @@ class BillController extends Controller {
         $payment = $request->request->get("total");
         $payMethodId = 1; //$request->request->get("paymenthod");
         $observation = $request->request->get("observations");
-        $customerUserId = $request->request->get("customerId");
+        $customerId = $request->request->get("customerId");
                 
+        $customer = $this->getCustomerById($customerId);
         $paymentAgreement = $this->getPaymentAgreementById($request->request->get("paymentAgreementId"));
 
-        $bill = $this->saveBilling($customerUserId, $observation, $paymentAgreement);
-        $this->saveBillDetail($bill, $request->request->get("services"));
+        $bill = $this->saveBilling($customer, $observation, $paymentAgreement);
+        $total = $this->saveBillDetail($bill, $request->request->get("services"));
         
         if($payMethodId != 2){
             $this->savePayDetail($payMethodId ,$payment, $bill);
         }
         
-        $this->saveBillHistory($bill);
         //asignacion de puntos al cliente
+        if($customer && $paymentAgreement->getId()  == 1){
+            $bonification = $this->getBonificationByPaymentAgreement($paymentAgreement);
+            $this->updateCustomer($total, $customer, $bonification);
+        }
+        
+        $this->saveBillHistory($bill);
+
         //Enviar via correo electronico la factura al cliente
 
         return $this->json(["billId" => $bill->getId()]);
@@ -121,12 +128,12 @@ class BillController extends Controller {
         return $billContentRepository->find($billContentId);
     }
 
-    private function saveBilling($customerUserId, $observation, $paymentAgreement) {
+    private function saveBilling($customer, $observation, $paymentAgreement) {
         $bill = new Bill();
         $em = $this->get('doctrine')->getManager();
 
         $bill->setSellerUser($this->getUser());
-        $bill->setCustomerUser($this->getUserbyId($customerUserId));
+        $bill->setCustomer($customer);
         $bill->setObservation($observation);
         $bill->setPaymentAgreement($paymentAgreement);
         $bill->setBillState($this->getBillState($paymentAgreement));
@@ -139,9 +146,11 @@ class BillController extends Controller {
     }
 
     private function saveBillDetail($bill, $services) {
+        $total = 0;
         $em = $this->get('doctrine')->getManager();
 
         foreach ($services as $service) {
+            $total += $service["price"] * $service["quantity"];
             $billDetail = new BillDetail();
             $serviceObj = $this->getServiceByServiceCategoryId($service["id"]);
 
@@ -156,6 +165,7 @@ class BillController extends Controller {
                 $this->saveObjectStateReceivedService($serviceObj, $billDetail, $service["descriptors"]);
             }
         }
+        return $total;
     }
 
     private function saveObjectStateReceivedService($service, $billDetail, $descriptors) {
@@ -237,11 +247,11 @@ class BillController extends Controller {
         return $billRepository->getConsecutive();
     }
 
-    private function getUserbyId($userId) {
+    private function getCustomerById($customerId) {
         $doctrineManager = $this->get('doctrine')->getManager();
-        $userRepository = $doctrineManager->getRepository("LavasecoBundle:User");
+        $userRepository = $doctrineManager->getRepository("LavasecoBundle:Customer");
 
-        return $userRepository->find($userId);
+        return $userRepository->find($customerId);
     }
 
     private function getPayMethodById($payMethodById){
@@ -339,4 +349,38 @@ class BillController extends Controller {
         return $typeTransactionRepository->find($typeTransactionId);
     }
     
+    private function updateCustomer($total, &$customer, $bonification){
+        $em = $this->get('doctrine')->getManager();
+
+        $currentPoints = $customer->getPoints();
+        $totalSpent =  $customer->getTotalSpent();
+        $customer->setLastVisit(new \DateTime(date('Y-m-d H:i:s')));
+        $customer->setTotalSpent($totalSpent + $total);
+        $customer->setTotalVisits($customer->getTotalVisits() + 1);
+        $customer->setPoints($currentPoints + ($total * $bonification / 100 ));
+        
+        $em->persist($customer);
+    }
+    
+    private function getBonificationByPaymentAgreement($paymentAgreement){
+        $bonification = 0;
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $loyaltyRepository = $doctrineManager->getRepository("LavasecoBundle:Loyalty");
+        
+        $loyalty = $loyaltyRepository->find(1);
+        
+        if($paymentAgreement->getId() == 1){
+            $bonification = $loyalty->getAdvancePercent();
+        }
+        
+        if($paymentAgreement->getId() == 2){
+            $bonification = $loyalty->getUponDeliveryPercent();
+        }
+        
+        if($paymentAgreement->getId() == 3){
+            $bonification = $loyalty->getDepositPercent();
+        }
+        
+        return $bonification;
+    }
 }

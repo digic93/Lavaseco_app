@@ -61,10 +61,10 @@ class Bill {
     protected $sellerUser;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="customerbills")
-     * @ORM\JoinColumn(name="customer_user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Customer", inversedBy="bills")
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    protected $customerUser;
+    protected $customer;
 
     /**
      * @ORM\ManyToOne(targetEntity="BillState", inversedBy="bills")
@@ -83,6 +83,12 @@ class Bill {
      * @ORM\JoinColumn(name="payment_agreement_id", referencedColumnName="id", nullable=false)
      */
     protected $paymentAgreement;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="SalePoint", inversedBy="bills")
+     * @ORM\JoinColumn(name="sale_point_id", referencedColumnName="id")
+     */
+    protected $salePoint;
 
     /**
      * Constructor
@@ -123,6 +129,28 @@ class Bill {
      */
     public function getConsecutive() {
         return $this->consecutive;
+    }
+
+    /**
+     * Set observation
+     *
+     * @param string $observation
+     *
+     * @return Bill
+     */
+    public function setObservation($observation) {
+        $this->observation = $observation;
+
+        return $this;
+    }
+
+    /**
+     * Get observation
+     *
+     * @return string
+     */
+    public function getObservation() {
+        return $this->observation;
     }
 
     /**
@@ -247,7 +275,7 @@ class Bill {
      *
      * @return Bill
      */
-    public function setSellerUser(\LavasecoBundle\Entity\User $sellerUser = null) {
+    public function setSellerUser(\LavasecoBundle\Entity\User $sellerUser) {
         $this->sellerUser = $sellerUser;
 
         return $this;
@@ -263,25 +291,25 @@ class Bill {
     }
 
     /**
-     * Set customerUser
+     * Set customer
      *
-     * @param \LavasecoBundle\Entity\User $customerUser
+     * @param \LavasecoBundle\Entity\Customer $customer
      *
      * @return Bill
      */
-    public function setCustomerUser(\LavasecoBundle\Entity\User $customerUser = null) {
-        $this->customerUser = $customerUser;
+    public function setCustomer(\LavasecoBundle\Entity\Customer $customer = null) {
+        $this->customer = $customer;
 
         return $this;
     }
 
     /**
-     * Get customerUser
+     * Get customer
      *
-     * @return \LavasecoBundle\Entity\User
+     * @return \LavasecoBundle\Entity\Customer
      */
-    public function getCustomerUser() {
-        return $this->customerUser;
+    public function getCustomer() {
+        return $this->customer;
     }
 
     /**
@@ -291,7 +319,7 @@ class Bill {
      *
      * @return Bill
      */
-    public function setBillState(\LavasecoBundle\Entity\BillState $billState = null) {
+    public function setBillState(\LavasecoBundle\Entity\BillState $billState) {
         $this->billState = $billState;
 
         return $this;
@@ -307,13 +335,35 @@ class Bill {
     }
 
     /**
+     * Set processState
+     *
+     * @param \LavasecoBundle\Entity\ProcessState $processState
+     *
+     * @return Bill
+     */
+    public function setProcessState(\LavasecoBundle\Entity\ProcessState $processState) {
+        $this->processState = $processState;
+
+        return $this;
+    }
+
+    /**
+     * Get processState
+     *
+     * @return \LavasecoBundle\Entity\ProcessState
+     */
+    public function getProcessState() {
+        return $this->processState;
+    }
+
+    /**
      * Set paymentAgreement
      *
      * @param \LavasecoBundle\Entity\PaymentAgreement $paymentAgreement
      *
      * @return Bill
      */
-    public function setPaymentAgreement(\LavasecoBundle\Entity\PaymentAgreement $paymentAgreement = null) {
+    public function setPaymentAgreement(\LavasecoBundle\Entity\PaymentAgreement $paymentAgreement) {
         $this->paymentAgreement = $paymentAgreement;
 
         return $this;
@@ -328,56 +378,30 @@ class Bill {
         return $this->paymentAgreement;
     }
 
-
     /**
-     * Set observation
+     * Set salePoint
      *
-     * @param string $observation
+     * @param \LavasecoBundle\Entity\SalePoint $salePoint
      *
      * @return Bill
      */
-    public function setObservation($observation)
-    {
-        $this->observation = $observation;
+    public function setSalePoint(\LavasecoBundle\Entity\SalePoint $salePoint = null) {
+        $this->salePoint = $salePoint;
 
         return $this;
     }
 
     /**
-     * Get observation
+     * Get salePoint
      *
-     * @return string
+     * @return \LavasecoBundle\Entity\SalePoint
      */
-    public function getObservation()
-    {
-        return $this->observation;
-    }
-    
-    /**
-     * Set processState
-     *
-     * @param \LavasecoBundle\Entity\ProcessState $processState
-     *
-     * @return Bill
-     */
-    public function setProcessState(\LavasecoBundle\Entity\ProcessState $processState)
-    {
-        $this->processState = $processState;
-
-        return $this;
+    public function getSalePoint() {
+        return $this->salePoint;
     }
 
-    /**
-     * Get processState
-     *
-     * @return \LavasecoBundle\Entity\ProcessState
-     */
-    public function getProcessState()
-    {
-        return $this->processState;
-    }
-    
     public function getCreatedAtString() {
         return $this->createdAt->format('d/m/Y H:i');
     }
+
 }

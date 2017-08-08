@@ -31,5 +31,5 @@ class HomeController extends Controller {
 
         return $salePointRepository->findOneBy(array('isActive' => $active));
     }
-
+///home/diego/dumps/Dump20170807.sql has finished
 }

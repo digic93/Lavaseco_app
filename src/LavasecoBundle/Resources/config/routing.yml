@@ -34,9 +34,9 @@ lavaseco_settign_service_categories:
     path:     /configuracion/servicios
     defaults: { _controller: LavasecoBundle:Service:setting }
 
-lavaseco_settign_users:
-    path:     /configuracion/usuarios
-    defaults: { _controller: LavasecoBundle:User:create }
+lavaseco_settign_customers:
+    path:     /configuracion/clientes
+    defaults: { _controller: LavasecoBundle:Customer:create }
 
 lavaseco_settign_sale_point:
     path:     /configuracion/puntoventa
@@ -79,27 +79,27 @@ lavaseco_api_descriptors:
     methods:  [GET]
 
 #permitido solo para los usuarios que tienen acceso a venta
-lavaseco_api_search_user:
-    path:     /api/tool/user
-    defaults: { _controller: LavasecoBundle:User:search }
+lavaseco_api_search_customer:
+    path:     /api/search/customer
+    defaults: { _controller: LavasecoBundle:Customer:search }
     methods:  [POST]
     
 #permitido solo para los usuarios que tienen acceso a venta    
-lavaseco_api_get_user:
-    path:     /api/user/{userId}
-    defaults: { _controller: LavasecoBundle:User:getByUserId, userId:0}
+lavaseco_api_get_customer:
+    path:     /api/customer/{customerId}
+    defaults: { _controller: LavasecoBundle:Customer:getCustomer, customerId:0}
     methods:  [GET]
     requirements:
-        userId:  \d+
+        customerId:  \d+
 
-lavaseco_api_validate_user:
-    path:     /api/user/{email}
-    defaults: { _controller: LavasecoBundle:User:validateEmail, email: ''}
+lavaseco_api_validate_customer:
+    path:     /api/customer/{email}
+    defaults: { _controller: LavasecoBundle:Customer:validateEmail, email: ''}
     methods:  [GET]
         
-lavaseco_api_create_user:
-    path:     /api/user
-    defaults: { _controller: LavasecoBundle:User:register }
+lavaseco_api_create_customer:
+    path:     /api/customer
+    defaults: { _controller: LavasecoBundle:Customer:register }
     methods:  [POST]
 
 lavaseco_api_sale_billing:
