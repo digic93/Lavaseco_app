@@ -1,0 +1,33 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block body %} 
+    <h1>Bienvenido Nombre Usuario</h1> 
+    <p>
+        Seleccione la opción de su preferencia    
+    </p>
+    <hr>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Buscar...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </span>
+            </div>
+            <br>
+            <div class="btn-group text-center" role="group">
+                {% for option in Options %}
+                    <button type="button" class="btn btn-default" onClick="" >
+                        <img src="{{ asset( option.img ) }}" style="width: 30px;" /> {{ option.name }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>    
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+        
+    </script>
+{% endblock %}

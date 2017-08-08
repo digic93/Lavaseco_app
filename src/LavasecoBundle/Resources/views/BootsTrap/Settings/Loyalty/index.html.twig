@@ -1,7 +1,98 @@
 {% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
 
 {% block body %} 
-{{ form_start(form) }}
-{{ form_widget(form) }}
-{{ form_end(form) }}
+    <h1>Configuración del Modulo de Fidelización</h1>
+    <p>
+        Cree o modifique los valores de los porcentajes o los puntos iniciales por cada nuevo registro de clientes.    
+    </p>
+    <hr>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <!-- Form Tipo descriptor-->
+            {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
+            <div class="form-group">
+                <div id="" class="form-group">
+                    <p>Puntos Iniciales (Registro)</p>
+                    {{ form_errors(form.startPoint) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-star" aria-hidden="true"></i></span>
+                            {{ form_widget(form.startPoint, {'attr': {'class': 'form-control  input-md'} }) }}
+                    </div>
+                </div>
+
+                <div id="" class="form-group">
+                    <p>Porcentaje de Deposito</p>
+                    {{ form_errors(form.depositPercent) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-percent" aria-hidden="true"></i></span>
+                            {{ form_widget(form.depositPercent, {'attr': {'class': 'form-control  input-md'} }) }}
+                    </div>
+                </div>
+
+                <div id="" class="form-group">
+                    <p>Porcentaje sobre la Entrega</p>
+                    {{ form_errors(form.uponDeliveryPercent) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-percent" aria-hidden="true"></i></span>
+                            {{ form_widget(form.uponDeliveryPercent, {'attr': {'class': 'form-control  input-md'} }) }}
+                    </div>
+                </div>
+
+                <div id="" class="form-group">
+                    <p>Porcentaje de Avance</p>
+                    {{ form_errors(form.advancePercent) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-percent" aria-hidden="true"></i></span>
+                            {{ form_widget(form.advancePercent, {'attr': {'class': 'form-control  input-md'} }) }}
+                    </div>
+                </div>
+
+                <!-- Button -->
+                <div class="form-group">
+                    <label class="control-label" for="singlebutton"></label>
+                    <div class="input-group">
+                        <input type="submit" id="singlebutton" name="singlebutton" class="btn btn-success btn-block" value="Guardar">
+                    </div>
+                </div>
+
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>    
+
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#lavasecobundle_loyalty_startpoint").number(true);
+            $("#lavasecobundle_loyalty_depositPercent").number(true);
+            $("#lavasecobundle_loyalty_uponDeliveryPercent").number(true);
+            $("#lavasecobundle_loyalty_advancePercent").number(true);
+        });
+
+        $('#lavasecobundle_loyalty_depositPercent').keyup(function () {
+            if ($(this).val() > 100) {
+                $(this).val('100');
+            } else if($(this).val() < 0){
+                $(this).val('0');
+            }
+        });
+        
+        $('#lavasecobundle_loyalty_uponDeliveryPercent').keyup(function () {
+            if ($(this).val() < 100) {
+                $(this).val('100');
+            }else if($(this).val() < 0){
+                $(this).val('0');
+            }
+        });
+        
+        $('#lavasecobundle_loyalty_advancePercent').keyup(function () {
+            if ($(this).val() < 100) {
+                $(this).val('100');
+            }else if($(this).val() < 0){
+                $(this).val('0');
+            }
+        });
+    </script>
 {% endblock %}
