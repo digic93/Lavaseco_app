@@ -21,29 +21,29 @@
                 </div>
 
                 <div id="" class="form-group">
-                    <p>Porcentaje de Deposito</p>
+                    <p>Porcentaje por Pago Anticipado</p>
                     {{ form_errors(form.depositPercent) }}
                     <div class="input-group">
+                        {{ form_widget(form.depositPercent, {'attr': {'class': 'form-control  input-md'} }) }}
                         <span class="input-group-addon"><i class="fa fa-percent" aria-hidden="true"></i></span>
-                            {{ form_widget(form.depositPercent, {'attr': {'class': 'form-control  input-md'} }) }}
                     </div>
                 </div>
 
                 <div id="" class="form-group">
-                    <p>Porcentaje sobre la Entrega</p>
+                    <p>Porcentaje por Pago ContraEntrega</p>
                     {{ form_errors(form.uponDeliveryPercent) }}
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-percent" aria-hidden="true"></i></span>
-                            {{ form_widget(form.uponDeliveryPercent, {'attr': {'class': 'form-control  input-md'} }) }}
+                        {{ form_widget(form.uponDeliveryPercent, {'attr': {'class': 'form-control  input-md'} }) }}
+                         <span class="input-group-addon"><i class="fa fa-percent" aria-hidden="true"></i></span>
                     </div>
                 </div>
 
                 <div id="" class="form-group">
-                    <p>Porcentaje de Avance</p>
+                    <p>Porcentaje por Pago Abono</p>
                     {{ form_errors(form.advancePercent) }}
                     <div class="input-group">
+                        {{ form_widget(form.advancePercent, {'attr': {'class': 'form-control  input-md'} }) }}
                         <span class="input-group-addon"><i class="fa fa-percent" aria-hidden="true"></i></span>
-                            {{ form_widget(form.advancePercent, {'attr': {'class': 'form-control  input-md'} }) }}
                     </div>
                 </div>
 
@@ -74,24 +74,18 @@
         $('#lavasecobundle_loyalty_depositPercent').keyup(function () {
             if ($(this).val() > 100) {
                 $(this).val('100');
-            } else if($(this).val() < 0){
-                $(this).val('0');
             }
         });
         
         $('#lavasecobundle_loyalty_uponDeliveryPercent').keyup(function () {
             if ($(this).val() < 100) {
                 $(this).val('100');
-            }else if($(this).val() < 0){
-                $(this).val('0');
             }
         });
         
         $('#lavasecobundle_loyalty_advancePercent').keyup(function () {
             if ($(this).val() < 100) {
                 $(this).val('100');
-            }else if($(this).val() < 0){
-                $(this).val('0');
             }
         });
     </script>

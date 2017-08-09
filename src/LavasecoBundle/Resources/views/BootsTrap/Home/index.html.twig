@@ -15,10 +15,8 @@
                 </span>
             </div>
             <br>
-            <div class="btn-group text-center" role="group">
-                      <button type="button" class="btn btn-default" onClick="" >
-                        <img src=" asset( option.img ) " style="width: 30px;" />  option.name 
-                    </button>
+            <div id="blockOption" class="btn-group text-center" role="group">
+
             </div>
         </div>
     </div>    
@@ -26,6 +24,47 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        
+        $(document).ready(function () {
+            var result = {"menu":
+                        [
+                            {
+                                "name": "Venta",
+                                "father": "",
+                                "path": "{{ path('lavaseco_sales') }}"
+                            },
+                            {
+                                "name": "Ordenes",
+                                "father": "",
+                                "path": "{{ path('lavaseco_orders') }}"
+                            },
+                            {
+                                "name": "Facturas",
+                                "father": "",
+                                "path": "{{ path('lavaseco_Bills') }}"
+                            },
+                            {
+                                "name": "Configuración",
+                                "father": "",
+                                "path": ""
+                            }
+                        ]
+            };
+
+            for (var i in result.menu) {
+                itemMenu(result.menu[i]);
+            }
+        });
+
+        function itemMenu(item) {
+            var html = "<a href=\"" + item.path + "\">\
+                            <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                <div class=\"thumbnail service\">\
+                                    <img src=\"/serviceImg/servicio.jpg\" alt=\"img\" />\
+                                    <h5 class=\"text-center\">" + item.name + "</h5>\
+                                </div>\
+                            </div>\
+                        </a>";
+            $("#blockOption").append(html);
+        }
     </script>
 {% endblock %}
