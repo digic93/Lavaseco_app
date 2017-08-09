@@ -1,7 +1,7 @@
 {% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
 
 {% block body %} 
-    <h1>Bienvenido Nombre Usuario</h1> 
+    <h1>Bienvenido {{ app.user.firstName }} {{ app.user.lastName }}</h1> 
     <p>
         Seleccione la opción de su preferencia    
     </p>
@@ -16,11 +16,9 @@
             </div>
             <br>
             <div class="btn-group text-center" role="group">
-                {% for option in Options %}
-                    <button type="button" class="btn btn-default" onClick="" >
-                        <img src="{{ asset( option.img ) }}" style="width: 30px;" /> {{ option.name }}
+                      <button type="button" class="btn btn-default" onClick="" >
+                        <img src=" asset( option.img ) " style="width: 30px;" />  option.name 
                     </button>
-                {% endfor %}
             </div>
         </div>
     </div>    

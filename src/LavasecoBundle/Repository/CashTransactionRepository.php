@@ -28,9 +28,9 @@ class CashTransactionRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter('turn', $turn)
                 ->setParameter('salePoint', $salePointId)
                 ->setParameter('typeTransactionId', $typeTransactionId)
-                ->getQuery();
-         
+                ->getQuery()
+                ->getScalarResult();
         
-        return $total->getScalarResult()[0]['total'];
+        return (count($total))?$total[0]['total']:0;
     }
 }

@@ -34,4 +34,13 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
                 
         return $bills->getResult();
     }
+    
+    public function getBills(){        
+        $bills = $this->createQueryBuilder('b')
+                ->where('b.processState != 7')
+                ->getQuery();
+                
+        return $bills->getResult();
+    }
+    
 }
