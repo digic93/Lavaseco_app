@@ -10,4 +10,14 @@ namespace LavasecoBundle\Repository;
  */
 class ProcessStateRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getProces(){
+        $qb = $this->createQueryBuilder('p');
+        
+        $query = $qb->where($qb->expr()->notIn('p.id', '7'))
+                ->orderBy("p.id", 'ASC')
+                ->getQuery();
+        
+        return $query->getResult();
+        
+    }
 }

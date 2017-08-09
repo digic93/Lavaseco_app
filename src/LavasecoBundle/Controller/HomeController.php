@@ -9,6 +9,7 @@ class HomeController extends Controller {
 
     public function indexAction() {
         $securityContext = $this->container->get('security.authorization_checker');
+        $configuration = $this->get('lavaseco.app_configuration');
         if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $salePointSession = $this->get('session')->get('salePoint');
 
@@ -19,9 +20,9 @@ class HomeController extends Controller {
 
                 $this->get('session')->set('salePoint', ($salePoint) ? "0" : "1");
             }
-        }
+            return $this->render($configuration->getViewTheme() . ':Home/index.html.twig');
 
-        $configuration = $this->get('lavaseco.app_configuration');
+        }
         return $this->render($configuration->getViewTheme() . ':index.html.twig');
     }
 
@@ -31,5 +32,4 @@ class HomeController extends Controller {
 
         return $salePointRepository->findOneBy(array('isActive' => $active));
     }
-///home/diego/dumps/Dump20170807.sql has finished
 }

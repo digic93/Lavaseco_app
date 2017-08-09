@@ -139,7 +139,8 @@ class BillController extends Controller {
         $bill->setBillState($this->getBillState($paymentAgreement));
         $bill->setProcessState($this->getProcessState());
         $bill->setConsecutive($this->getBillConsecutive());
-
+        $bill->setSalePoint($this->getSalePoint());
+        
         $em->persist($bill);
 
         return $bill;
@@ -294,8 +295,8 @@ class BillController extends Controller {
             "bill" => $bill->getId(),
             "consecutive" => $bill->getConsecutive(),
             "seller" => $bill->getSellerUser()->getName(),
-            "customer" => ($bill->getCustomerUser()) ? $bill->getCustomerUser()->getName() : "No se Registro Cliente",
-            "phoneNumber" => ($bill->getCustomerUser()) ? $bill->getCustomerUser()->getPhoneNumber() : "No se Registro Cliente",
+            "customer" => ($bill->getCustomer()) ? $bill->getCustomer()->getName() : "No se Registro Cliente",
+            "phoneNumber" => ($bill->getCustomer()) ? $bill->getCustomer()->getPhoneNumber() : "No se Registro Telefono",
             "observation" => $bill->getObservation(),
             "createdAt" => $bill->getCreatedAtString(),
             "billDetail" => $this->getItemsBill($bill)

@@ -149,7 +149,7 @@
                 validName = true;
             }
         });
-
+{#
         $('#client_address').focusout(function () {
             var address = $("#client_address").val();
 
@@ -173,7 +173,7 @@
                 $("#divPhone").removeClass("has-warning");
             }
         });
-
+#}
 
         function saveUser() {
             if (validName) {
@@ -197,7 +197,7 @@
                     dataType: "json",
                     data: user,
                     success: function (result) {
-                        $('#messageCreatedUser').text("El usuario" + result.name + " ha sido creado correctamente.");
+                        $('#messageCreatedUser').text("El cliente " + result.name + " ha sido creado correctamente.");
                         $('#modalAlert').modal('show');
                         clearForm();
                     },

@@ -51,8 +51,8 @@
                         <tr>
                             <td>{{ bill.id }}</td>
                             <td>{{ bill.consecutive }}</td>
-                            <td>{{ bill.customerUser.name | default("No se Registro Cliente")}}</td>
-                            <td>{{ bill.customerUser.phoneNumber | default("No se Registro Cliente")}}</td>
+                            <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
+                            <td>{{ bill.customer.phoneNumber | default("No se Registro telefono")}}</td>
                             <td>{{ bill.processState.name}}</td>
                             <td>{{ bill.sellerUser.name }}</td>
                             <td>{{ bill.CreatedAtString}}</td>

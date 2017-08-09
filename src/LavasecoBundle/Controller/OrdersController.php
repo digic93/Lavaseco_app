@@ -16,10 +16,10 @@ class OrdersController extends Controller {
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
         $processStateRepository = $doctrineManager->getRepository("LavasecoBundle:ProcessState");
 
-        $data["processStates"] = $processStateRepository->findBy([],["id" => "ASC"]);
+        $data["processStates"] = $processStateRepository->getProces();
         
-        if ($processId == 0) {
-            $bills = $billRepository->findAll();
+        if ($processId == 0 || $processId >= 7) {
+            $bills = $billRepository->getBills();
         } else {
 
             $bills = $billRepository->getBillsByProcessId($processId);
