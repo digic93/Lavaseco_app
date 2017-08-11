@@ -10,6 +10,18 @@ namespace LavasecoBundle\Repository;
  */
 class CashTransactionRepository extends \Doctrine\ORM\EntityRepository {
 
+    public function getStarCash($salePointId, $turn) {
+        return $this->getTotalByTypeTransaction($salePointId, $turn, 1);
+    }
+    
+    public function getIntputCash($salePointId, $turn) {
+        return $this->getTotalByTypeTransaction($salePointId, $turn, 3);
+    }
+    
+    public function getOutputCash($salePointId, $turn) {
+        return $this->getTotalByTypeTransaction($salePointId, $turn, 4);
+    }
+    
     public function getFninalBalance($salePointId, $turn) {
         $start = $this->getTotalByTypeTransaction($salePointId, $turn, 1);
         $intput = $this->getTotalByTypeTransaction($salePointId, $turn, 3);

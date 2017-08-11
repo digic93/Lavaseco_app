@@ -27,14 +27,20 @@
         <!--facturas-->
         <div class="col-md-12"> 
             <div class="well well-sm pull-right">
-                <form class="form-inline">
-                    <button type="button" id="changeStateButton" class="btn btn-default" onclick="delivered();">Entregar</button> |
-                    <div class="form-group">
-                        <select class="form-control" id="sel1">
-                            <option>Seleccione un estado </option>
-                        </select>
-                    </div>
-                </form>                
+                {% if salePointIsOpen %}
+                    <form class="form-inline">
+                        <button type="button" id="deleveryButton" class="btn btn-default" onclick="delivered();">Entregar</button> |
+                        <button type="button" id="refundButton" class="btn btn-default" onclick="refund();">Reembolso</button>
+                        {#                    <div class="form-group">
+                                                <select class="form-control" id="sel1">
+                                                    <option>Seleccione un estado </option>
+                                                </select>
+                                            </div>
+                        #}
+                    </form>                
+                {% else %}
+                    <p>Para realizar una entrega o reembolso la caja debe estar abierta.</p>
+                {% endif %}
             </div>
 
             <table id="billsUndeliveredTable" class="display" cellspacing="0" width="100%">
@@ -165,13 +171,14 @@
 
     <script>
         var bill;
+        var billId;
         var total = 0;
         var UndeliveredBillSelect = 0;
 
         $(document).ready(function () {
             $("#change").number(true);
             $("#cashReceived").number(true);
-            
+
             var billsUndeliveredTable = $('#billsUndeliveredTable').DataTable({
                 "order": [[0, "Desc"]]
             });
@@ -182,7 +189,7 @@
 
             $('#billsUndeliveredTable tbody').on('click', 'tr', function () {
                 var data = billsUndeliveredTable.row(this).data();
-                UndeliveredBillSelect = data[0];
+                UndeliveredBillSelect = billId = data[0];
 
                 $(".selected").toggleClass('selected');
 
@@ -193,6 +200,7 @@
 
             $('#billsDeliveredTable tbody').on('click', 'tr', function () {
                 var data = billsDeliveredTable.row(this).data();
+                billId = data[0];
                 UndeliveredBillSelect = 0;
                 $(".selected").toggleClass('selected');
 
@@ -339,6 +347,30 @@
                 $("#divCashReceived").addClass("has-success");
                 $("#divCashReceived").removeClass("has-error");
                 return true;
+            }
+        }
+
+        function refund() {
+            if (billId === undefined || billId === 0) {
+                alert("Seleccione por lo menos una Factura!");
+                return;
+            }
+
+            if (confirm("Recuerde que este proceso es irreversible. ¿Esta seguro del reembolso de la factura " + billId + "?")) {
+                $.ajax({
+                    url: "{{ path("lavaseco_api_bill_refund") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: {
+                        "bill": billId
+                    },
+                    success: function (result) {
+                        alert("Reembolso con exito");
+                        $('#wayToPay').modal('hide');
+                        location.reload();
+                    }
+
+                });
             }
         }
     </script>

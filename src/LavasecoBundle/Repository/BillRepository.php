@@ -38,6 +38,7 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
     public function findDelivered() {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.processState = 7')
+                ->orWhere('b.billState = 3')
                 ->getQuery();
 
         return $bills->getResult();
@@ -46,6 +47,7 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
     public function findUndelivered() {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.processState != 7')
+                ->andWhere('b.billState != 3')
                 ->getQuery();
 
         return $bills->getResult();

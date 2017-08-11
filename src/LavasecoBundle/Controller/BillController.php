@@ -17,6 +17,7 @@ class BillController extends Controller {
 
     public function indexAction() {
         $configuration = $this->get('lavaseco.app_configuration');
+        $salePoint = $this->get('session')->get('salePoint');
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
 
@@ -26,6 +27,7 @@ class BillController extends Controller {
         return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', [
                     "billsDelivered" => $billsDelivered,
                     "billsUndelivered" => $billsUndelivered,
+                    "salePointIsOpen" => ($salePoint) ? $salePoint->getIsOpen() : false
         ]);
     }
 
@@ -65,7 +67,7 @@ class BillController extends Controller {
         $bill = $this->saveBilling($customer, $observation, $paymentAgreement);
         $total = $this->saveBillDetail($bill, $request->request->get("services"));
 
-        if ($payMethodId != 2) {
+        if ($paymentAgreement->getId() != 2) {
             $this->savePayDetail($payMethodId, $payment, $bill);
         }
 
@@ -155,7 +157,7 @@ class BillController extends Controller {
         }
         $payment = ($bill->getPaymentAgreement()->getId() == 2) ? $total : ($total - $bill->getPayed());
 
-        $bill->setBillState($this->getBillState(2)); //estado cancelado
+        $bill->setBillState($this->getBillStateById(2)); //estado cancelado
         $bill->setProcessState($this->getProcessStateById(7)); //processState entregado
 
         $this->savePayDetail($payMethodId, $payment, $bill);
@@ -168,6 +170,24 @@ class BillController extends Controller {
         $this->saveBillHistory($bill);
 
         return $this->json([true]);
+    }
+
+    public function refundAction(Request $request) {
+        $bill = $this->getBillById($request->request->get('bill'));
+
+        if (!$bill) {
+            throw new NotFoundHttpException('Factura no encontrada!');
+        }
+
+        $bill->setBillState($this->getBillStateById(3)); //estdo anulado
+        $this->saveCashTransaction($bill->getPayed(), $bill, true);
+
+        $em = $this->get('doctrine')->getManager();
+        $em->persist($bill);
+        $em->flush();
+
+        return $this->json([true]);
+
     }
 
     private function getBillContentById($billContentId) {
@@ -185,7 +205,7 @@ class BillController extends Controller {
         $bill->setCustomer($customer);
         $bill->setObservation($observation);
         $bill->setPaymentAgreement($paymentAgreement);
-        $bill->setBillState($this->getBillState($paymentAgreement->getId()));
+        $bill->setBillState($this->getBillStateById(($paymentAgreement->getId() == 1) ? 2 : 1)); //si el acuerdo de pago es antisipado estado cancelado
         $bill->setProcessState($this->getProcessState());
         $bill->setConsecutive($this->getBillConsecutive());
         $bill->setSalePoint($this->getSalePoint());
@@ -260,7 +280,7 @@ class BillController extends Controller {
         $em->persist($payDeatil);
     }
 
-    private function saveCashTransaction($payment, $bill, $abono = false) {
+    private function saveCashTransaction($payment, $bill, $abono = 0) {
         $em = $this->get('doctrine')->getManager();
         $salePoint = $this->getSalePoint();
 
@@ -269,17 +289,17 @@ class BillController extends Controller {
         $cashTransaction->setUser($this->getUser());
         $cashTransaction->setSalePoint($salePoint);
         $cashTransaction->setTurn($salePoint->getTurn());
-        $cashTransaction->setTypeTransaction($this->getTypeTransactionById(3)); //3 es el id de tipo de transaccion ingreso
-        $cashTransaction->setDescription(($abono) ? "Abono" : "Pago" . " Facura " . $bill->getId());
+        $cashTransaction->setTypeTransaction($this->getTypeTransactionById(($abono == -1) ? 4 : 3)); //3 es el id de tipo de transaccion ingreso 4 egreso
+        $cashTransaction->setDescription(($abono == -1) ? "Reembolso" : (($abono) ? "Abono" : "Pago") . " Facura " . $bill->getId());
 
         $em->persist($cashTransaction);
     }
 
-    private function getBillState($paymentAgreementId) {
+    private function getBillStateById($billStateId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billStateRepository = $doctrineManager->getRepository("LavasecoBundle:BillState");
 
-        return $billStateRepository->find($paymentAgreementId);
+        return $billStateRepository->find($billStateId);
     }
 
     private function getProcessState() {

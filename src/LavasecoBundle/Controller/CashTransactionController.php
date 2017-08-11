@@ -27,7 +27,7 @@ class CashTransactionController extends Controller {
             $cashTransaction = $form->getData();
             // se envia negado por que aun no se actualiza el punto de venta, y determnia el tipo de transaccion realizada
             $typeTransaction = $this->getTypeTransaction(($egress == 0) ? !$salePoint->getIsOpen() : null);
-            $this->saveCashTransaction($cashTransaction, $salePoint, ($egress == 0)?$description:null, $typeTransaction);
+            $this->saveCashTransaction($cashTransaction, $salePoint, ($egress == 0) ? $description : null, $typeTransaction);
             if ($egress == 0) {
                 $this->updateSalePoint($salePoint, $cashTransaction->getPayment());
             }
@@ -42,7 +42,8 @@ class CashTransactionController extends Controller {
                     "form" => $form->createView(),
                     "editObservations" => $egress,
                     "title" => ($salePoint->getIsOpen()) ? ($egress == "1") ? "Egreso" : "Cierre" : "Apertura",
-                    "cashTransactions" => ($egress == 0) ? $this->getCashTransactions() : null
+                    "cashTransactions" => ($egress == 0) ? $this->getCashTransactions() : null,
+                    "summary" => ($egress == 0) ? $this->getSummary($salePoint) : null
         ]);
     }
 
@@ -52,7 +53,7 @@ class CashTransactionController extends Controller {
         $cashTransaction->setTurn($salePoint->getTurn());
         $cashTransaction->setSalePoint($salePoint);
         $cashTransaction->setUser($this->getUser());
-        if($description != null){
+        if ($description != null) {
             $cashTransaction->setDescription($description);
         }
         $cashTransaction->setTypeTransaction($typeTransaction);
@@ -115,12 +116,25 @@ class CashTransactionController extends Controller {
 
         return $cashTransactionRepository->findClosedCash($salePoint->getId(), $salePoint->getTurn());
     }
-    
-    private function getBalance($salePoint){
+
+    private function getBalance($salePoint) {
         $em = $this->get('doctrine')->getManager();
         $cashTransactionRepository = $em->getRepository("LavasecoBundle:CashTransaction");
-        
-        return $cashTransactionRepository->getFninalBalance($salePoint->getId(),$salePoint->getTurn());
+
+        return $cashTransactionRepository->getFninalBalance($salePoint->getId(), $salePoint->getTurn());
+    }
+
+    private function getSummary($salePoint) {
+        $em = $this->get('doctrine')->getManager();
+        $cashTransactionRepository = $em->getRepository("LavasecoBundle:CashTransaction");
+
+        $result = ($salePoint->getIsOpen()) ? [
+            "start" => $cashTransactionRepository->getStarCash($salePoint->getId(), $salePoint->getTurn()),
+            "input" => $cashTransactionRepository->getIntputCash($salePoint->getId(), $salePoint->getTurn()),
+            "output" => $cashTransactionRepository->getOutputCash($salePoint->getId(), $salePoint->getTurn()),
+                ] : false;
+
+        return $result;
     }
 
 }
