@@ -113,7 +113,7 @@ class CashTransactionController extends Controller {
 
         $cashTransactionRepository = $em->getRepository("LavasecoBundle:CashTransaction");
 
-        return $cashTransactionRepository->findByTurn($salePoint->getTurn());
+        return $cashTransactionRepository->findClosedCash($salePoint->getId(), $salePoint->getTurn());
     }
     
     private function getBalance($salePoint){

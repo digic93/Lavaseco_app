@@ -119,6 +119,18 @@ lavaseco_api_order_change_processState:
     defaults: { _controller: LavasecoBundle:Orders:changeProcessState }
     methods:  [POST] 
         
+lavaseco_api_bill:
+    path:     /api/bill/{billId}
+    defaults: { _controller: LavasecoBundle:Bill:getBillById, billId: 0 }
+    methods:  [GET]
+    requirements:
+        billId:  \d+
+        
+lavaseco_api_bill_deliver:
+    path:     /api/bill/delivery
+    defaults: { _controller: LavasecoBundle:Bill:deliver }
+    methods:  [POST]
+        
 lavaseco_api_bill_history:
     path:     /api/bill/history/{billId}
     defaults: { _controller: LavasecoBundle:Bill:getHistoryByBillId, billId: 0 }
