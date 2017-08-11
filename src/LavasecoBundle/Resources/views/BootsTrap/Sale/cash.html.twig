@@ -16,6 +16,13 @@
     <hr>
     <div class="row">
         <div class="col-md-12">
+            {% if summary %}
+                <p>Resumen de caja,  
+                    Apertura: <strong>${{ summary.start }}</strong>, 
+                    Ingresos: <strong>${{ summary.input }}</strong>, 
+                    Egresos: <strong>${{ summary.output }}</strong>.
+                </p>
+            {% endif %}
             <!-- Form Tipo descriptor-->
             <div class="panel panel-default">
                 <div class="panel-heading">
