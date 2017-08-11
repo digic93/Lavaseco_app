@@ -19,7 +19,7 @@ class OrdersController extends Controller {
         $data["processStates"] = $processStateRepository->getProces();
         
         if ($processId == 0 || $processId >= 7) {
-            $bills = $billRepository->getBills();
+            $bills = $billRepository->findUndelivered();
         } else {
 
             $bills = $billRepository->getBillsByProcessId($processId);

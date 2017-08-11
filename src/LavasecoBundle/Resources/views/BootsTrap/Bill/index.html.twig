@@ -28,8 +28,7 @@
         <div class="col-md-12"> 
             <div class="well well-sm pull-right">
                 <form class="form-inline">
-                    <button type="button" id="changeStateButton" class="btn btn-default" onclick="changeEstate();">Cobrar</button>
-                    |
+                    <button type="button" id="changeStateButton" class="btn btn-default" onclick="delivered();">Entregar</button> |
                     <div class="form-group">
                         <select class="form-control" id="sel1">
                             <option>Seleccione un estado </option>
@@ -38,7 +37,7 @@
                 </form>                
             </div>
 
-            <table id="billsTable" class="display" cellspacing="0" width="100%">
+            <table id="billsUndeliveredTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>Factura</th>
@@ -53,7 +52,40 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for bill in bills %}
+                    {% for bill in billsUndelivered %}
+                        <tr>
+                            <td>{{ bill.id }}</td>
+                            <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
+                            <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                            <td>{{ bill.processState.name}}</td>
+                            <td>{{ bill.paymentAgreement.name }}</td>
+                            <td>{{ bill.billState.name}}</td>
+                            <td>{{ bill.observation}}</td>
+                            <td>{{ bill.sellerUser.name }}</td>
+                            <td>{{ bill.CreatedAtString}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            <h3>Facturas Entregadas</h3>
+            <hr>
+            <table id="billsDeliveredTable" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Factura</th>
+                        <th>Cliente</th>
+                        <th>Telefono</th>
+                        <th>Estado Proceso</th>
+                        <th>Pago</th>
+                        <th>Estado Factura</th>
+                        <th>observación</th>
+                        <th>Vendedor</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in billsDelivered %}
                         <tr>
                             <td>{{ bill.id }}</td>
                             <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
@@ -70,7 +102,60 @@
             </table>
         </div>
     </div>
+    <!-- Modal -->
+    <div id="wayToPay" class="modal fade" role="dialog">
+        <div class="modal-dialog">
 
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <label id="paymentTittle"></label>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-10 col-md-offset-1">
+                            <div class="form-group">
+                                <p>Forma de Pago</p>
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectWayToPay" onChange="" class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div class="form-group">
+                                <div id="divTotalBill"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <p>Dinero Recibido<span class="req">*</span></p>
+                                <div class="input-group" id="divCashReceived">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="cashReceived" type="text" autocomplete="off" onkeyup="updateChange();"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <p>Vueltas</p>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="change" type="text" autocomplete="off" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit"  onclick="deliverBill();" class="btn btn-success"/>Cobrar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
@@ -79,14 +164,36 @@
     <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
 
     <script>
+        var bill;
+        var total = 0;
+        var UndeliveredBillSelect = 0;
+
         $(document).ready(function () {
-            var billsTable = $('#billsTable').DataTable({
+            $("#change").number(true);
+            $("#cashReceived").number(true);
+            
+            var billsUndeliveredTable = $('#billsUndeliveredTable').DataTable({
                 "order": [[0, "Desc"]]
             });
 
-            $('#billsTable tbody').on('click', 'tr', function () {
-                var data = billsTable.row(this).data();
+            var billsDeliveredTable = $('#billsDeliveredTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
 
+            $('#billsUndeliveredTable tbody').on('click', 'tr', function () {
+                var data = billsUndeliveredTable.row(this).data();
+                UndeliveredBillSelect = data[0];
+
+                $(".selected").toggleClass('selected');
+
+                $(this).toggleClass('selected');
+
+                collapseProcessLine(data[0]);
+            });
+
+            $('#billsDeliveredTable tbody').on('click', 'tr', function () {
+                var data = billsDeliveredTable.row(this).data();
+                UndeliveredBillSelect = 0;
                 $(".selected").toggleClass('selected');
 
                 $(this).toggleClass('selected');
@@ -96,7 +203,6 @@
         });
 
         function collapseProcessLine(billId) {
-
             $.ajax({
                 url: "{{ path('lavaseco_api_bill_history') }}/" + billId,
                 method: "GET",
@@ -115,6 +221,7 @@
                 }
             });
         }
+
         function addProcesHistory(billHistory) {
             var html = "<li class=\"timeline-item\">\
                             <div class=\"timeline-badge\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i></div>\
@@ -130,6 +237,109 @@
                             </div>\
                         </li>";
             $("#listLineTime").append(html);
+        }
+
+        function delivered() {
+            if (UndeliveredBillSelect === 0) {
+                alert("No a seleccionado una factura para entregar!");
+                return;
+            }
+            deliveredBill(UndeliveredBillSelect);
+        }
+
+        function deliveredBill(billId) {
+            $.ajax({
+                url: "{{ path('lavaseco_api_bill') }}/" + billId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (billRsult) {
+                    bill = billRsult;
+                    if (bill.billState === 2 && bill.payAgreement === 1) {
+                        deliverBill(bill);
+                    } else {
+                        wayToPay(bill);
+                    }
+                }
+            });
+        }
+
+        function deliverBill() {
+            $.ajax({
+                url: "{{ path("lavaseco_api_bill_deliver") }}",
+                method: "POST",
+                dataType: "json",
+                data: bill,
+                success: function (result) {
+                    if (result.error !== undefined) {
+                        alert("Error al registrar la factura");
+                    } else {
+                        alert("Se registró la entrega con exito");
+                        $('#wayToPay').modal('hide');
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+        function wayToPay() {
+            var htmlTotalBill = "";
+
+            if (bill.payAgreement === 2) {
+                total = bill.total;
+                htmlTotalBill = "<p class='text-right'><strong>Total Factura: $" + $.number(bill.total) + "</strong></p>";
+            } else if (bill.payAgreement === 3) {
+                total = bill.total - bill.payed;
+
+                htmlTotalBill = "<p class='text-right'>\
+                    Total Factura:<strong>$" + $.number(bill.total) + "</strong><br>\
+                    Abono: <strong>$" + $.number(bill.payed) + "<br></strong>\
+                    <strong>Total a Cobrar: $" + $.number(bill.total - bill.payed) + "</strong>\
+                    </p>";
+
+            } else {
+                return;
+            }
+
+            $('#paymentTittle').text('Cobro Factura ' + bill.id);
+            $('#wayToPay').modal('show');
+            $('#divTotalBill').html(htmlTotalBill);
+            addWayToPay();
+        }
+
+        function loadWayPay(payment) {
+            var html = "<option value=\"" + payment.name + "\" data-id=\"" + payment.id + "\" data-name=\"" + payment.name + "\">" + payment.name + "</option>";
+            $("#selectWayToPay").append(html);
+        }
+
+        function addWayToPay() {
+            $("#selectWayToPay").empty();
+            $.ajax({
+                url: "{{ path('lavaseco_api_pay_method') }}",
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (payMethods) {
+                    for (var i in payMethods) {
+                        loadWayPay(payMethods[i]);
+                    }
+                }
+            });
+        }
+
+        function updateChange() {
+            var change = $("#cashReceived").val() - total;
+            if (change < 0) {
+                $("#change").val('');
+                $("#divCashReceived").removeClass("has-success");
+                $("#divCashReceived").addClass("has-error");
+                return false;
+            } else {
+                $("#change").val(change);
+                $("#divCashReceived").addClass("has-success");
+                $("#divCashReceived").removeClass("has-error");
+                return true;
+            }
         }
     </script>
 {% endblock %}

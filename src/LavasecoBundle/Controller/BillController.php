@@ -11,6 +11,7 @@ use LavasecoBundle\Entity\CashTransaction;
 use LavasecoBundle\Entity\ObjectStateReceivedService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BillController extends Controller {
 
@@ -19,9 +20,13 @@ class BillController extends Controller {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
 
-        $bills = $billRepository->findAll();
+        $billsDelivered = $billRepository->findDelivered();
+        $billsUndelivered = $billRepository->findUndelivered();
 
-        return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', ["bills" => $bills]);
+        return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', [
+                    "billsDelivered" => $billsDelivered,
+                    "billsUndelivered" => $billsUndelivered,
+        ]);
     }
 
     public function settingAction(Request $request) {
@@ -53,23 +58,23 @@ class BillController extends Controller {
         $payMethodId = 1; //$request->request->get("paymenthod");
         $observation = $request->request->get("observations");
         $customerId = $request->request->get("customerId");
-                
+
         $customer = $this->getCustomerById($customerId);
         $paymentAgreement = $this->getPaymentAgreementById($request->request->get("paymentAgreementId"));
 
         $bill = $this->saveBilling($customer, $observation, $paymentAgreement);
         $total = $this->saveBillDetail($bill, $request->request->get("services"));
-        
-        if($payMethodId != 2){
-            $this->savePayDetail($payMethodId ,$payment, $bill);
+
+        if ($payMethodId != 2) {
+            $this->savePayDetail($payMethodId, $payment, $bill);
         }
-        
+
         //asignacion de puntos al cliente
-        if($customer && $paymentAgreement->getId()  == 1){
+        if ($customer && $paymentAgreement->getId() == 1) {
             $bonification = $this->getBonificationByPaymentAgreement($paymentAgreement);
             $this->updateCustomer($total, $customer, $bonification);
         }
-        
+
         $this->saveBillHistory($bill);
 
         //Enviar via correo electronico la factura al cliente
@@ -121,6 +126,50 @@ class BillController extends Controller {
         return $this->json($resutl);
     }
 
+    public function getBillByIdAction($billId) {
+        $bill = $this->getBillById($billId);
+
+        $billResult = [
+            "id" => $bill->getId(),
+            "payed" => $bill->getPayed(),
+            "total" => $bill->getTotal(),
+            "billState" => $bill->getBillState()->getId(),
+            "payAgreement" => $bill->getPaymentAgreement()->getId(),
+        ];
+
+        return $this->json($billResult);
+    }
+
+    public function deliverAction(Request $request) {
+        $payMethodId = 1; //por ahora solo metodo de pago en efectivo
+        $bill = $this->getBillById($request->request->get('id'));
+
+        if (!$bill) {
+            throw new NotFoundHttpException('Factura no encontrada!');
+        }
+        //si  el pago es contra entrega (1)
+
+        $total = $bill->getTotal();
+        if ($bill->getCustomer()) {
+            $customer = $this->getCustomerById($bill->getCustomer()->getId());
+        }
+        $payment = ($bill->getPaymentAgreement()->getId() == 2) ? $total : ($total - $bill->getPayed());
+
+        $bill->setBillState($this->getBillState(2)); //estado cancelado
+        $bill->setProcessState($this->getProcessStateById(7)); //processState entregado
+
+        $this->savePayDetail($payMethodId, $payment, $bill);
+
+        //asigno puntos al usuario
+        if ($bill->getCustomer()) {
+            $bonification = $this->getBonificationByPaymentAgreement($bill->getPaymentAgreement());
+            $this->updateCustomer($total, $customer, $bonification);
+        }
+        $this->saveBillHistory($bill);
+
+        return $this->json([true]);
+    }
+
     private function getBillContentById($billContentId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billContentRepository = $doctrineManager->getRepository("LavasecoBundle:BillContent");
@@ -136,11 +185,11 @@ class BillController extends Controller {
         $bill->setCustomer($customer);
         $bill->setObservation($observation);
         $bill->setPaymentAgreement($paymentAgreement);
-        $bill->setBillState($this->getBillState($paymentAgreement));
+        $bill->setBillState($this->getBillState($paymentAgreement->getId()));
         $bill->setProcessState($this->getProcessState());
         $bill->setConsecutive($this->getBillConsecutive());
         $bill->setSalePoint($this->getSalePoint());
-        
+
         $em->persist($bill);
 
         return $bill;
@@ -193,52 +242,56 @@ class BillController extends Controller {
         $em->persist($billHistory);
         $em->flush();
     }
-    
-    private function savePayDetail($payMethodId, $payment, $bill){
+
+    private function savePayDetail($payMethodId, $payment, $bill) {
         $em = $this->get('doctrine')->getManager();
-        
+
         $payMethod = $this->getPayMethodById($payMethodId);
-        
-        $payDeatil = new PayDetail();        
+
+        $payDeatil = new PayDetail();
         $payDeatil->setBill($bill);
         $payDeatil->setPayment($payment);
         $payDeatil->setPayMethod($payMethod);
-        
-        if($payMethod->getId() == 1){ //si el pago es en efectivo registra movieento en la caja
+
+        if ($payMethod->getId() == 1) { //si el pago es en efectivo registra movieento en la caja
             $this->saveCashTransaction($payment, $bill);
         }
-        
+
         $em->persist($payDeatil);
     }
 
-    private function saveCashTransaction($payment, $bill, $abono = false){
+    private function saveCashTransaction($payment, $bill, $abono = false) {
         $em = $this->get('doctrine')->getManager();
         $salePoint = $this->getSalePoint();
-        
+
         $cashTransaction = new CashTransaction();
         $cashTransaction->setPayment($payment);
         $cashTransaction->setUser($this->getUser());
         $cashTransaction->setSalePoint($salePoint);
         $cashTransaction->setTurn($salePoint->getTurn());
-        $cashTransaction->setTypeTransaction($this->getTypeTransactionById(3));//3 es el id de tipo de transaccion ingreso
-        $cashTransaction->setDescription(($abono)? "Abono":"Pago" ." Facura " . $bill->getId());
-        
+        $cashTransaction->setTypeTransaction($this->getTypeTransactionById(3)); //3 es el id de tipo de transaccion ingreso
+        $cashTransaction->setDescription(($abono) ? "Abono" : "Pago" . " Facura " . $bill->getId());
+
         $em->persist($cashTransaction);
     }
-    
-    private function getBillState($paymentAgreement) {
+
+    private function getBillState($paymentAgreementId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billStateRepository = $doctrineManager->getRepository("LavasecoBundle:BillState");
 
-        return $billStateRepository->find(($paymentAgreement->getId() == 1 ) ? 2 : 1);
+        return $billStateRepository->find($paymentAgreementId);
     }
 
     private function getProcessState() {
         ////determinar el estado delproceso segun el punto de venta o usuario que realiza la factura
+        return $this->getProcessStateById(1);
+    }
+
+    private function getProcessStateById($processStateId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $processStateRepository = $doctrineManager->getRepository("LavasecoBundle:ProcessState");
 
-        return $processStateRepository->find(1);
+        return $processStateRepository->find($processStateId);
     }
 
     private function getBillConsecutive() {
@@ -255,13 +308,13 @@ class BillController extends Controller {
         return $userRepository->find($customerId);
     }
 
-    private function getPayMethodById($payMethodById){
+    private function getPayMethodById($payMethodById) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $payMethodRepository = $doctrineManager->getRepository("LavasecoBundle:PayMethod");
 
         return $payMethodRepository->find($payMethodById);
     }
-    
+
     private function getPaymentAgreementById($paymentAgreementId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $paymentAgreementRepository = $doctrineManager->getRepository("LavasecoBundle:PaymentAgreement");
@@ -332,7 +385,7 @@ class BillController extends Controller {
         }
         return $descriptors;
     }
-    
+
     private function getSalePoint() {
         $salePoint = $this->get('session')->get('salePoint');
         $em = $this->get('doctrine')->getManager();
@@ -341,47 +394,48 @@ class BillController extends Controller {
 
         return $salePointRepository->find($salePoint->getId());
     }
-    
+
     private function getTypeTransactionById($typeTransactionId) {
         $em = $this->get('doctrine')->getManager();
         $typeTransactionRepository = $em->getRepository("LavasecoBundle:TypeTransaction");
 
-        
+
         return $typeTransactionRepository->find($typeTransactionId);
     }
-    
-    private function updateCustomer($total, &$customer, $bonification){
+
+    private function updateCustomer($total, &$customer, $bonification) {
         $em = $this->get('doctrine')->getManager();
 
         $currentPoints = $customer->getPoints();
-        $totalSpent =  $customer->getTotalSpent();
+        $totalSpent = $customer->getTotalSpent();
         $customer->setLastVisit(new \DateTime(date('Y-m-d H:i:s')));
         $customer->setTotalSpent($totalSpent + $total);
         $customer->setTotalVisits($customer->getTotalVisits() + 1);
         $customer->setPoints($currentPoints + ($total * $bonification / 100 ));
-        
+
         $em->persist($customer);
     }
-    
-    private function getBonificationByPaymentAgreement($paymentAgreement){
+
+    private function getBonificationByPaymentAgreement($paymentAgreement) {
         $bonification = 0;
         $doctrineManager = $this->get('doctrine')->getManager();
         $loyaltyRepository = $doctrineManager->getRepository("LavasecoBundle:Loyalty");
-        
+
         $loyalty = $loyaltyRepository->find(1);
-        
-        if($paymentAgreement->getId() == 1){
+
+        if ($paymentAgreement->getId() == 1) {
             $bonification = $loyalty->getAdvancePercent();
         }
-        
-        if($paymentAgreement->getId() == 2){
+
+        if ($paymentAgreement->getId() == 2) {
             $bonification = $loyalty->getUponDeliveryPercent();
         }
-        
-        if($paymentAgreement->getId() == 3){
+
+        if ($paymentAgreement->getId() == 3) {
             $bonification = $loyalty->getDepositPercent();
         }
-        
+
         return $bonification;
     }
+
 }

@@ -403,5 +403,23 @@ class Bill {
     public function getCreatedAtString() {
         return $this->createdAt->format('d/m/Y H:i');
     }
-
+    
+    public function getTotal(){
+        $total = 0;
+        foreach($this->billDetails as $billDetail){
+             $total += $billDetail->getPrice() * $billDetail->getQuantity();
+        }
+        return $total;
+    }
+    
+    public function getPayed(){
+        $payed = 0;
+        
+        foreach($this->payDetails as $payDetails){
+            $payed += $payDetails->getPayment();
+        }
+        
+        return $payed;
+    }
+    
 }

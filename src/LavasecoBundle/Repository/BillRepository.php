@@ -25,22 +25,30 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
 
         return $consecutive;
     }
-    
-    public function getBillsByProcessId($processId){        
+
+    public function getBillsByProcessId($processId) {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.processState = :processStateId')
                 ->setParameter('processStateId', $processId)
                 ->getQuery();
-                
+
         return $bills->getResult();
     }
-    
-    public function getBills(){        
+
+    public function findDelivered() {
+        $bills = $this->createQueryBuilder('b')
+                ->where('b.processState = 7')
+                ->getQuery();
+
+        return $bills->getResult();
+    }
+
+    public function findUndelivered() {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.processState != 7')
                 ->getQuery();
-                
+
         return $bills->getResult();
     }
-    
+
 }
