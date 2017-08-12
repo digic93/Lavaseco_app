@@ -41,22 +41,35 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                    <li><a href="{{ path('lavaseco_sales') }}">Venta <i class="fa fa-shopping-cart" aria-hidden="true"></i></a></li>
-                    <li><a href="{{ path('lavaseco_orders') }}">Ordenes <i class="fa fa-cubes" aria-hidden="true"></i></a></li>
-                    <li><a href="{{ path('lavaseco_Bills') }}">Facturas <i class="fa fa-file-text" aria-hidden="true"></i></a></li>
-                    <li>
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuración <i class="fa fa-wrench" aria-hidden="true"></i></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{{ path('lavaseco_settign_bill_content') }}">Factura</a></li>
-                            <li><a href="{{ path('lavaseco_settign_sale_point') }}">Puntos de Venta</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="{{ path('lavaseco_settign_descriptions') }}">Descriptores</a></li>
-                            <li><a href="{{ path('lavaseco_settign_service_categories') }}">Categorias y Servicios</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="{{ path('lavaseco_settign_customers') }}">Clientes</a></li>
-                            <li><a href="{{ path('lavaseco_settign_loyalty') }}">Fidelización</a></li>
-                        </ul>
-                    </li>
+                    {% if is_granted('ROLE_CASHIER') %} 
+                        <li><a href="{{ path('lavaseco_sales') }}">Venta <i class="fa fa-shopping-cart" aria-hidden="true"></i></a></li>
+                        <li><a href="{{ path('lavaseco_Bills') }}">Facturas <i class="fa fa-file-text" aria-hidden="true"></i></a></li>
+                    {% endif %}
+                    {% if is_granted('ROLE_OPERATOR') %} 
+                        <li><a href="{{ path('lavaseco_orders') }}">Ordenes <i class="fa fa-cubes" aria-hidden="true"></i></a></li>
+                    {% endif %}
+
+                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))%}
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuración <i class="fa fa-wrench" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu">
+                                {% if is_granted('ROLE_MANAGER') %}
+                                    <li><a href="{{ path('lavaseco_setting_bill_content') }}">Factura</a></li>
+                                    <li><a href="{{ path('lavaseco_setting_sale_point') }}">Puntos de Venta</a></li>
+                                    <li role="separator" class="divider"></li>
+                                {% endif %}
+
+                                <li><a href="{{ path('lavaseco_setting_descriptions') }}">Descriptores</a></li>
+                                <li><a href="{{ path('lavaseco_setting_service_categories') }}">Categorias y Servicios</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="{{ path('lavaseco_setting_customers') }}">Clientes</a></li>
+                                {% if is_granted('ROLE_MANAGER') %}
+                                    <li><a href="{{ path('lavaseco_setting_loyalty') }}">Fidelización</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% endif %}
+
                     <li><a href="{{ path('fos_user_security_logout') }}" class="btn_log_out">Cerrar sesión <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> </a></li>
                     {% else %}
                     <li><a href="{{ path('fos_user_security_login') }}" class="btn_log_in">Iniciar sesión <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </a></li>
