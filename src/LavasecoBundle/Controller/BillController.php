@@ -290,7 +290,7 @@ class BillController extends Controller {
         $cashTransaction->setSalePoint($salePoint);
         $cashTransaction->setTurn($salePoint->getTurn());
         $cashTransaction->setTypeTransaction($this->getTypeTransactionById(($abono == -1) ? 4 : 3)); //3 es el id de tipo de transaccion ingreso 4 egreso
-        $cashTransaction->setDescription(($abono == -1) ? "Reembolso" : (($abono) ? "Abono" : "Pago") . " Facura " . $bill->getId());
+        $cashTransaction->setDescription((($abono == -1) ? "Reembolso" : (($abono) ? "Abono" : "Pago")) . " Facura " . $bill->getId());
 
         $em->persist($cashTransaction);
     }

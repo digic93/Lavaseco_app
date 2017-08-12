@@ -22,27 +22,27 @@ lavaseco_Bills:
     path:     /facturas
     defaults: { _controller: LavasecoBundle:Bill:index }
             
-lavaseco_settign_bill_content:
+lavaseco_setting_bill_content:
     path:     /configuracion/factura
     defaults: { _controller: LavasecoBundle:Bill:setting }
 
-lavaseco_settign_descriptions:
+lavaseco_setting_descriptions:
     path:     /configuracion/descriptores
     defaults: { _controller: LavasecoBundle:Description:setting }
 
-lavaseco_settign_service_categories:
+lavaseco_setting_service_categories:
     path:     /configuracion/servicios
     defaults: { _controller: LavasecoBundle:Service:setting }
 
-lavaseco_settign_customers:
+lavaseco_setting_customers:
     path:     /configuracion/clientes
     defaults: { _controller: LavasecoBundle:Customer:create }
 
-lavaseco_settign_sale_point:
+lavaseco_setting_sale_point:
     path:     /configuracion/puntoventa
     defaults: { _controller: LavasecoBundle:SalePoint:index }
 
-lavaseco_settign_loyalty:
+lavaseco_setting_loyalty:
     path:     /configuracion/fidelidad
     defaults: { _controller: LavasecoBundle:Loyalty:index }
 

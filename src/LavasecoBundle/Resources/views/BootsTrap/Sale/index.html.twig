@@ -22,10 +22,12 @@
             <h1>Ventas</h1>
         </div>
         <div class="col-md-4 text-right">
+            {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('lavaseco_cash') }}/1"class="btn btn-warning" type="button" >
                 <i class="fa fa-money" aria-hidden="true"></i>
                 Retiros de Caja
             </a>
+            {% endif %}    
             <a id="closeSalePoint" href="{{ path('lavaseco_cash') }}" class="btn btn-danger">
                 <i class="fa fa-lock" aria-hidden="true"></i>
                 Cierre de Caja

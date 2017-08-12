@@ -15,19 +15,22 @@
         <div class="col-md-9"> 
             <div class="well well-sm pull-right">
                 <form class="form-inline">
-                    <div class="checkbox">
-                        <label>
-                            <input  id="seletedCheckbox" type="checkbox"> Seleccionar Varios
-                        </label>
-                    </div>
-                    |
                     <div class="form-group">
+                        <label>
+                            Filtrar por
+                        </label>
                         <select id="processStateUpdate" class="form-control" onchange="updateUrl(this);">
                             <option value="0" selected>Todos los estados</option>
                             {% for processState in processStates%}
                                 <option value="{{ processState.id }}">{{ processState.name }}</option>
                             {% endfor %}
                         </select>
+                    </div>
+                    |
+                    <div class="checkbox">
+                        <label>
+                            <input  id="seletedCheckbox" type="checkbox"> Seleccionar Varios
+                        </label>
                     </div>
                     |
                     <button type="button" id="changeStateButton" class="btn btn-default" onclick="changeEstate();">Cambiar de estado</button>
