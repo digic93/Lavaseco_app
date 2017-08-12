@@ -32,15 +32,15 @@
                 <i class="fa fa-lock" aria-hidden="true"></i>
                 Cierre de Caja
             </a>
-        </div> 
-    </div>  
+        </div>
+    </div>
     <hr>
     <div class="row">
         <!--Productos por categoria-->
         <div class="col-md-8">
             <h3>Servicios</h3>
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Buscar...">
+                <input id="servicesSearch" type="text" class="form-control" placeholder="Buscar...">
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </span>
@@ -138,6 +138,33 @@
                     <p>
                         {{ billContent.foot }}
                     </p>
+                    <hr>
+
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="checkboxes-1">Factura:</label>
+                        <div class="col-md-7">
+                            <div id="checkboxBill" class="checkbox">
+                                <label for="checkboxes-1">
+                                    <input  id="printBill" type="checkbox" value="imprimir">
+                                    Imprimir
+                                </label>
+                                <label for="checkboxes-1">
+                                    <input id="sendBill"  type="checkbox" value="correo" disabled="true">
+                                    Enviar al correo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="" class="form-group">
+                        <label id="titleNotify" class="col-md-4 control-label" for="checkboxes"></label>
+                        <div class="col-md-7">
+                            <div id="checkboxNotifyEmail" class="checkbox">
+                                
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="button" class="btn btn-success btn-block" onclick="wayToPay();">
                         Facturar
                         <i class="fa fa-check" aria-hidden="true"></i>
@@ -315,31 +342,6 @@
         </div>
     </div>
 
-    <!-- Modal alert Close Sale Point -->
-    <div id="modalAlert" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">
-                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                        Confirmación Cierre de Caja
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <p>En este momento va a cerrar la caja, recuerde que este proceso es irreversible. ¿Realmente desea cerrar?</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="{{ path('lavaseco_cash') }}" class="btn btn-success" >Aceptar</a>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
 {% endblock %}
 
 {% block javascripts %}
@@ -389,6 +391,30 @@
                         $("#addClientBill").attr('disabled', false);
                     } else {
                         $("#addClientBill").attr('disabled', true);
+                    }
+                    return data;
+                }
+            },
+
+            displayField: "data",
+            valueField: "id",
+            onSelect: displayResult
+        });
+        
+        $('#servicesSerch').typeahead({
+            order: "asc",
+            ajax: {
+                url: "{{ path('lavaseco_api_sale_service_category') }}",
+                method: "POST",
+                loadingClass: "loading-circle",
+                preDispatch: function (query) {
+                    return {
+                        nameOrEmail: query
+                    };
+                },
+                preProcess: function (data) {
+                    if (data.success === false) {
+                        return false;
                     }
                     return data;
                 }
@@ -639,19 +665,46 @@
                         return;
                     }
                     factura.customerId = user.id;
+                    $("#sendBill").attr('disabled', true);
+                    $("#checkboxNotifyEmail").html("");
 
                     html = "<p> <strong> Nombre Cliente: </strong>" + user.name + "<br>";
-                    if(user.email !== null)
-                        html += "<strong> Email Cliente: </strong>" + user.email + "<br>";
-                    if(user.phoneNumber !== null)
-                        html += "<strong> numero: </strong>" + user.phoneNumber + "<br>";
 
+                    if (user.email !== null) {
+                        html += "<strong> Email Cliente: </strong>" + user.email + "<br>";
+                        $("#sendBill").attr('disabled', false);
+                        notifyByEmail();
+                    }
+                    if (user.phoneNumber !== null) {
+                        html += "<strong> numero: </strong>" + user.phoneNumber + "<br>";
+                    }
                     html += "<strong> Puntos Acumulados: </strong>" + user.points + "<br></p>";
-                    
+
                     $("#infoClientBill").empty();
                     $("#infoClientBill").html(html);
                 }
             });
+        }
+
+        function notifyByEmail() {
+            var html = "";
+            var result = {"notification":
+                        [
+                            {"name": "Facturado", "id": 1},
+                            {"name": "Listo para Entrega", "id": 2},
+                            {"name": "Entregado", "id": 3}
+                        ]
+            };
+            $("#titleNotify").text("Notificar");
+            
+            for (var i in result.notification) {
+                html += "<label for=\"checkboxes-2\">\
+                        <input  type=\"checkbox\" id=\"checkboxes-2\" value=\"" + result.notification[i].name + "\">"
+                        + result.notification[i].name +
+                    "</label>";
+            }
+            $('#checkboxNotifyEmail').append(html);
+
         }
 
         function signUpClient() {
@@ -743,9 +796,7 @@
             }
         }
 
-        function closeSalePoint() {
-            $("#modalAlert").modal('show');
-        }
+
     </script>
 {% endblock %}
 
