@@ -61,10 +61,18 @@ class BillController extends Controller {
         $observation = $request->request->get("observations");
         $customerId = $request->request->get("customerId");
 
+        $notity = [
+            "printBill" => $request->request->get("printBill") == "true"? true:false,
+            "sendBill" => $request->request->get("sendBill") == "true"? true:false,
+            "notifyRedyDelivery" => $request->request->get("notifyRedyDelivery") == "true"? true:false,
+            "notifyDelivered" => $request->request->get("notifyDelivered") == "true"? true:false,
+        ];
+
+
         $customer = $this->getCustomerById($customerId);
         $paymentAgreement = $this->getPaymentAgreementById($request->request->get("paymentAgreementId"));
 
-        $bill = $this->saveBilling($customer, $observation, $paymentAgreement);
+        $bill = $this->saveBilling($customer, $observation, $paymentAgreement, $notity);
         $total = $this->saveBillDetail($bill, $request->request->get("services"));
 
         if ($paymentAgreement->getId() != 2) {
@@ -78,8 +86,31 @@ class BillController extends Controller {
         }
 
         $this->saveBillHistory($bill);
-
+        
         //Enviar via correo electronico la factura al cliente
+        if ($customer && $notity ["sendBill"]) {
+            if($customer->getEmail()){
+                $salePoint = $this->getSalePoint();
+                $configuration = $this->get('lavaseco.app_configuration');
+                $facturaId = $salePoint->getId() . "-" . $bill->getId();
+
+                $message = (new \Swift_Message('Factura de servicio ' . $facturaId ))
+                        ->setFrom(['noreply@lavasecomodelo.com' => 'Lavaseco Modelo'])
+                        ->setTo($customer->getEmail())
+                        ->setBody(
+                        $this->renderView(
+                                $configuration->getViewTheme().':Emails/billEmail.html.twig', 
+                                [
+                                    'facturaId' => $facturaId,
+                                    'customer' => $customer,
+                                    'bill' => $bill,
+                                    'billContent' => $this->getBillContentById(1),
+                                ]
+                        ), 'text/html'
+                );
+                $this->get('mailer')->send($message);
+            }
+        }
 
         return $this->json(["billId" => $bill->getId()]);
     }
@@ -187,7 +218,6 @@ class BillController extends Controller {
         $em->flush();
 
         return $this->json([true]);
-
     }
 
     private function getBillContentById($billContentId) {
@@ -197,7 +227,7 @@ class BillController extends Controller {
         return $billContentRepository->find($billContentId);
     }
 
-    private function saveBilling($customer, $observation, $paymentAgreement) {
+    private function saveBilling($customer, $observation, $paymentAgreement, $notity) {
         $bill = new Bill();
         $em = $this->get('doctrine')->getManager();
 
@@ -210,12 +240,18 @@ class BillController extends Controller {
         $bill->setConsecutive($this->getBillConsecutive());
         $bill->setSalePoint($this->getSalePoint());
 
+        $bill->setPrintedTiket(true);
+        $bill->setPrintBill($notity["printBill"]);
+        $bill->setSendBill($notity["sendBill"]);
+        $bill->setNotifyDelivered($notity["notifyDelivered"]);
+        $bill->setNotifyRedyDelivery($notity["notifyRedyDelivery"]);
+
         $em->persist($bill);
 
         return $bill;
     }
 
-    private function saveBillDetail($bill, $services) {
+    private function saveBillDetail(&$bill, $services) {
         $total = 0;
         $em = $this->get('doctrine')->getManager();
 
@@ -231,6 +267,8 @@ class BillController extends Controller {
             $billDetail->setObservation($service["observations"]);
 
             $em->persist($billDetail);
+            
+            $bill->addBillDetail($billDetail);
             if (isset($service["descriptors"])) {
                 $this->saveObjectStateReceivedService($serviceObj, $billDetail, $service["descriptors"]);
             }
@@ -238,7 +276,7 @@ class BillController extends Controller {
         return $total;
     }
 
-    private function saveObjectStateReceivedService($service, $billDetail, $descriptors) {
+    private function saveObjectStateReceivedService($service, &$billDetail, $descriptors) {
         $em = $this->get('doctrine')->getManager();
         foreach ($descriptors as $descriptor) {
             $objectStateReceivedService = new ObjectStateReceivedService();
@@ -246,7 +284,8 @@ class BillController extends Controller {
             $objectStateReceivedService->setBillDetail($billDetail);
             $objectStateReceivedService->
                     setStateObjectDescription($this->getStateObjectDescriptionById($descriptor["id"]));
-
+            
+            $billDetail->addObjectStateReceivedService($objectStateReceivedService);
             $em->persist($objectStateReceivedService);
         }
     }
@@ -290,7 +329,7 @@ class BillController extends Controller {
         $cashTransaction->setSalePoint($salePoint);
         $cashTransaction->setTurn($salePoint->getTurn());
         $cashTransaction->setTypeTransaction($this->getTypeTransactionById(($abono == -1) ? 4 : 3)); //3 es el id de tipo de transaccion ingreso 4 egreso
-        $cashTransaction->setDescription((($abono == -1) ? "Reembolso" : (($abono) ? "Abono" : "Pago")) . " Facura " . $bill->getId());
+        $cashTransaction->setDescription((($abono == -1) ? "Reembolso" : (($abono) ? "Abono" : "Pago")) . " Factura " . $bill->getId());
 
         $em->persist($cashTransaction);
     }

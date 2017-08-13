@@ -40,6 +40,41 @@ class Bill {
     private $createdAt;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="print", type="boolean")
+     */
+    private $printBill;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="printed_tiket", type="boolean")
+     */
+    private $printedTiket;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="send_bill", type="boolean")
+     */
+    private $sendBill;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="notify_redy_delivery", type="boolean")
+     */
+    private $notifyRedyDelivery;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="notify_delivered", type="boolean")
+     */
+    private $notifyDelivered;
+
+    /**
      * @ORM\OneToMany(targetEntity="PayDetail", mappedBy="bill")
      */
     protected $payDetails;
@@ -403,23 +438,143 @@ class Bill {
     public function getCreatedAtString() {
         return $this->createdAt->format('d/m/Y H:i');
     }
-    
-    public function getTotal(){
+
+    public function getTotal() {
         $total = 0;
-        foreach($this->billDetails as $billDetail){
-             $total += $billDetail->getPrice() * $billDetail->getQuantity();
+        foreach ($this->billDetails as $billDetail) {
+            $total += $billDetail->getPrice() * $billDetail->getQuantity();
         }
         return $total;
     }
-    
-    public function getPayed(){
+
+    public function getPayed() {
         $payed = 0;
-        
-        foreach($this->payDetails as $payDetails){
+
+        foreach ($this->payDetails as $payDetails) {
             $payed += $payDetails->getPayment();
         }
-        
+
         return $payed;
     }
-    
+
+
+    /**
+     * Set printBill
+     *
+     * @param boolean $printBill
+     *
+     * @return Bill
+     */
+    public function setPrintBill($printBill)
+    {
+        $this->printBill = $printBill;
+
+        return $this;
+    }
+
+    /**
+     * Get printBill
+     *
+     * @return boolean
+     */
+    public function getPrintBill()
+    {
+        return $this->printBill;
+    }
+
+    /**
+     * Set printedTiket
+     *
+     * @param boolean $printedTiket
+     *
+     * @return Bill
+     */
+    public function setPrintedTiket($printedTiket)
+    {
+        $this->printedTiket = $printedTiket;
+
+        return $this;
+    }
+
+    /**
+     * Get printedTiket
+     *
+     * @return boolean
+     */
+    public function getPrintedTiket()
+    {
+        return $this->printedTiket;
+    }
+
+    /**
+     * Set sendBill
+     *
+     * @param boolean $sendBill
+     *
+     * @return Bill
+     */
+    public function setSendBill($sendBill)
+    {
+        $this->sendBill = $sendBill;
+
+        return $this;
+    }
+
+    /**
+     * Get sendBill
+     *
+     * @return boolean
+     */
+    public function getSendBill()
+    {
+        return $this->sendBill;
+    }
+
+    /**
+     * Set notifyRedyDelivery
+     *
+     * @param boolean $notifyRedyDelivery
+     *
+     * @return Bill
+     */
+    public function setNotifyRedyDelivery($notifyRedyDelivery)
+    {
+        $this->notifyRedyDelivery = $notifyRedyDelivery;
+
+        return $this;
+    }
+
+    /**
+     * Get notifyRedyDelivery
+     *
+     * @return boolean
+     */
+    public function getNotifyRedyDelivery()
+    {
+        return $this->notifyRedyDelivery;
+    }
+
+    /**
+     * Set notifyDelivered
+     *
+     * @param boolean $notifyDelivered
+     *
+     * @return Bill
+     */
+    public function setNotifyDelivered($notifyDelivered)
+    {
+        $this->notifyDelivered = $notifyDelivered;
+
+        return $this;
+    }
+
+    /**
+     * Get notifyDelivered
+     *
+     * @return boolean
+     */
+    public function getNotifyDelivered()
+    {
+        return $this->notifyDelivered;
+    }
 }
