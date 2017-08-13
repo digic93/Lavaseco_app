@@ -83,7 +83,6 @@
                     <h6 class="text-center">{{ billContent.address }}</h6>
                     <hr>
                     <p>
-                        Orden: #0325-03-29<br>
                         Cajero: {{ app.user.name }}<br>
                         PV: {{ app.session.get('salePoint').name }}
                     </p>
@@ -690,7 +689,7 @@
             var html = "";
             var result = {"notification":
                         [
-                            {"name": "Facturado", "id": 1},
+                            //{"name": "Facturado", "id": 1},
                             {"name": "Listo para Entrega", "id": 2},
                             {"name": "Entregado", "id": 3}
                         ]
@@ -699,7 +698,7 @@
             
             for (var i in result.notification) {
                 html += "<label for=\"checkboxes-2\">\
-                        <input  type=\"checkbox\" id=\"checkboxes-2\" value=\"" + result.notification[i].name + "\">"
+                        <input  type=\"checkbox\" id=\"checkboxes-2-"+ result.notification[i].id +"\" value=\"" + result.notification[i].name + "\">"
                         + result.notification[i].name +
                     "</label>";
             }
@@ -739,7 +738,7 @@
             }
             if (updateChange()) {
                 factura.cashReceived = $("#cashReceived").val();
-                factura.change = $("#change").val();
+                factura.change = $("#change").val();                
                 ajaxSaleBill();
             } else {
                 alert("Verifique el dinero dado por el cliente");
@@ -747,6 +746,11 @@
         }
 
         function wayToPay() {
+            factura ["printBill"] = $('#printBill').is(":checked");
+            factura ["sendBill"] = $('#sendBill').is(":checked");
+            factura ["notifyRedyDelivery"] = $('#checkboxes-2-2').is(":checked");
+            factura ["notifyDelivered"] = $('#checkboxes-2-3').is(":checked");
+            
             var paymentAgreement = $('#bill_payAgreement').val();
             if (paymentAgreement === "2") {//2 es el id del metodo de contra entrega
                 factura.cashReceived = 0;

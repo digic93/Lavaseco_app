@@ -14,7 +14,7 @@ class CustomerController extends Controller {
         $customersByPhoneNumber = $this->getCustomersByPhoneNumber($request->request->get('nameOrEmail'));
 
         $usersResutl = $customersByName + $customersByPhoneNumber + $customersByEmail;
-        
+
         return $this->json($usersResutl);
     }
 
@@ -47,16 +47,31 @@ class CustomerController extends Controller {
 
     public function registerAction(Request $request) {
         $em = $this->get('doctrine')->getManager();
-        
+
         $customer = new Customer();
         $customer->setName($request->request->get('name'));
         $customer->setEmail($request->request->get('email'));
         $customer->setAddress($request->request->get('address'));
         $customer->setPoints($this->getStartPoints());
         $customer->setPhoneNumber($request->request->get('phoneNumber'));
-        
+
         $em->persist($customer);
         $em->flush();
+
+        if ($customer->getEmail()) {
+            $configuration = $this->get('lavaseco.app_configuration');
+            $message = (new \Swift_Message('Bienvenido al Lavaseco Modelo'))
+                    ->setFrom(['noreply@lavasecomodelo.com' => 'Lavaseco Modelo'])
+                    ->setTo($customer->getEmail())
+                    ->setBody(
+                    $this->renderView(
+                            $configuration->getViewTheme() . ':Emails/welcomeEmail.html.twig', [
+                        'customer' => $customer,
+                            ]
+                    ), 'text/html'
+            );
+            $this->get('mailer')->send($message);
+        }
 
         return $this->json(["id" => $customer->getId(),
                     "name" => $customer->getName(),
@@ -65,12 +80,14 @@ class CustomerController extends Controller {
                     "phoneNumber" => $customer->getPhoneNumber(),
                     "createdAt" => $customer->getCreatedAt(),
                     "lastVisit" => $customer->getLastVisit(),
-                ]);
+        ]);
     }
 
     private function validateEmail($email) {
-        $userManager = $this->get('fos_user.user_manager');
-        $email_exist = $userManager->findUserByEmail($email);
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $customerRepository = $doctrineManager->getRepository("LavasecoBundle:Customer");
+        
+        $email_exist = $customerRepository->findByEmail($email);
 
         if (!$email_exist) {
             return true;
@@ -91,10 +108,10 @@ class CustomerController extends Controller {
                 "data" => $customer->getName()
             ];
         }
-        
+
         return $customersResutl;
     }
-    
+
     private function getCustomersByEmail($email) {
         $customersResutl = array();
         $doctrineManager = $this->get('doctrine')->getManager();
@@ -107,7 +124,7 @@ class CustomerController extends Controller {
                 "data" => $customer->getEmail()
             ];
         }
-        
+
         return $customersResutl;
     }
 
@@ -123,17 +140,17 @@ class CustomerController extends Controller {
                 "data" => $customer->getPhoneNumber()
             ];
         }
-        
+
         return $customersResutl;
     }
-    
-    public function getStartPoints(){
+
+    public function getStartPoints() {
         $doctrineManager = $this->get('doctrine')->getManager();
         $customerLoyalty = $doctrineManager->getRepository("LavasecoBundle:Loyalty");
-        
+
         $loyalty = $customerLoyalty->find(1);
-        
-        return $loyalty->getStartPoint(); 
+
+        return $loyalty->getStartPoint();
     }
 
 }

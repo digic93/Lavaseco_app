@@ -10,8 +10,9 @@
                 <td style="padding: 10px 0 30px 0;">
                     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border: 1px solid #cccccc; border-collapse: collapse;">
                         <tr>
-                            <td align="center" bgcolor="#70bbd9" style="padding: 5px 0 30px 0; color: #153643; font-size: 28px; font-weight: bold; font-family: Arial, sans-serif;">
-                                <img src="images/h1.png" width="300" height="230" style="display: block;" />
+                            <td align="center" bgcolor="#DDDFDF" style="padding: 5px 0 30px 0; color: #153643; font-size: 28px; font-weight: bold; font-family: Arial, sans-serif;">
+                                <h3>Lavaseco Modelo</h3>
+                                {#<img src="images/h1.png" width="300" height="230" style="display: block;" />#}
                             </td>
                         </tr>
                         <tr>
@@ -19,21 +20,127 @@
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                     <tr>
                                         <td style="color: #153643; font-family: Arial, sans-serif; font-size: 24px;">
-                                            <b>Hola, {{ app.user.firstName }} {{ app.user.lastName }}</b> 
+                                            <b>Hola, {{ customer.name }}</b> 
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="padding: 20px 0 30px 0; color: #153643; font-family: Arial, sans-serif; font-size: 16px; line-height: 20px;">
                                             Te estamos haciendo envío de tu factura
-                                            
-                                            contenido
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <table cellpadding="0" cellspacing="0" width="100%" style="border-width: 1px;border-style: solid; border-color: #cccccc;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td align="center">
+                                                            <h2>{{ billContent.companyName }}</h2>
+                                                            <h4>Nit {{ billContent.fiscalId }}</h4>
+                                                            <h6>{{ billContent.address }}</h6>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-left: 10px;">
+                                                            Factura: {{ facturaId }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-left: 10px;">
+                                                            Puntos Acumulados: {{ customer.points }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 0px 10px 10px 10px;">
+                                                            Cajero: {{ app.user.name }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-top: solid 1px #cccccc; padding: 10px 10px 10px 10px;">
+                                                            {{ billContent.head }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-top: solid 1px #cccccc; padding: 10px 5px 10px 5px;">
+                                                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="border-bottom: solid 1px #aaaaaa;">Servicio</th>
+                                                                        <th style="border-bottom: solid 1px #aaaaaa;" align="center">Cantidad</th>
+                                                                        <th style="border-bottom: solid 1px #aaaaaa;" align="right">Precio</th>
+                                                                        <th style="border-bottom: solid 1px #aaaaaa;" align="right">Total</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <th style="border-top: solid 2px #aaaaaa;" colspan="3" align="right">Total</th>
+                                                                        <th style="border-top: solid 2px #aaaaaa;" align="right">${{bill.total}}</th>
+                                                                    </tr>
+                                                                </tfoot>
+                                                                <tbody>
+                                                                    {% for billdetail in bill.billDetails %}
+                                                                        <tr>
+                                                                            <td style="border-top: solid 1px #aaaaaa;" >{{billdetail.service.serviceName}}</td>
+                                                                            <td style="border-top: solid 1px #aaaaaa;"  align="center">{{ billdetail.quantity }}</td>
+                                                                            <td style="border-top: solid 1px #aaaaaa;"  align="right">${{billdetail.price }}</td>
+                                                                            <td style="border-top: solid 1px #aaaaaa;"  align="right">${{billdetail.quantity * billdetail.price}}</td>
+                                                                        </tr>
+                                                                        {% if billdetail.objectStateReceivedService %}
+                                                                            <tr>
+                                                                                <td colspan="4">
+                                                                                    {% for objectStateReceivedService in billdetail.objectStateReceivedService %}
+                                                                                        {{ objectStateReceivedService.stateObjectDescription.name }}, 
+                                                                                    {% endfor %}
+                                                                                </td>
+                                                                            </tr>
+                                                                        {% endif %}
+                                                                        {% if billdetail.observation %}
+                                                                            <tr>
+                                                                                <td colspan="4">
+                                                                                   Observaciones: {{ billdetail.observation }}
+                                                                                </td>
+                                                                            </tr>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </tbody> 
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-top: solid 1px #cccccc; padding: 10px 10px 0px 10px;">
+                                                            Pago: {{ bill.billState.name }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 0px 10px 0px 10px;">
+                                                            Acuerdo de pago: {{ bill.paymentAgreement.name }}
+                                                        </td>
+                                                    </tr>
+                                                    {% if bill.observation %}
+                                                        <tr>
+                                                            <td style="padding: 0px 10px 0px 10px;">
+                                                                Observaciones: 
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding: 0px 10px 10px 10px;">
+                                                                {{ bill.observation }}
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                    <tr>
+                                                        <td style="border-top: solid 1px #cccccc; padding: 10px 10px 0px 10px;">
+                                                            {{ billContent.foot }}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </td>
                                     </tr>
                                 </table>
                             </td>
                         </tr>
                         <tr>
-                            <td bgcolor="#ee4c50" style="padding: 30px 30px 30px 30px;">
+                            <td bgcolor="#000000" style="padding: 30px 30px 30px 30px;">
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                     <tr>
                                         <td style="color: #ffffff; font-family: Arial, sans-serif; font-size: 14px;" width="75%">
