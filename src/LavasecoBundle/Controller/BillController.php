@@ -199,7 +199,8 @@ class BillController extends Controller {
             $this->updateCustomer($total, $customer, $bonification);
         }
         $this->saveBillHistory($bill);
-
+        $this->notifyDelivery($bill, $customer);
+        
         return $this->json([true]);
     }
 
@@ -495,6 +496,27 @@ class BillController extends Controller {
         }
 
         return $bonification;
+    }
+    
+        private function notifyDelivery($bill, $customer) {
+        if ($bill->getNotifyDelivered() && $bill->getProcessState()->getId() == 7) {
+            $configuration = $this->get('lavaseco.app_configuration');
+            $billId = $bill->getSalePoint()->getId() . "-" . $bill->getId();
+
+            $message = (new \Swift_Message('Factura ' . $billId . ' se a entregado'))
+                    ->setFrom(['noreply@lavasecomodelo.com' => 'Lavaseco Modelo'])
+                    ->setTo($customer->getEmail())
+                    ->setBody(
+                    $this->renderView(
+                            $configuration->getViewTheme() . ':Emails/deliveriedEmail.html.twig', [
+                        'billId' => $billId,
+                        'customer' => $customer,
+                        'bill' => $bill,
+                            ]
+                    ), 'text/html'
+            );
+            $this->get('mailer')->send($message);
+        }
     }
 
 }
