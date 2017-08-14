@@ -6,17 +6,54 @@
         Seleccione la opción de su preferencia    
     </p>
     <hr>
+    <ol id="breadcrumbMenu" class="breadcrumb">
+        <li><a class="active">Inicio</a></li>
+    </ol>
+
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Buscar...">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
-                </span>
-            </div>
-            <br>
             <div id="blockOption" class="btn-group text-center" role="group">
+                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                    {% if is_granted('ROLE_CASHIER') %} 
+                        <a href="{{ path('lavaseco_sales') }}">
+                            <div class="col-sm-6 col-md-4 service-itm">
+                                <div class="thumbnail service">
+                                    <img src= "menuImg/sale.jpg" alt="img"/>
+                                    <h5 class="text-center">Venta</h5>
+                                </div>
+                            </div>
+                        </a>
 
+                        <a href="{{ path('lavaseco_Bills') }}">
+                            <div class="col-sm-6 col-md-4 service-itm">
+                                <div class="thumbnail service">
+                                    <img src= "menuImg/bill.png" alt="img"/>
+                                    <h5 class="text-center">Facturas</h5>
+                                </div>
+                            </div>
+                        </a>        
+
+                    {% endif %}
+                    {% if is_granted('ROLE_OPERATOR') %} 
+                        <a href="{{ path('lavaseco_orders') }}">
+                            <div class="col-sm-6 col-md-4 service-itm">
+                                <div class="thumbnail service">
+                                    <img src= "menuImg/orders.png" alt="img"/>
+                                    <h5 class="text-center">Ordenes</h5>
+                                </div>
+                            </div>
+                        </a>  
+                    {% endif %}
+
+                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))%}
+                        <div class="col-sm-6 col-md-4 service-itm" onclick="settingsButton();">
+                            <div class="thumbnail service">
+                                <img src= "menuImg/settings.png" alt="img"/>
+                                <h5 class="text-center">Configuración</h5>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>    
@@ -24,47 +61,63 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        $(document).ready(function () {
-            var result = {"menu":
-                        [
-                            {
-                                "name": "Venta",
-                                "father": "",
-                                "path": "{{ path('lavaseco_sales') }}"
-                            },
-                            {
-                                "name": "Ordenes",
-                                "father": "",
-                                "path": "{{ path('lavaseco_orders') }}"
-                            },
-                            {
-                                "name": "Facturas",
-                                "father": "",
-                                "path": "{{ path('lavaseco_Bills') }}"
-                            },
-                            {
-                                "name": "Configuración",
-                                "father": "",
-                                "path": ""
-                            }
-                        ]
-            };
-
-            for (var i in result.menu) {
-                itemMenu(result.menu[i]);
-            }
-        });
-
-        function itemMenu(item) {
-            var html = "<a href=\"" + item.path + "\">\
+        function settingsButton() {
+        var html = "<a href=\"{{ path('lavaseco_setting_descriptions') }}\">\
                             <div class=\"col-sm-6 col-md-4 service-itm\">\
                                 <div class=\"thumbnail service\">\
-                                    <img src=\"/serviceImg/servicio.jpg\" alt=\"img\" />\
-                                    <h5 class=\"text-center\">" + item.name + "</h5>\
+                                    <i class=\"fa fa-pencil-square-o fa-5x\" aria-hidden=\"true\"></i>\
+                                    <h5 class=\"text-center\">Descriptores</h5>\
+                                </div>\
+                            </div>\
+                        </a>\
+                        <a href=\"{{ path('lavaseco_setting_service_categories') }}\">\
+                            <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                <div class=\"thumbnail service\">\
+                                    <i class=\"fa fa-shopping-basket fa-5x\" aria-hidden=\"true\"></i>\
+                                    <h5 class=\"text-center\">Categorias y Servicios</h5>\
+                                </div>\
+                            </div>\
+                        </a>\
+                        <a href=\"{{ path('lavaseco_setting_customers') }}\">\
+                            <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                <div class=\"thumbnail service\">\
+                                    <i class=\"fa fa-users fa-5x\" aria-hidden=\"true\"></i>\
+                                    <h5 class=\"text-center\">Clientes</h5>\
                                 </div>\
                             </div>\
                         </a>";
-            $("#blockOption").append(html);
-        }
+        {% if is_granted('ROLE_MANAGER') %}
+            html += "<a href=\"{{ path('lavaseco_setting_bill_content') }}\">\
+                        <div class=\"col-sm-6 col-md-4 service-itm\">\
+                            <div class=\"thumbnail service\">\
+                                <i class=\"fa fa-file-text-o fa-5x\" aria-hidden=\"true\"></i>\
+                                <h5 class=\"text-center\">Factura</h5>\
+                            </div>\
+                        </div>\
+                    </a>\
+                    <a href=\"{{ path('lavaseco_setting_sale_point') }}\">\
+                        <div class=\"col-sm-6 col-md-4 service-itm\">\
+                            <div class=\"thumbnail service\">\
+                                <i class=\"fa fa-laptop fa-5x\" aria-hidden=\"true\"></i>\
+                                <h5 class=\"text-center\">Puntos de Venta</h5>\
+                            </div>\
+                        </div>\
+                    </a>";
+        {% endif %}
+
+        {% if is_granted('ROLE_MANAGER') %}
+            html += "<a href=\"{{ path('lavaseco_setting_loyalty') }}\">\
+                        <div class=\"col-sm-6 col-md-4 service-itm\">\
+                            <div class=\"thumbnail service\">\
+                                <i class=\"fa fa-star fa-5x\" aria-hidden=\"true\"></i>\
+                                <h5 class=\"text-center\">Fidelización</h5>\
+                            </div>\
+                        </div>\
+                    </a>";
+        {% endif %}
+        
+        $("#breadcrumbMenu").html("<li><a href=\"\">Inicio</a></li><li class=\"active\">Configuración</li>");
+        $("#blockOption").html(html);
+    }
     </script>
 {% endblock %}

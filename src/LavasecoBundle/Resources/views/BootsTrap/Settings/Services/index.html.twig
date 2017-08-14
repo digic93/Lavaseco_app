@@ -256,6 +256,9 @@
                         category["id"] = result.categoryId;
                         addCategoryAtTree(category);
                         $('#categoriesModal').modal('hide');
+                    },
+                    error: function () {
+                        openModalAlerErrorSuccess("Confirmación Servicios y Categorias", "Error al cargar los servicios y categorias");
                     }
                 });
             }
@@ -291,9 +294,11 @@
                                 </div>";
                         $("#select_state_new_service").append(html);
                     }
-                }
-            }
-            );
+                },
+                error: function () {
+                    openModalAlerErrorSuccess("Confirmación Descriptores", "Error al cargar los descriptores");
+                }        
+            });
         }
 
         function updateServiceCategory() {
@@ -443,6 +448,9 @@
                             $("#serviceData").show();
                         }
                     }
+                },
+                error: function() {
+                    openModalAlerErrorSuccess("Confirmación Servicios Categorias", "Error al cargar el servicio/categoria seleccionado");
                 }
             });
         }

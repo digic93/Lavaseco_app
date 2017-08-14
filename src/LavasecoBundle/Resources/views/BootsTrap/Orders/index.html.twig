@@ -93,7 +93,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Cabio de Estado</h4>
+                    <h4 class="modal-title" id="myModalLabel">Cambio de Estado</h4>
                 </div>
                 <div class="modal-body">
                     <p>
@@ -122,7 +122,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" onclick="saveChange();">Guradar</button>
+                    <button type="button" class="btn btn-success" onclick="saveChange();">Guardar</button>
                 </div>
             </div>
         </div>
@@ -234,6 +234,10 @@
                 },
                 success: function (result) {
                     location.reload();
+                    openModalAlerErrorSuccess("Confirmación de Cambios", "Los cambios han sido aplicados con éxito.");
+                },
+                error: function () {
+                    openModalAlerErrorSuccess("Confirmación de Cambios", "Error al guardar los cambios realizados, intente nuevamente.");
                 }
             });
         }

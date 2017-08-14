@@ -55,7 +55,7 @@
                 <div class="form-group">
                     <label class="control-label" for="singlebutton"></label>
                     <div class="input-group">
-                        <input type="submit" id="singlebutton" name="singlebutton" class="btn btn-success btn-block" value="Guardar">
+                        <input type="submit" id="singlebuttonSaveData" name="singlebutton" class="btn btn-success btn-block" value="Guardar">
                     </div>
                 </div>
 
@@ -134,6 +134,16 @@
                 $("#divAdvanceP").removeClass("has-error");
                 $("#helpBlockAdvanceP").text("");
             }
+        });
+        
+        $("#singlebuttonSaveData").on('click', function () {
+            {% if MessagePad %}
+                {% if error %}
+                    openModalAlertSymphony('Confimación Actualización Datos Fidelización de Clientes');
+                {% else %}
+                    openModalAlertSymphony('Confimación Actualización Datos Fidelización de Clientes');
+                {% endif %}
+            {% endif %}
         });
     </script>
 {% endblock %}

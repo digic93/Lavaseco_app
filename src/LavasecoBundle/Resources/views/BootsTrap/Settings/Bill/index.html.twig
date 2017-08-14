@@ -70,7 +70,7 @@
                 <div class="form-group">
                     <label class="col-md-4 control-label" for="singlebutton"></label>
                     <div class="col-md-4">
-                        <input type="submit" id="singlebutton" name="singlebutton" class="btn btn-success" value="Guardar">
+                        <input type="submit" id="singlebuttonSave" name="singlebutton" class="btn btn-success" value="Guardar">
                     </div>
                 </div>
 
@@ -169,6 +169,16 @@
             if ($("#lavasecobundle_billcontent_foot").val().length > 0) {
                 $("#invoice_footer").text($("#lavasecobundle_billcontent_foot").val());
             }
+        });
+        
+        $("#singlebuttonSave").on('click', function () {
+            {% if MessagePad %}
+                {% if error %}
+                    openModalAlertSymphony('Confimación Datos de la Factura');
+                {% else %}
+                    openModalAlertSymphony('Confimación Datos de la Factura');
+                {% endif %}
+            {% endif %}
         });
     </script>
 {% endblock %}

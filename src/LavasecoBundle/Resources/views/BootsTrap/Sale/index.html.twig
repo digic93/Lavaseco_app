@@ -478,7 +478,7 @@
                 dataType: 'json',
                 success: function (servicesCategories) {
                     if (!servicesCategories.length) {
-                        alert("Servicios no Disponibles");
+                        openModalAlerErrorSuccess("Error", "Servicios no Disponibles");
                         return;
                     }
 
@@ -720,9 +720,9 @@
                 data: factura,
                 success: function (result) {
                     if (result.error !== undefined) {
-                        alert("Error al registrar la factura");
+                        openModalAlerErrorSuccess("Corfirmación Factura", "Error al registrar la factura");
                     } else {
-                        alert("Facturado con exito");
+                        openModalAlerErrorSuccess("Corfirmación Factura", "Facturado con éxito");
                         $('#wayToPay').modal('hide');
                         location.reload();
                     }
@@ -741,7 +741,7 @@
                 factura.change = $("#change").val();                
                 ajaxSaleBill();
             } else {
-                alert("Verifique el dinero dado por el cliente");
+                openModalAlerErrorSuccess("Error", "Verifique el dinero dado por el cliente");
             }
         }
 
