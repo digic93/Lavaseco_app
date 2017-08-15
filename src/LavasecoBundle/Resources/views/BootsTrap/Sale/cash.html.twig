@@ -98,31 +98,6 @@
         {% endif %}
     </div>
     
-    <!-- Modal alert Close Sale Point -->
-    <div id="modalAlert" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">
-                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                            Confirmación {{ title }} de Caja
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>En este momento va a dar {{ title }} a la caja, recuerde que este proceso es irreversible. ¿Realmente desea hacer esta transacción?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success" >Aceptar</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                    </div>
-                </div>
-            {{ form_end(form) }}        
-        </div>
-    </div>
-
 {% endblock %}
 
 {% block javascripts %}
@@ -141,7 +116,7 @@
         {% endif%}
         
         $("#openCloseAlert").on('click', function () {
-           $("#modalAlert").modal('show');
+           openModalAlerConfirmation("Confirmación {{ title }} de Caja", En este momento va a dar {{ title }} a la caja, recuerde que este proceso es irreversible. ¿Realmente desea hacer esta transacción?);
         });
     </script>
 {% endblock %}

@@ -280,9 +280,9 @@
                 data: bill,
                 success: function (result) {
                     if (result.error !== undefined) {
-                        alert("Error al registrar la factura");
+                        openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la factura");
                     } else {
-                        alert("Se registró la entrega con exito");
+                        openModalAlerErrorSuccess('Confirmación de Factura', "Se registró la entrega con exito");
                         $('#wayToPay').modal('hide');
                         location.reload();
                     }
@@ -352,7 +352,7 @@
 
         function refund() {
             if (billId === undefined || billId === 0) {
-                alert("Seleccione por lo menos una Factura!");
+                openModalAlerErrorSuccess('Error', "Seleccione por lo menos una Factura!");
                 return;
             }
 
@@ -365,9 +365,12 @@
                         "bill": billId
                     },
                     success: function (result) {
-                        alert("Reembolso con exito");
+                        openModalAlerErrorSuccess('Confirmación de Reembolso', "Reembolso ha sido efectuado con éxito.");
                         $('#wayToPay').modal('hide');
                         location.reload();
+                    },
+                    error: function () {
+                        openModalAlerErrorSuccess('Confirmación de Reembolso', "Error a efectuar el reembolso.");
                     }
 
                 });

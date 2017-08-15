@@ -77,6 +77,96 @@
             </script>
         {% endif %}
         
+        <!-- Modal alert Success/Error -->
+        <div id="modalAlertSuccessError" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                            <lable id="titleModalAlert"></lable>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="messageModalAlert"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function openModalAlerErrorSuccess(title, content) {
+                $("#titleModalAlert").text(title);
+                $("#messageModalAlert").text(content);
+                $("#modalAlertSuccessError").modal('show');
+            }
+        </script>
+        
+        <!-- Modal alert Conformation -->
+        <div id="modalAlertConfirmation" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                            <lable id="titleModalAlertConf"></lable>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="messageModalAlertConf"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Aceptar</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function openModalAlerConfirmation(title, content) {
+                $("#titleModalAlertConf").text(title);
+                $("#messageModalAlertConf").text(content);
+                $("#modalAlertConfirmation").modal('show');
+            }
+        </script>
+        
+        <!-- Modal alert Symphony Form -->
+        <div id="modalAlertSymphony" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                            <lable id="titleModalAlertSy"></lable>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="messageModalAlertSy">{{ MessagePad }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function openModalAlertSymphony(title) {
+                $("#titleModalAlertSy").text(title);
+                $("#modalAlertSymphony").modal('show');
+            }
+        </script>
+        
         <script src="{{ asset("BootsTrapTheme/js/bootstrap.min.js") }}"></script>        
         {% block javascripts %}{% endblock %}
     </body>

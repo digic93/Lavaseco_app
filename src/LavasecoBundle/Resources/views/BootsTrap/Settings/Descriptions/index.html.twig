@@ -45,7 +45,7 @@
                             <div class="form-group">
                                 <label class="col-md-4 control-label" for="singlebutton"></label>
                                 <div class="col-md-4">
-                                    <input id="singlebutton" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
+                                    <input id="singlebuttonRegisDescrip" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
                                 </div>
                             </div>
 
@@ -78,7 +78,7 @@
                             <div class="form-group">
                                 <label class="col-md-4 control-label" for="singlebutton"></label>
                                 <div class="col-md-4">
-                                    <input id="singlebutton" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
+                                    <input id="singlebuttonRegisTypeDesc" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
                                 </div>
                             </div>
                         </fieldset>
@@ -119,6 +119,26 @@
     <script>
         $(document).ready(function () {
             $('#descriptorsTable').DataTable();
+        });
+        
+        $("#singlebuttonRegisDescrip").on('click', function () {
+            {% if MessagePad %}
+                {% if error %}
+                    openModalAlertSymphony('Confimación Registro Descriptor');
+                {% else %}
+                    openModalAlertSymphony('Confimación Registro Descriptor');
+                {% endif %}
+            {% endif %}
+        });
+        
+        $("#singlebuttonRegisTypeDesc").on('click', function () {
+            {% if MessagePad %}
+                {% if error %}
+                    openModalAlertSymphony('Confimación Registro Tipo Descriptor');
+                {% else %}
+                    openModalAlertSymphony('Confimación Registro Tipo Descriptor');
+                {% endif %}
+            {% endif %}
         });
     </script>
 {% endblock %}

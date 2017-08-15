@@ -65,36 +65,10 @@
     </div>
 </div>
 
-<!-- Modal alert Close Sale Point -->
-<div id="modalAlert" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                    Confirmación Creación de Usuario
-                </h4>
-            </div>
-            <div class="modal-body">
-                <p id="messageCreatedUser"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-
-    </div>
-</div>
-
 {% block javascripts %}
     <script>
         var valid = false;
         var validName = false;
-        var validLastName = false;
-        var validPhone = false;
 
         $('#client_email').focusout(function () {
             if ($("#client_email").val() !== ""){         
@@ -197,18 +171,15 @@
                     dataType: "json",
                     data: user,
                     success: function (result) {
-                        $('#messageCreatedUser').text("El cliente " + result.name + " ha sido creado correctamente.");
-                        $('#modalAlert').modal('show');
+                        openModalAlerErrorSuccess("Confirmación Creación de Usuarios", "El cliente " + result.name + " ha sido creado correctamente.");
                         clearForm();
                     },
                     error: function () {
-                        $('#messageCreatedUser').text("Error al registrar el usuario");
-                        $('#modalAlert').modal('show');
+                        openModalAlerErrorSuccess("Confirmación Creación de Usuarios", "Error al registrar el usuario");
                     }
                 });
             } else {
-                $('#messageCreatedUser').text("El campo nombre es obligatorio");
-                $('#modalAlert').modal('show');
+                openModalAlerErrorSuccess("Error", "El campo nombre es obligatorio");
             }
         }
 
@@ -225,6 +196,8 @@
             $("#divPhone").removeClass("has-warning");
             $("#divName").removeClass("has-warning");
             $("#divAddress").removeClass("has-warning");
+            validName = false;
+            valid = false;
         }
 
     </script>
