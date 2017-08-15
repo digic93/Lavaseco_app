@@ -18,7 +18,7 @@ class DescriptionController extends Controller {
         $formCategoryStateObjectView = $this->formCategoryStateObject($request);
         
         if(!$formCategoryStateObjectView || !$formObjectDescriptionView){
-            return $this->redirectToRoute('lavaseco_settign_descriptions');
+            return $this->redirectToRoute('lavaseco_setting_descriptions');
         }
             
         
