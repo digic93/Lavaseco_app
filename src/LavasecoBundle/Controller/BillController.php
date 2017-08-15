@@ -32,6 +32,7 @@ class BillController extends Controller {
     }
 
     public function settingAction(Request $request) {
+        $data = array();
         $configuration = $this->get('lavaseco.app_configuration');
 
         $billContent = $this->getBillContentById(1);
@@ -40,18 +41,22 @@ class BillController extends Controller {
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->get('doctrine')->getManager();
+            try {
+                $em = $this->get('doctrine')->getManager();
+                $billContent = $form->getData();
+                $em->persist($billContent);
 
-            $billContent = $form->getData();
-
-            $em->persist($billContent);
-
-            $em->flush();
+                $em->flush();
+                $data["messagePad"] = "Se Guardo la configuración con éxito.";
+            } catch (\Doctrine\DBAL\DBALException $e) {
+                $data["messagePad"] = "No se pudo Guardar la configuración.";
+                $data["errorPad"] = true;
+            }
         }
 
-        return $this->render($configuration->getViewTheme() . ':Settings/Bill/index.html.twig', [
+        return $this->render($configuration->getViewTheme() . ':Settings/Bill/index.html.twig', $data + [
                     'form' => $form->createView(),
-                    'billContent' => $billContent,
+                    'billContent' => $billContent
         ]);
     }
 
@@ -62,10 +67,10 @@ class BillController extends Controller {
         $customerId = $request->request->get("customerId");
 
         $notity = [
-            "printBill" => $request->request->get("printBill") == "true"? true:false,
-            "sendBill" => $request->request->get("sendBill") == "true"? true:false,
-            "notifyRedyDelivery" => $request->request->get("notifyRedyDelivery") == "true"? true:false,
-            "notifyDelivered" => $request->request->get("notifyDelivered") == "true"? true:false,
+            "printBill" => $request->request->get("printBill") == "true" ? true : false,
+            "sendBill" => $request->request->get("sendBill") == "true" ? true : false,
+            "notifyRedyDelivery" => $request->request->get("notifyRedyDelivery") == "true" ? true : false,
+            "notifyDelivered" => $request->request->get("notifyDelivered") == "true" ? true : false,
         ];
 
 
@@ -86,25 +91,24 @@ class BillController extends Controller {
         }
 
         $this->saveBillHistory($bill);
-        
+
         //Enviar via correo electronico la factura al cliente
         if ($customer && $notity ["sendBill"]) {
-            if($customer->getEmail()){
+            if ($customer->getEmail()) {
                 $salePoint = $this->getSalePoint();
                 $configuration = $this->get('lavaseco.app_configuration');
                 $facturaId = $salePoint->getId() . "-" . $bill->getId();
 
-                $message = (new \Swift_Message('Factura de servicio ' . $facturaId ))
+                $message = (new \Swift_Message('Factura de servicio ' . $facturaId))
                         ->setFrom(['noreply@lavasecomodelo.com' => 'Lavaseco Modelo'])
                         ->setTo($customer->getEmail())
                         ->setBody(
                         $this->renderView(
-                                $configuration->getViewTheme().':Emails/billEmail.html.twig', 
-                                [
-                                    'facturaId' => $facturaId,
-                                    'customer' => $customer,
-                                    'bill' => $bill,
-                                    'billContent' => $this->getBillContentById(1),
+                                $configuration->getViewTheme() . ':Emails/billEmail.html.twig', [
+                            'facturaId' => $facturaId,
+                            'customer' => $customer,
+                            'bill' => $bill,
+                            'billContent' => $this->getBillContentById(1),
                                 ]
                         ), 'text/html'
                 );
@@ -200,7 +204,7 @@ class BillController extends Controller {
         }
         $this->saveBillHistory($bill);
         $this->notifyDelivery($bill, $customer);
-        
+
         return $this->json([true]);
     }
 
@@ -268,7 +272,7 @@ class BillController extends Controller {
             $billDetail->setObservation($service["observations"]);
 
             $em->persist($billDetail);
-            
+
             $bill->addBillDetail($billDetail);
             if (isset($service["descriptors"])) {
                 $this->saveObjectStateReceivedService($serviceObj, $billDetail, $service["descriptors"]);
@@ -285,7 +289,7 @@ class BillController extends Controller {
             $objectStateReceivedService->setBillDetail($billDetail);
             $objectStateReceivedService->
                     setStateObjectDescription($this->getStateObjectDescriptionById($descriptor["id"]));
-            
+
             $billDetail->addObjectStateReceivedService($objectStateReceivedService);
             $em->persist($objectStateReceivedService);
         }
@@ -497,8 +501,8 @@ class BillController extends Controller {
 
         return $bonification;
     }
-    
-        private function notifyDelivery($bill, $customer) {
+
+    private function notifyDelivery($bill, $customer) {
         if ($bill->getNotifyDelivered() && $bill->getProcessState()->getId() == 7) {
             $configuration = $this->get('lavaseco.app_configuration');
             $billId = $bill->getSalePoint()->getId() . "-" . $bill->getId();

@@ -15,47 +15,6 @@
     <div class="row">
         <!--Formulario contenidio-->
         <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Registro Descriptor</h3>
-                </div>
-                <div class="panel-body">                    
-                    <!-- Form Descriptor -->
-                    {{ form_start(formObjectDescription, {'attr': {'class': 'form-horizontal'} }) }}
-                    <fieldset>
-                            <!-- Text input-->
-                            <div class="form-group">
-                                {{ form_errors(formObjectDescription.name) }}
-                                <label class="col-md-4 control-label" for="textinput">{{ form_label(formObjectDescription.name, 'Nombre') }}</label>  
-                                <div class="col-md-5">
-                                    {{ form_widget(formObjectDescription.name, {'attr': {'class': 'form-control input-md'} }) }}
-                                </div>
-                            </div>
-                                
-                            <!-- Select Basic -->
-                            <div class="form-group">
-                                {{ form_errors(formObjectDescription.categoryStateObject) }}
-                                <label class="col-md-4 control-label" for="selectbasic">{{ form_label(formObjectDescription.categoryStateObject, 'Tipo Descriptor') }}</label>
-                                <div class="col-md-5">
-                                    {{ form_widget(formObjectDescription.categoryStateObject, {'attr': {'class': 'form-control'} }) }}
-                                </div>
-                            </div>
-
-                            <!-- Button -->
-                            <div class="form-group">
-                                <label class="col-md-4 control-label" for="singlebutton"></label>
-                                <div class="col-md-4">
-                                    <input id="singlebuttonRegisDescrip" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
-                                </div>
-                            </div>
-
-                        </fieldset>
-                    {{ form_end(formObjectDescription) }}
-                </div>
-            </div>
-
-        </div>
-        <div class="col-md-6">
             <!-- Form Tipo descriptor-->
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -64,25 +23,66 @@
                 <div class="panel-body">
                     <!-- Form Tipo descriptor-->
                     {{ form_start(formCategoryStateObject, {'attr': {'class': 'form-horizontal'} }) }}
-                        <fieldset>
-                            <!-- Text input-->
-                            <div class="form-group">
-                                {{ form_errors(formCategoryStateObject.name) }}
-                                <label class="col-md-4 control-label" for="textinput">{{ form_label(formCategoryStateObject.name, 'Tipo Descriptor') }}</label>  
-                                <div class="col-md-5">
-                                    {{ form_widget(formCategoryStateObject.name, {'attr': {'class': 'form-control  input-md'} }) }}
-                                </div>
+                    <fieldset>
+                        <!-- Text input-->
+                        <div class="form-group">
+                            {{ form_errors(formCategoryStateObject.name) }}
+                            <label class="col-md-4 control-label" for="textinput">{{ form_label(formCategoryStateObject.name, 'Tipo Descriptor') }}</label>  
+                            <div class="col-md-5">
+                                {{ form_widget(formCategoryStateObject.name, {'attr': {'class': 'form-control  input-md'} }) }}
                             </div>
+                        </div>
 
-                            <!-- Button -->
-                            <div class="form-group">
-                                <label class="col-md-4 control-label" for="singlebutton"></label>
-                                <div class="col-md-4">
-                                    <input id="singlebuttonRegisTypeDesc" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
-                                </div>
+                        <!-- Button -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="singlebutton"></label>
+                            <div class="col-md-4">
+                                <input id="singlebuttonRegisTypeDesc" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
                             </div>
-                        </fieldset>
+                        </div>
+                    </fieldset>
                     {{ form_end(formCategoryStateObject) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Registro Descriptor</h3>
+                </div>
+                <div class="panel-body">                    
+                    <!-- Form Descriptor -->
+                    {{ form_start(formObjectDescription, {'attr': {'class': 'form-horizontal'} }) }}
+                    <fieldset>
+                        <!-- Text input-->
+                        <div class="form-group">
+                            {{ form_errors(formObjectDescription.name) }}
+                            <label class="col-md-4 control-label" for="textinput">{{ form_label(formObjectDescription.name, 'Nombre') }}</label>  
+                            <div class="col-md-5">
+                                {{ form_widget(formObjectDescription.name, {'attr': {'class': 'form-control input-md'} }) }}
+                            </div>
+                        </div>
+
+                        <!-- Select Basic -->
+                        <div class="form-group">
+                            {{ form_errors(formObjectDescription.categoryStateObject) }}
+                            <label class="col-md-4 control-label" for="selectbasic">{{ form_label(formObjectDescription.categoryStateObject, 'Tipo Descriptor') }}</label>
+                            <div class="col-md-5">
+                                {{ form_widget(formObjectDescription.categoryStateObject, {'attr': {'class': 'form-control'} }) }}
+                            </div>
+                        </div>
+
+                        <!-- Button -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="singlebutton"></label>
+                            <div class="col-md-4">
+                                <input id="singlebuttonRegisDescrip" type="submit" name="singlebutton" class="btn btn-success pull-right" value="Guardar"/>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                    {{ form_end(formObjectDescription) }}
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@
         <div class="col-md-12">
             <h3>Descriptores Registrados</h3>
             <hr>
-         
+
             <table id="descriptorsTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
@@ -101,11 +101,11 @@
                 </thead>
                 <tbody>
                     {% for ObjectDescription in ObjectDescriptions %}
-                    <tr>
-                        <td>{{ ObjectDescription.name }}</td>
-                        <td>{{ ObjectDescription.categoryStateObject.name }}</td>
-                        <td>Editd</td>
-                    </tr>
+                        <tr>
+                            <td>{{ ObjectDescription.name }}</td>
+                            <td>{{ ObjectDescription.categoryStateObject.name }}</td>
+                            <td>Editd</td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -119,26 +119,6 @@
     <script>
         $(document).ready(function () {
             $('#descriptorsTable').DataTable();
-        });
-        
-        $("#singlebuttonRegisDescrip").on('click', function () {
-            {% if MessagePad %}
-                {% if error %}
-                    openModalAlertSymphony('Confimación Registro Descriptor');
-                {% else %}
-                    openModalAlertSymphony('Confimación Registro Descriptor');
-                {% endif %}
-            {% endif %}
-        });
-        
-        $("#singlebuttonRegisTypeDesc").on('click', function () {
-            {% if MessagePad %}
-                {% if error %}
-                    openModalAlertSymphony('Confimación Registro Tipo Descriptor');
-                {% else %}
-                    openModalAlertSymphony('Confimación Registro Tipo Descriptor');
-                {% endif %}
-            {% endif %}
         });
     </script>
 {% endblock %}
