@@ -136,14 +136,5 @@
             }
         });
         
-        $("#singlebuttonSaveData").on('click', function () {
-            {% if MessagePad %}
-                {% if error %}
-                    openModalAlertSymphony('Confimación Actualización Datos Fidelización de Clientes');
-                {% else %}
-                    openModalAlertSymphony('Confimación Actualización Datos Fidelización de Clientes');
-                {% endif %}
-            {% endif %}
-        });
     </script>
 {% endblock %}

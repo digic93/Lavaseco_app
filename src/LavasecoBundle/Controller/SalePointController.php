@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class SalePointController extends Controller {
 
     public function indexAction(Request $request) {
+        $data = array();
         $configuration = $this->get('lavaseco.app_configuration');
 
         $salePoint = new SalePoint();
@@ -18,19 +19,24 @@ class SalePointController extends Controller {
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->get('doctrine')->getManager();
-            
-            $salePoint = $form->getData();
-            
-            $em->persist($salePoint);
-            $em->flush();
-            return $this->redirectToRoute('lavaseco_settign_sale_point');
+            try {
+                $em = $this->get('doctrine')->getManager();
+
+                $salePoint = $form->getData();
+
+                $em->persist($salePoint);
+                $em->flush();
+
+                $form = $this->createForm(SalePointType::class, new SalePoint());
+                $data["messagePad"] = "Punto de venta " . $salePoint->getName() . "creado correctamente";
+            } catch (\Doctrine\DBAL\DBALException $e) {
+                $data["messagePad"] = "Punto de venta " . $salePoint->getName() . " no pudo ser creado, verifique que no exista un punto de venta con el mismo nombre";
+                $data["errorPad"] = true;
+            }
         }
 
-        return $this->render($configuration->getViewTheme() . ':Settings/SalePoint/index.html.twig', [
-                    "form" => $form->createView(),
-                    "salePoints" => $this->getSalePoints()
-        ]);
+        return $this->render($configuration->getViewTheme() . ':Settings/SalePoint/index.html.twig'
+                , ["form" => $form->createView(),"salePoints" => $this->getSalePoints()] + $data);
     }
 
     public function getSalePointAction(Request $request) {

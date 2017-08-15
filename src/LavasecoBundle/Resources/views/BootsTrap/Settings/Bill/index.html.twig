@@ -171,15 +171,6 @@
             }
         });
         
-        $("#singlebuttonSave").on('click', function () {
-            {% if MessagePad %}
-                {% if error %}
-                    openModalAlertSymphony('Confimación Datos de la Factura');
-                {% else %}
-                    openModalAlertSymphony('Confimación Datos de la Factura');
-                {% endif %}
-            {% endif %}
-        });
     </script>
 {% endblock %}
 
