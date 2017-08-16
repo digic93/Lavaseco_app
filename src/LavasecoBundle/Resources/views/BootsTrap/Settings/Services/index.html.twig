@@ -123,7 +123,7 @@
                     <label id="tittle_service_category"></label>
                 </div>
                 <div class="panel-body">
-                    <h3 id="name_service_category" class="text-center">Tipo Categoria o Servicio</h3>
+                    <h3 id="name_service_category" class="text-center" data-shortname="">Tipo Categoria o Servicio</h3>
                     <hr>
                     <h4>Descripcion:</h4>
                     <p id="descrip_service_category">...</p>
@@ -137,7 +137,7 @@
                         <hr>
                     </div>
                     <div class="btn-group pull-right" role="group">
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#categoriesModal" 
+                        <button type="button" class="btn btn-primary" data-target="#categoriesModal" 
                                 onclick="updateServiceCategory();">Modificar</button>
                         <button type="button" class="btn btn-default" onclick="deleteServiceCategory();">Eliminar</button>
                     </div>
@@ -212,7 +212,7 @@
 {% block javascripts %}
     <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
     <script>
-
+        
         $(document).ready(function () {
             $("#priceNewService").number(true);
             //Evento cerrar ventana modal
@@ -255,10 +255,11 @@
                     success: function (result) {
                         category["id"] = result.categoryId;
                         addCategoryAtTree(category);
+                        openModalAlerErrorSuccess("Confirmación Servicios y Categorías", "El Servicio/Categoría ha sido creado correctamente.");
                         $('#categoriesModal').modal('hide');
                     },
                     error: function () {
-                        openModalAlerErrorSuccess("Confirmación Servicios y Categorias", "Error al cargar los servicios y categorias");
+                        openModalAlerErrorSuccess("Confirmación Servicios y Categorías", "Error al cargar los servicios y categorías");
                     }
                 });
             }
@@ -274,7 +275,7 @@
                 getImputsDescriptions();
             }
         }
-
+        
         function getImputsDescriptions() {
             $.ajax({
                 url: "{{ path("lavaseco_api_descriptors") }}",
@@ -282,36 +283,59 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (decriptions) {
-                    $("#select_state_new_service").empty();
-                    $("#descriptors").show();
-                    $("#priceNewServiceImput").show();
-                    for (var desc in decriptions) {
-                        var html = "<div class=\"checkbox\">\
-                                    <label for=\"checkboxes-1\">\
-                                        <input class=\"checkboxDescriptor\" type=\"checkbox\" name=\"checkboxes\" id=\"checkboxes-1\" value=\"" + decriptions[desc].id + "\">"
-                                + decriptions[desc].name +
-                                "</label>\
-                                </div>";
-                        $("#select_state_new_service").append(html);
-                    }
+                    drawDescriptors(decriptions);
                 },
                 error: function () {
                     openModalAlerErrorSuccess("Confirmación Descriptores", "Error al cargar los descriptores");
                 }        
             });
         }
+        
+        function drawDescriptors(decriptions) {
+            $("#select_state_new_service").empty();
+            $("#descriptors").show();
+            $("#priceNewServiceImput").show();
+            for (var desc in decriptions) {
+                var html = "<div class=\"checkbox\">\
+                            <label for=\"checkboxes-1\">\
+                                <input class=\"checkboxDescriptor\" type=\"checkbox\" name=\"checkboxes\" id=\"checkboxes-1\" value=\"" + decriptions[desc].id + "\">"
+                        + decriptions[desc].name +
+                        "</label>\
+                        </div>";
+                $("#select_state_new_service").append(html);
+            }
+        }
 
         function updateServiceCategory() {
-            var name = $("#name_service_category").text();
+            var name = $("#name_service_category").attr("data-shortname");           
             var description = $("#descrip_service_category").text();
+            
+            $("#titleModal").html("Modificar " + $("#tittle_service_category").text());
+            
             if ($("#tittle_service_category").text().length > 0) {
                 $("#nameNewCategory").val(name);
                 $("#descriptionNewCategory").val(description);
+                $("#priceNewServiceImput").hide();
+                $("#descriptors").hide();
+                
+                if ($("#tittle_service_category").text() === "Servicio") {
+                    $("#priceNewService").val($("#price_service_category").text());
+                    getImputsDescriptions();         
+                }
+                $("#categoriesModal").modal("show");      
+            }
+            else{
+                openModalAlerErrorSuccess('Advertencia', 'Seleccione la Categoría/Servicio a modificar');
             }
         }
 
         function deleteServiceCategory() {
-
+            if ($("#tittle_service_category").text().length > 0) {
+                openModalAlerErrorSuccess('Eliminación de Categoría/Servicio ', 'Eliminación éxitosa');
+            }
+            else{
+                openModalAlerErrorSuccess('Advertencia', 'Seleccione la Categoriía/Servicio a eliminar');
+            }
         }
 
         function validateFields() {
@@ -430,12 +454,14 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (data) {
+                    console.log(data);
                     $("#serviceData").hide();
                     if (data.name !== undefined) {
                         $("#tittle_service_category").text(data.type);
                         $("#name_service_category").text(data.name);
+                        $("#name_service_category").attr('data-shortname', data.shortName);
                         $("#descrip_service_category").text(data.description);
-
+                        
                         if (data.type === "Servicio") {
                             $("#price_service_category").text($.number(data.price));
 

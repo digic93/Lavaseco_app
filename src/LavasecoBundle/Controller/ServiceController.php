@@ -113,6 +113,7 @@ class ServiceController extends Controller {
             "name" => $serviceCategory->getFullName(),
             "type" => $type,
             "description" => $serviceCategory->getDescription(),
+            "shortName" => $serviceCategory->getName()
         ];
 
         if (count($services)) {
