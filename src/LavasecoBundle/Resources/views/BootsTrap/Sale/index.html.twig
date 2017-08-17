@@ -774,8 +774,6 @@
                         html += "<strong> numero: </strong>" + user.phoneNumber + "<br>";
                     }
                     html += "<strong> Puntos Acumulados: </strong><label id =\"currentPointUser\">" + user.points + "</label><br></p>";
-                    $("#redeemPoints").val(user.points);
-
                     $("#infoClientBill").empty();
                     $("#infoClientBill").html(html);
                 }
@@ -948,6 +946,8 @@
                 $("#modalRedeemPoints").modal('show');
                 $("#totalRedeemPoints").val(factura.total - $("#redeemPoints").val());
                 $("#subtotalRedeemPoints").val(factura.subtotal);
+                //abre ventana modal
+                $("#modalRedeemPoints").modal('show'); 
             }
         }
 
@@ -967,6 +967,7 @@
                 $("#divRedeemPoints").addClass("has-error");
                 return false;
             } else {
+                var currentTotal = factura.total - redeemedPoints;   
                 $("#totalRedeemPoints").val(currentTotal);
                 $("#divRedeemPoints").addClass("has-success");
                 $("#divRedeemPoints").removeClass("has-error");
