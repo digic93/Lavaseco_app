@@ -42,7 +42,10 @@ class CustomerController extends Controller {
 
     public function createAction() {
         $configuration = $this->get('lavaseco.app_configuration');
-        return $this->render($configuration->getViewTheme() . ':Settings/Customer/index.html.twig');
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $customerRepository = $doctrineManager->getRepository("LavasecoBundle:Customer");
+        $customers = $customerRepository->findAll();
+        return $this->render($configuration->getViewTheme() . ':Settings/Customer/index.html.twig', ["customers" => $customers]);
     }
 
     public function registerAction(Request $request) {

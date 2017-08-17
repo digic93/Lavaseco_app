@@ -18,9 +18,9 @@
         <div class="col-md-12">
             {% if summary %}
                 <p>Resumen de caja,  
-                    Apertura: <strong>${{ summary.start }}</strong>, 
-                    Ingresos: <strong>${{ summary.input }}</strong>, 
-                    Egresos: <strong>${{ summary.output }}</strong>.
+                    Apertura: <strong>$<span class="number">{{ summary.start }}</span></strong>, 
+                    Ingresos: <strong>$<span class="number">{{ summary.input }}</span></strong>, 
+                    Egresos: <strong>$<span class="number">{{ summary.output }}</span></strong>.
                 </p>
             {% endif %}
             <!-- Form Tipo descriptor-->
@@ -106,6 +106,7 @@
 
     <script>
         $(document).ready(function () {
+            $('span.number').number( true );
             $("#transactionTable").DataTable();
             //$("#lavasecobundle_cashtransaction_payment").number(true);
         });
@@ -116,7 +117,7 @@
         {% endif%}
         
         $("#openCloseAlert").on('click', function () {
-           openModalAlerConfirmation("Confirmación {{ title }} de Caja", En este momento va a dar {{ title }} a la caja, recuerde que este proceso es irreversible. ¿Realmente desea hacer esta transacción?);
+           openModalAlerConfirmation("Confirmación {{ title }} de Caja", "En este momento va a dar {{ title }} a la caja, recuerde que este proceso es irreversible. ¿Realmente desea hacer esta transacción?");
         });
     </script>
 {% endblock %}

@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="customer")
  * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\CustomerRepository")
  */
-class Customer
-{
+class Customer {
+
     /**
      * @var int
      *
@@ -56,7 +56,6 @@ class Customer
      */
     private $points;
 
-
     /**
      * @var \DateTime
      *
@@ -95,8 +94,7 @@ class Customer
      *
      * @return int
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -107,8 +105,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -119,8 +116,7 @@ class Customer
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -131,8 +127,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setEmail($email)
-    {
+    public function setEmail($email) {
         $this->email = $email;
 
         return $this;
@@ -143,8 +138,7 @@ class Customer
      *
      * @return string
      */
-    public function getEmail()
-    {
+    public function getEmail() {
         return $this->email;
     }
 
@@ -155,8 +149,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setPhoneNumber($phoneNumber)
-    {
+    public function setPhoneNumber($phoneNumber) {
         $this->phoneNumber = $phoneNumber;
 
         return $this;
@@ -167,8 +160,7 @@ class Customer
      *
      * @return string
      */
-    public function getPhoneNumber()
-    {
+    public function getPhoneNumber() {
         return $this->phoneNumber;
     }
 
@@ -179,8 +171,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setPoints($points)
-    {
+    public function setPoints($points) {
         $this->points = $points;
 
         return $this;
@@ -191,8 +182,7 @@ class Customer
      *
      * @return int
      */
-    public function getPoints()
-    {
+    public function getPoints() {
         return $this->points;
     }
 
@@ -203,8 +193,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -215,8 +204,7 @@ class Customer
      *
      * @return string
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -227,8 +215,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setLastVisit($lastVisit)
-    {
+    public function setLastVisit($lastVisit) {
         $this->lastVisit = $lastVisit;
 
         return $this;
@@ -239,8 +226,7 @@ class Customer
      *
      * @return \DateTime
      */
-    public function getLastVisit()
-    {
+    public function getLastVisit() {
         return $this->lastVisit;
     }
 
@@ -251,8 +237,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setTotalVisits($totalVisits)
-    {
+    public function setTotalVisits($totalVisits) {
         $this->totalVisits = $totalVisits;
 
         return $this;
@@ -263,8 +248,7 @@ class Customer
      *
      * @return int
      */
-    public function getTotalVisits()
-    {
+    public function getTotalVisits() {
         return $this->totalVisits;
     }
 
@@ -275,8 +259,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setTotalSpent($totalSpent)
-    {
+    public function setTotalSpent($totalSpent) {
         $this->totalSpent = $totalSpent;
 
         return $this;
@@ -287,8 +270,7 @@ class Customer
      *
      * @return int
      */
-    public function getTotalSpent()
-    {
+    public function getTotalSpent() {
         return $this->totalSpent;
     }
 
@@ -299,8 +281,7 @@ class Customer
      *
      * @return Customer
      */
-    public function setAddress($address)
-    {
+    public function setAddress($address) {
         $this->address = $address;
 
         return $this;
@@ -311,15 +292,14 @@ class Customer
      *
      * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress() {
         return $this->address;
     }
+
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->setPoints(0);
         $this->setTotalSpent(0);
         $this->setTotalVisits(0);
@@ -335,8 +315,7 @@ class Customer
      *
      * @return Customer
      */
-    public function addBill(\LavasecoBundle\Entity\Bill $bill)
-    {
+    public function addBill(\LavasecoBundle\Entity\Bill $bill) {
         $this->bills[] = $bill;
 
         return $this;
@@ -347,8 +326,7 @@ class Customer
      *
      * @param \LavasecoBundle\Entity\Bill $bill
      */
-    public function removeBill(\LavasecoBundle\Entity\Bill $bill)
-    {
+    public function removeBill(\LavasecoBundle\Entity\Bill $bill) {
         $this->bills->removeElement($bill);
     }
 
@@ -357,8 +335,16 @@ class Customer
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getBills()
-    {
+    public function getBills() {
         return $this->bills;
     }
+
+    public function getLastVisitString() {
+        return $this->lastVisit->format('d/m/Y H:i');
+    }
+
+    public function getCreatedAtString() {
+        return $this->createdAt->format('d/m/Y H:i');
+    }
+
 }

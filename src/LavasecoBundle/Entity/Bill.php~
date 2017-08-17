@@ -75,6 +75,13 @@ class Bill {
     private $notifyDelivered;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="discount", type="integer")
+     */
+    private $discount;
+
+    /**
      * @ORM\OneToMany(targetEntity="PayDetail", mappedBy="bill")
      */
     protected $payDetails;
@@ -455,6 +462,116 @@ class Bill {
         }
 
         return $payed;
+    }
+
+    /**
+     * Set printBill
+     *
+     * @param boolean $printBill
+     *
+     * @return Bill
+     */
+    public function setPrintBill($printBill) {
+        $this->printBill = $printBill;
+
+        return $this;
+    }
+
+    /**
+     * Get printBill
+     *
+     * @return boolean
+     */
+    public function getPrintBill() {
+        return $this->printBill;
+    }
+
+    /**
+     * Set printedTiket
+     *
+     * @param boolean $printedTiket
+     *
+     * @return Bill
+     */
+    public function setPrintedTiket($printedTiket) {
+        $this->printedTiket = $printedTiket;
+
+        return $this;
+    }
+
+    /**
+     * Get printedTiket
+     *
+     * @return boolean
+     */
+    public function getPrintedTiket() {
+        return $this->printedTiket;
+    }
+
+    /**
+     * Set sendBill
+     *
+     * @param boolean $sendBill
+     *
+     * @return Bill
+     */
+    public function setSendBill($sendBill) {
+        $this->sendBill = $sendBill;
+
+        return $this;
+    }
+
+    /**
+     * Get sendBill
+     *
+     * @return boolean
+     */
+    public function getSendBill() {
+        return $this->sendBill;
+    }
+
+    /**
+     * Set notifyRedyDelivery
+     *
+     * @param boolean $notifyRedyDelivery
+     *
+     * @return Bill
+     */
+    public function setNotifyRedyDelivery($notifyRedyDelivery) {
+        $this->notifyRedyDelivery = $notifyRedyDelivery;
+
+        return $this;
+    }
+
+    /**
+     * Get notifyRedyDelivery
+     *
+     * @return boolean
+     */
+    public function getNotifyRedyDelivery() {
+        return $this->notifyRedyDelivery;
+    }
+
+    /**
+     * Set notifyDelivered
+     *
+     * @param boolean $notifyDelivered
+     *
+     * @return Bill
+     */
+    public function setNotifyDelivered($notifyDelivered) {
+        $this->notifyDelivered = $notifyDelivered;
+
+        return $this;
+    }
+
+    /**
+     * Get notifyDelivered
+     *
+     * @return boolean
+     */
+    public function getNotifyDelivered() {
+        return $this->notifyDelivered;
     }
 
 }
