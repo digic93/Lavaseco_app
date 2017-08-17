@@ -445,6 +445,7 @@
             factura["cashReceived"] = 0;
             factura["change"] = 0;
             factura["subtotal"] = 0;
+            factura["redeemedPoints"] = 0;
 
             $("#quantity_service").number(true);
             $("#priceServiceImput").number(true);
@@ -773,8 +774,6 @@
                         html += "<strong> numero: </strong>" + user.phoneNumber + "<br>";
                     }
                     html += "<strong> Puntos Acumulados: </strong><label id =\"currentPointUser\">" + user.points + "</label><br></p>";
-                    $("#redeemPoints").val(user.points);
-
                     $("#infoClientBill").empty();
                     $("#infoClientBill").html(html);
                 }
@@ -932,21 +931,27 @@
                 openModalAlerErrorSuccess("Error", "No es posible realizar esta acción si no ha seleccionado un cliente");          
             }else if  (factura.total === 0) {
                 openModalAlerErrorSuccess("Error", "No es posible realizar esta acción si el monto de la factura es igual a cero");
-            } else if  (factura.redeemedPoints === 0) {
-                openModalAlerErrorSuccess("Error", "No es posible realizar esta acción el cliente no posee puntos para redimir");
+            } else if  ($("#currentPointUser").val() === 0) {
+                openModalAlerErrorSuccess("Error", "No es posible realizar esta acción el cliente no posee puntos para realizar esta operación");
             }else{
-                $("#modalRedeemPoints").modal('show');
-                $("#totalRedeemPoints").val(factura.total - $("#redeemPoints").val());
+                if(parseInt($("#currentPointUser").text()) > factura.total){
+                    $("#redeemPoints").val(factura.total);
+                }else{
+                     $("#redeemPoints").val(parseInt($("#currentPointUser").text()));
+                }
+                //asigna valores a los inputs
+                $("#totalRedeemPoints").val(factura.total - parseInt($("#redeemPoints").val()));
                 $("#subtotalRedeemPoints").val(factura.subtotal);
+                //abre ventana modal
+                $("#modalRedeemPoints").modal('show'); 
             }
         }
         
         function updateRedeemPoints() {
-            var redeemedPoints = $("#redeemPoints").val();
-            var currentTotal = factura.total - redeemedPoints;
-            var currentPoints = $("#currentPointUser").text();
+            var redeemedPoints = parseInt($("#redeemPoints").val());
+            var currentPoints = parseInt($("#currentPointUser").text());
                 
-            if (redeemedPoints > factura.subtotal) {
+            if (redeemedPoints > factura.total) {
                 $("#totalRedeemPoints").val(factura.total);
                 $("#divRedeemPoints").removeClass("has-success");
                 $("#divRedeemPoints").addClass("has-error");
@@ -957,6 +962,7 @@
                 $("#divRedeemPoints").addClass("has-error");
                 return false;
             } else {
+                var currentTotal = factura.total - redeemedPoints;   
                 $("#totalRedeemPoints").val(currentTotal);
                 $("#divRedeemPoints").addClass("has-success");
                 $("#divRedeemPoints").removeClass("has-error");
@@ -966,16 +972,15 @@
         
         function saveRedeemPoints() {
             if (updateRedeemPoints()) {
-                var points = $("#redeemPoints").val();
-                factura.total = $("#totalRedeemPoints").val();
-                
-                $("#modalRedeemPoints").modal('hide');
-                
-                $("#redeemedPointBill").html("<strong>$" + $.number(points) + "</strong>"); 
+                factura.redeemedPoints += parseInt(($("#redeemPoints").val()));
+                factura.total = parseInt($("#totalRedeemPoints").val());
+                 
+                $("#redeemedPointBill").html("<strong>$" + $.number(factura.redeemedPoints) + "</strong>"); 
                 $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
                 $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
-                $("#currentPointUser").text($("#currentPointUser").text() - points);
-                
+                $("#currentPointUser").text(parseInt($("#currentPointUser").text()) - parseInt($("#redeemPoints").val()));
+                //se esconde la centana modal
+                $("#modalRedeemPoints").modal('hide');             
             } else {
                 openModalAlerErrorSuccess("Error", "La cantidad de puntos redimibles no puede superar el total de la factura y/o la cantidad de puntos que tiene el cliente");
             }
