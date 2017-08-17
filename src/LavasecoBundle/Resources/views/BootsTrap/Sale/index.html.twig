@@ -23,10 +23,10 @@
         </div>
         <div class="col-md-4 text-right">
             {% if is_granted('ROLE_ADMIN') %}
-            <a href="{{ path('lavaseco_cash') }}/1"class="btn btn-warning" type="button" >
-                <i class="fa fa-money" aria-hidden="true"></i>
-                Retiros de Caja
-            </a>
+                <a href="{{ path('lavaseco_cash') }}/1"class="btn btn-warning" type="button" >
+                    <i class="fa fa-money" aria-hidden="true"></i>
+                    Retiros de Caja
+                </a>
             {% endif %}    
             <a id="closeSalePoint" href="{{ path('lavaseco_cash') }}" class="btn btn-danger">
                 <i class="fa fa-lock" aria-hidden="true"></i>
@@ -117,15 +117,15 @@
                                 <td>Subtotal</td>
                                 <td></td>
                                 <td id="subtotalBill" class="text-right"><strong>$0</strong></td>
-                                
+
                             </tr>
-                                
+
                             <tr>
                                 <td>Puntos Redimidos</td>
                                 <td></td>
                                 <td id="redeemedPointBill" class="text-right"><strong>$0</strong></td>
                             </tr>
-                            
+
                             <tr style="border-top-style: solid; border-top-width: 1px">
                                 <td><strong>Total</strong></td>
                                 <td></td>
@@ -151,16 +151,16 @@
                         {{ billContent.foot }}
                     </p>
                     <hr>
-                    
+
                     <div id="" class="form-group">
                         <button type="button" class="btn btn-info btn-block" onclick="openRedeemPoints()">
                             Redimir Puntos
                             <i class="fa fa-star" aria-hidden="true"></i>
                         </button>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="checkboxes-1">Factura:</label>
                         <div class="col-md-7">
@@ -181,13 +181,13 @@
                         <label id="titleNotify" class="col-md-4 control-label" for="checkboxes"></label>
                         <div class="col-md-7">
                             <div id="checkboxNotifyEmail" class="checkbox">
-                                
+
                             </div>
                         </div>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <button type="button" class="btn btn-success btn-block" onclick="wayToPay();">
                         Facturar
                         <i class="fa fa-check" aria-hidden="true"></i>
@@ -323,7 +323,7 @@
                         Redimir Puntos
                     </h4>
                 </div>
-                
+
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-10 col-md-offset-1">
@@ -334,9 +334,9 @@
                                     <input class="form-control" id="redeemPoints" type="text" autocomplete="off" onkeyup="updateRedeemPoints();"/>
                                 </div>
                             </div>
-                            
+
                             <hr>
-                             
+
                             <div class="form-group">
                                 <p>Subtotal</p>
                                 <div class="input-group" id="divCashReceived">
@@ -344,7 +344,7 @@
                                     <input class="form-control" id="subtotalRedeemPoints" type="text" autocomplete="off" disabled/>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <p>Total a Pagar</p>
                                 <div class="input-group" id="divCashReceived">
@@ -362,7 +362,7 @@
             </div>
         </div>
     </div>
-                
+
     <!-- Modal -->
     <div id="wayToPay" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -387,7 +387,7 @@
                                 </div>
                             </div>
                             <hr>
-                            
+
                             <div class="form-group">
                                 <div id="divTotalBill"></div>
                             </div>
@@ -407,7 +407,7 @@
                                     <input class="form-control" id="change" type="text" autocomplete="off" disabled/>
                                 </div>
                             </div>
-                            
+
                             <div id="divMissingMoney" class="form-group" style="display:none;">
                                 <p>Dinero Faltante</p>
                                 <div class="input-group">
@@ -437,6 +437,7 @@
         var summaryServices = {};
 
         $(document).ready(function () {
+            total = 0
             factura["total"] = 0;
             factura["services"] = [];
             factura["customerId"] = 0;
@@ -445,7 +446,7 @@
             factura["cashReceived"] = 0;
             factura["change"] = 0;
             factura["subtotal"] = 0;
-            factura["redeemedPoints"] = 0;
+            factura["redeemedPointBill"] = 0;
 
             $("#quantity_service").number(true);
             $("#priceServiceImput").number(true);
@@ -489,7 +490,7 @@
             valueField: "id",
             onSelect: displayResult
         });
-        
+
         $('#servicesSerch').typeahead({
             order: "asc",
             ajax: {
@@ -738,11 +739,10 @@
                 $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
                 $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
                 $('#addServiceModal').modal('hide');
-            }
-            else{
+            } else {
                 openModalAlerErrorSuccess("Error", "Ingrese algún servicio para añadir a la factura");
             }
-            
+            total = factura.total;
         }
 
         function displayResult(item) {
@@ -784,18 +784,17 @@
             var html = "";
             var result = {"notification":
                         [
-                            //{"name": "Facturado", "id": 1},
                             {"name": "Listo para Entrega", "id": 2},
                             {"name": "Entregado", "id": 3}
                         ]
             };
             $("#titleNotify").text("Notificar");
-            
+
             for (var i in result.notification) {
                 html += "<label for=\"checkboxes-2\">\
-                        <input  type=\"checkbox\" id=\"checkboxes-2-"+ result.notification[i].id +"\" value=\"" + result.notification[i].name + "\">"
+                        <input  type=\"checkbox\" id=\"checkboxes-2-" + result.notification[i].id + "\" value=\"" + result.notification[i].name + "\">"
                         + result.notification[i].name +
-                    "</label>";
+                        "</label>";
             }
             $('#checkboxNotifyEmail').append(html);
 
@@ -814,13 +813,15 @@
                 dataType: "json",
                 data: factura,
                 success: function (result) {
-                    if (result.error !== undefined) {
-                        openModalAlerErrorSuccess("Confirmación Factura", "Error al registrar la factura");
-                    } else {
-                        openModalAlerErrorSuccess("Confirmación Factura", "Facturado con éxito");
-                        $('#wayToPay').modal('hide');
-                        location.reload();
-                    }
+                    $('#wayToPay').modal('hide');
+                    openModalAlerErrorSuccess("Confirmación Factura", "Facturado con éxito",
+                            function () {
+                                location.reload();
+                            }
+                    );
+                },
+                error: function () {
+                    openModalAlerErrorSuccess("Error al Factura", "Error al registrar la factura");
                 }
             });
         }
@@ -833,7 +834,7 @@
             }
             if (updateChange()) {
                 factura.cashReceived = $("#cashReceived").val();
-                factura.change = $("#change").val();                
+                factura.change = $("#change").val();
                 ajaxSaleBill();
             } else {
                 openModalAlerErrorSuccess("Error", "Verifique el dinero dado por el cliente");
@@ -841,14 +842,14 @@
         }
 
         function wayToPay() {
-            if(factura["services"].length !== 0){
+            if (factura["services"].length !== 0) {
                 factura ["printBill"] = $('#printBill').is(":checked");
                 factura ["sendBill"] = $('#sendBill').is(":checked");
                 factura ["notifyRedyDelivery"] = $('#checkboxes-2-2').is(":checked");
                 factura ["notifyDelivered"] = $('#checkboxes-2-3').is(":checked");
-                
+
                 document.getElementById('divMissingMoney').style.display = 'none';
-                
+
                 var paymentAgreement = $('#bill_payAgreement').val();
                 if (paymentAgreement === "2") {//2 es el id del metodo de contra entrega
                     factura.cashReceived = 0;
@@ -856,18 +857,18 @@
                     ajaxSaleBill();
                 } else {
                     $('#paymentTittle').text('Cobro ' + $('#bill_payAgreement option:selected').data('name'));
-                    $('#wayToPay').modal('show');   
-                    $('#divTotalBill').html("<p class='text-right'><strong>Total Factura: $" + $.number(factura.total) + "</strong></p>");  
-                    
-                    if ($('#bill_payAgreement').val() !== "3"){
+                    $('#wayToPay').modal('show');
+                    $('#divTotalBill').html("<p class='text-right'><strong>Total Factura: $" + $.number(factura.total) + "</strong></p>");
+
+                    if ($('#bill_payAgreement').val() !== "3") {
                         document.getElementById('divMissingMoney').style.display = 'block';
                     }
                     addWayToPay();
                 }
-            }else{
+            } else {
                 openModalAlerErrorSuccess("Error", "No es posible facturar, aún no ha agregado ningun servicio a la factura.")
             }
-            
+
         }
 
         function addWayToPay() {
@@ -884,7 +885,7 @@
                 }
             });
         }
-        
+
         function loadWayPay(payment) {
             var html = "<option value=\"" + payment.name + "\" data-id=\"" + payment.id + "\" data-name=\"" + payment.name + "\">" + payment.name + "</option>";
             $("#selectWayToPay").append(html);
@@ -892,9 +893,9 @@
 
         function updateChange() {
             var paymentAgreement = $('#bill_payAgreement').val();
-            
+
             if (paymentAgreement !== "3") {//3 es el id del metodo de abono
-                var change = $("#cashReceived").val() - factura.total;            
+                var change = $("#cashReceived").val() - factura.total;
 
                 if (change < 0) {
                     $("#change").val('');
@@ -907,56 +908,60 @@
                     $("#divCashReceived").removeClass("has-error");
                     return true;
                 }
-            } else{  
+            } else {
                 var missingMoney = factura.total - $("#cashReceived").val();
-                        
-                if ($("#cashReceived").val()> factura.total){
+
+                if ($("#cashReceived").val() > factura.total) {
                     $("#change").val('');
                     $("#missingMoney").val('');
                     $("#divCashReceived").removeClass("has-success");
                     $("#divCashReceived").addClass("has-error");
                     return false;
-                }else{
+                } else {
                     $("#change").val(0);
                     $("#missingMoney").val(missingMoney);
                     $("#divCashReceived").addClass("has-success");
                     $("#divCashReceived").removeClass("has-error");
                     return true;
                 }
-            }   
+            }
         }
-        
+
         function openRedeemPoints() {
             if (factura.customerId === 0) {
-                openModalAlerErrorSuccess("Error", "No es posible realizar esta acción si no ha seleccionado un cliente");          
-            }else if  (factura.total === 0) {
+                openModalAlerErrorSuccess("Error", "No es posible realizar esta acción si no ha seleccionado un cliente");
+            } else if (factura.total === 0) {
                 openModalAlerErrorSuccess("Error", "No es posible realizar esta acción si el monto de la factura es igual a cero");
-            } else if  ($("#currentPointUser").val() === 0) {
-                openModalAlerErrorSuccess("Error", "No es posible realizar esta acción el cliente no posee puntos para realizar esta operación");
-            }else{
-                if(parseInt($("#currentPointUser").text()) > factura.total){
-                    $("#redeemPoints").val(factura.total);
+            } else if (factura.redeemedPoints === 0) {
+                openModalAlerErrorSuccess("Error", "No es posible realizar esta acción el cliente no posee puntos para redimir");
+            } else {
+                var currentPoints = parseInt($("#currentPointUser").text());
+                
+                if( currentPoints >= factura.total){
+                    $("#redeemPoints").val(total);
                 }else{
-                     $("#redeemPoints").val(parseInt($("#currentPointUser").text()));
+                    $("#redeemPoints").val(currentPoints);
                 }
-                //asigna valores a los inputs
-                $("#totalRedeemPoints").val(factura.total - parseInt($("#redeemPoints").val()));
+                
+                $("#modalRedeemPoints").modal('show');
+                $("#totalRedeemPoints").val(factura.total - $("#redeemPoints").val());
                 $("#subtotalRedeemPoints").val(factura.subtotal);
                 //abre ventana modal
                 $("#modalRedeemPoints").modal('show'); 
             }
         }
-        
+
         function updateRedeemPoints() {
             var redeemedPoints = parseInt($("#redeemPoints").val());
+            var currentTotal = factura.total - redeemedPoints;
             var currentPoints = parseInt($("#currentPointUser").text());
-                
-            if (redeemedPoints > factura.total) {
+
+            if (redeemedPoints > factura.subtotal) {
                 $("#totalRedeemPoints").val(factura.total);
                 $("#divRedeemPoints").removeClass("has-success");
                 $("#divRedeemPoints").addClass("has-error");
                 return false;
-            } else if(redeemedPoints > currentPoints){
+            } else if (redeemedPoints > currentPoints) {
                 $("#totalRedeemPoints").val(factura.total);
                 $("#divRedeemPoints").removeClass("has-success");
                 $("#divRedeemPoints").addClass("has-error");
@@ -969,23 +974,26 @@
                 return true;
             }
         }
-        
+
         function saveRedeemPoints() {
             if (updateRedeemPoints()) {
-                factura.redeemedPoints += parseInt(($("#redeemPoints").val()));
-                factura.total = parseInt($("#totalRedeemPoints").val());
-                 
-                $("#redeemedPointBill").html("<strong>$" + $.number(factura.redeemedPoints) + "</strong>"); 
+                var points = factura.redeemedPointBill = $("#redeemPoints").val();
+                factura.total = $("#totalRedeemPoints").val();
+
+                $("#modalRedeemPoints").modal('hide');
+
+                $("#redeemedPointBill").html("<strong>$" + $.number(points) + "</strong>");
                 $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
                 $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
-                $("#currentPointUser").text(parseInt($("#currentPointUser").text()) - parseInt($("#redeemPoints").val()));
-                //se esconde la centana modal
-                $("#modalRedeemPoints").modal('hide');             
+                $("#currentPointUser").text($("#currentPointUser").text() - points);
+
             } else {
+                factura.redeemedPointBill = 0;
                 openModalAlerErrorSuccess("Error", "La cantidad de puntos redimibles no puede superar el total de la factura y/o la cantidad de puntos que tiene el cliente");
             }
-            
-        };
+
+        }
+        ;
 
     </script>
 {% endblock %}

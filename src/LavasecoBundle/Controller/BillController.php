@@ -62,9 +62,11 @@ class BillController extends Controller {
 
     public function saveBillingAction(Request $request) {
         $payment = $request->request->get("total");
+        $cashReceived = $request->request->get("cashReceived");
         $payMethodId = 1; //$request->request->get("paymenthod");
         $observation = $request->request->get("observations");
         $customerId = $request->request->get("customerId");
+        $redeemedPointBill = $request->request->get("redeemedPointBill");
 
         $notity = [
             "printBill" => $request->request->get("printBill") == "true" ? true : false,
@@ -77,17 +79,17 @@ class BillController extends Controller {
         $customer = $this->getCustomerById($customerId);
         $paymentAgreement = $this->getPaymentAgreementById($request->request->get("paymentAgreementId"));
 
-        $bill = $this->saveBilling($customer, $observation, $paymentAgreement, $notity);
+        $bill = $this->saveBilling($customer, $observation, $paymentAgreement, $notity, $redeemedPointBill);
         $total = $this->saveBillDetail($bill, $request->request->get("services"));
 
         if ($paymentAgreement->getId() != 2) {
+            $payment = ($paymentAgreement->getId() == 1) ? $payment : $cashReceived;
             $this->savePayDetail($payMethodId, $payment, $bill);
         }
 
-        //asignacion de puntos al cliente
+        $bonification = ($redeemedPointBill == 0) ? $this->getBonificationByPaymentAgreement($paymentAgreement) : 0;
         if ($customer && $paymentAgreement->getId() == 1) {
-            $bonification = $this->getBonificationByPaymentAgreement($paymentAgreement);
-            $this->updateCustomer($total, $customer, $bonification);
+            $this->updateCustomer($total, $customer, $bonification, $redeemedPointBill);
         }
 
         $this->saveBillHistory($bill);
@@ -109,6 +111,9 @@ class BillController extends Controller {
                             'customer' => $customer,
                             'bill' => $bill,
                             'billContent' => $this->getBillContentById(1),
+                            'payment' => ($paymentAgreement->getId() != 2) ? $payment : 0,
+                            'points' => ($total * $bonification / 100 ),
+                            'redeemedPointBill' => $redeemedPointBill,
                                 ]
                         ), 'text/html'
                 );
@@ -232,7 +237,7 @@ class BillController extends Controller {
         return $billContentRepository->find($billContentId);
     }
 
-    private function saveBilling($customer, $observation, $paymentAgreement, $notity) {
+    private function saveBilling($customer, $observation, $paymentAgreement, $notify, $redeemedPointBill) {
         $bill = new Bill();
         $em = $this->get('doctrine')->getManager();
 
@@ -244,12 +249,13 @@ class BillController extends Controller {
         $bill->setProcessState($this->getProcessState());
         $bill->setConsecutive($this->getBillConsecutive());
         $bill->setSalePoint($this->getSalePoint());
+        $bill->setDiscount($redeemedPointBill);
 
         $bill->setPrintedTiket(true);
-        $bill->setPrintBill($notity["printBill"]);
-        $bill->setSendBill($notity["sendBill"]);
-        $bill->setNotifyDelivered($notity["notifyDelivered"]);
-        $bill->setNotifyRedyDelivery($notity["notifyRedyDelivery"]);
+        $bill->setPrintBill($notify["printBill"]);
+        $bill->setSendBill($notify["sendBill"]);
+        $bill->setNotifyDelivered($notify["notifyDelivered"]);
+        $bill->setNotifyRedyDelivery($notify["notifyRedyDelivery"]);
 
         $em->persist($bill);
 
@@ -467,7 +473,7 @@ class BillController extends Controller {
         return $typeTransactionRepository->find($typeTransactionId);
     }
 
-    private function updateCustomer($total, &$customer, $bonification) {
+    private function updateCustomer($total, &$customer, $bonification, $redeemedPointBill = 0) {
         $em = $this->get('doctrine')->getManager();
 
         $currentPoints = $customer->getPoints();
@@ -475,7 +481,12 @@ class BillController extends Controller {
         $customer->setLastVisit(new \DateTime(date('Y-m-d H:i:s')));
         $customer->setTotalSpent($totalSpent + $total);
         $customer->setTotalVisits($customer->getTotalVisits() + 1);
-        $customer->setPoints($currentPoints + ($total * $bonification / 100 ));
+
+        if ($bonification == 0) {
+            $points = $currentPoints - $redeemedPointBill;
+        }
+
+//        $customer->setPoints($points);
 
         $em->persist($customer);
     }

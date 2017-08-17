@@ -1,10 +1,66 @@
 {% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+{% endblock %} 
+
 {% block body %} 
     <h1>Gestor de Clientes</h1>
     <p>
         Cree modifique y edite la informacion de los usuarios.
     </p>
-    <hr>    
-    {% include 'LavasecoBundle:BootsTrap:Settings/Customer/customerForm.html.twig' %}
+    <hr>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">  
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Registro Clientes</h3>
+                </div>
+                <div class="panel-body">
+                    {% include 'LavasecoBundle:BootsTrap:Settings/Customer/customerForm.html.twig' %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <hr>
+        <h3>Clientes Registrados</h3>
+        <hr>
+        <table id="customersTable" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Telefono</th>
+                    <th>Direccion</th>
+                    <th>puntos</th>
+                    <th>Utima Visita</th>
+                    <th>Fecha Creación</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.email | default("No se Registro Correo") }}</td>
+                        <td>{{ customer.phoneNumber | default("No se Registro Telefono")  }}</td>
+                        <td>{{ customer.address | default("No se Registro Dirección")  }}</td>
+                        <td>{{ customer.points }}</td>
+                        <td>{{ customer.lastVisitString }}</td>
+                        <td>{{ customer.createdAtString }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#customersTable').DataTable();
+        });
+    </script>
 {% endblock %}
