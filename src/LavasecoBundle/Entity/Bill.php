@@ -75,6 +75,13 @@ class Bill {
     private $notifyDelivered;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="discount", type="integer")
+     */
+    private $discount;
+
+    /**
      * @ORM\OneToMany(targetEntity="PayDetail", mappedBy="bill")
      */
     protected $payDetails;
@@ -129,6 +136,7 @@ class Bill {
      * Constructor
      */
     public function __construct() {
+        $this->setDiscount(0);
         $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         $this->payDetails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->billDetails = new \Doctrine\Common\Collections\ArrayCollection();
@@ -439,11 +447,21 @@ class Bill {
         return $this->createdAt->format('d/m/Y H:i');
     }
 
-    public function getTotal() {
+    public function getTotalServices() {
         $total = 0;
         foreach ($this->billDetails as $billDetail) {
             $total += $billDetail->getPrice() * $billDetail->getQuantity();
         }
+        return $total;
+    }
+    
+    public function getTotal() {
+        $total = $this->getTotalServices();
+        
+        if($this->getDiscount() != 0){
+            $total -= $this->getDiscount();
+        }
+        
         return $total;
     }
 
@@ -457,7 +475,6 @@ class Bill {
         return $payed;
     }
 
-
     /**
      * Set printBill
      *
@@ -465,8 +482,7 @@ class Bill {
      *
      * @return Bill
      */
-    public function setPrintBill($printBill)
-    {
+    public function setPrintBill($printBill) {
         $this->printBill = $printBill;
 
         return $this;
@@ -477,8 +493,7 @@ class Bill {
      *
      * @return boolean
      */
-    public function getPrintBill()
-    {
+    public function getPrintBill() {
         return $this->printBill;
     }
 
@@ -489,8 +504,7 @@ class Bill {
      *
      * @return Bill
      */
-    public function setPrintedTiket($printedTiket)
-    {
+    public function setPrintedTiket($printedTiket) {
         $this->printedTiket = $printedTiket;
 
         return $this;
@@ -501,8 +515,7 @@ class Bill {
      *
      * @return boolean
      */
-    public function getPrintedTiket()
-    {
+    public function getPrintedTiket() {
         return $this->printedTiket;
     }
 
@@ -513,8 +526,7 @@ class Bill {
      *
      * @return Bill
      */
-    public function setSendBill($sendBill)
-    {
+    public function setSendBill($sendBill) {
         $this->sendBill = $sendBill;
 
         return $this;
@@ -525,8 +537,7 @@ class Bill {
      *
      * @return boolean
      */
-    public function getSendBill()
-    {
+    public function getSendBill() {
         return $this->sendBill;
     }
 
@@ -537,8 +548,7 @@ class Bill {
      *
      * @return Bill
      */
-    public function setNotifyRedyDelivery($notifyRedyDelivery)
-    {
+    public function setNotifyRedyDelivery($notifyRedyDelivery) {
         $this->notifyRedyDelivery = $notifyRedyDelivery;
 
         return $this;
@@ -549,8 +559,7 @@ class Bill {
      *
      * @return boolean
      */
-    public function getNotifyRedyDelivery()
-    {
+    public function getNotifyRedyDelivery() {
         return $this->notifyRedyDelivery;
     }
 
@@ -561,8 +570,7 @@ class Bill {
      *
      * @return Bill
      */
-    public function setNotifyDelivered($notifyDelivered)
-    {
+    public function setNotifyDelivered($notifyDelivered) {
         $this->notifyDelivered = $notifyDelivered;
 
         return $this;
@@ -573,8 +581,32 @@ class Bill {
      *
      * @return boolean
      */
-    public function getNotifyDelivered()
-    {
+    public function getNotifyDelivered() {
         return $this->notifyDelivered;
+    }
+
+
+    /**
+     * Set discount
+     *
+     * @param integer $discount
+     *
+     * @return Bill
+     */
+    public function setDiscount($discount)
+    {
+        $this->discount = $discount;
+
+        return $this;
+    }
+
+    /**
+     * Get discount
+     *
+     * @return integer
+     */
+    public function getDiscount()
+    {
+        return $this->discount;
     }
 }

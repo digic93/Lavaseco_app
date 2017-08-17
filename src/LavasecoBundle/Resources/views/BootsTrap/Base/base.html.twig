@@ -10,140 +10,151 @@
         <link href="{{ asset("BootsTrapTheme/css/bootstrap.min.css") }}" rel="stylesheet">
         <link href="{{ asset("BootsTrapTheme/css/font-awesome.min.css") }}" rel="stylesheet">
 
-        {% block stylesheets %}{% endblock %}
+    {% block stylesheets %}{% endblock %}
 
-        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-          <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 
-        <script src="{{ asset("BootsTrapTheme/js/jquery-3.2.1.min.js") }}"></script>
+    <script src="{{ asset("BootsTrapTheme/js/jquery-3.2.1.min.js") }}"></script>
 
-    </head>
-    <body>
-        {% include 'LavasecoBundle:BootsTrap:Base/menu.html.twig' %}
-        <div class="container">
-            <div class="row">
-                {% block body %}{% endblock %}
+</head>
+<body>
+    {% include 'LavasecoBundle:BootsTrap:Base/menu.html.twig' %}
+    <div class="container">
+        <div class="row">
+        {% block body %}{% endblock %}
+    </div>
+</div>
+<!-- Modal alert Success/Error -->
+<div id="modalAlertSuccessError" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    <lable id="titleModalAlert"></lable>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p id="messageModalAlert"></p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModalSuccess();" type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
-        <!-- Modal alert Success/Error -->
-        <div id="modalAlertSuccessError" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">
-                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                            <lable id="titleModalAlert"></lable>
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <p id="messageModalAlert"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
-                    </div>
-                </div>
+    </div>
+</div>        
+<!-- Modal alert Conformation -->
+<div id="modalAlertConfirmation" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    <lable id="titleModalAlertConf"></lable>
+                </h4>
             </div>
-        </div>        
-        <!-- Modal alert Conformation -->
-        <div id="modalAlertConfirmation" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">
-                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                            <lable id="titleModalAlertConf"></lable>
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <p id="messageModalAlertConf"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Aceptar</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                    </div>
-                </div>
+            <div class="modal-body">
+                <p id="messageModalAlertConf"></p>
             </div>
-        </div>    
-            
-        {#  0 si el usuario es  administrador y hay un punto de venta que regustrar #}
-        {% if app.session.get('salePoint') == "0" and is_granted('ROLE_ADMIN') %}
-            <script>
-                var device = localStorage.getItem("device") || generateUUID();
-            
-                $.ajax({
-                    url: "{{ path("lavaseco_api_sale_point") }}",
-                    method: "POST",
-                    dataType: "json",
-                    data: {
-                        "device": device
-                    },
-                    success: function (result) {
-                        if(result.succes){
-                            localStorage.setItem("device", result.divace);
-                            alert("Este dispositivo es activo como punto de venta " + result.name);
-                        }
-                        location.reload();
-                    }
-                });
-            
-                function generateUUID() {
-                    var d = new Date().getTime();
-                    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                        var r = (d + Math.random()*16)%16 | 0;
-                        d = Math.floor(d/16);
-                        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
-                    });
-                    return uuid;
-                };
-            </script>
-            
-        {#   1 para verificar si  el  dispositivo tiene uuid  #}
-        {% elseif app.session.get('salePoint') == "1" %}
-            <script>
-                $.ajax({
-                    url: "{{ path("lavaseco_api_sale_point_active") }}",
-                    method: "POST",
-                    dataType: "json",
-                    data: {
-                        "device": localStorage.getItem("device")
-                    },
-                    success: function (result) {
-                    }
-                });
-            </script>
-        {% endif %}
-        
-        <script src="{{ asset("BootsTrapTheme/js/bootstrap.min.js") }}"></script>    
-        <script>
-            function openModalAlerErrorSuccess(title, content) {
-                $("#titleModalAlert").text(title);
-                $("#messageModalAlert").text(content);
-                $("#modalAlertSuccessError").modal('show');
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Aceptar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>    
+
+{#  0 si el usuario es  administrador y hay un punto de venta que regustrar #}
+{% if app.session.get('salePoint') == "0" and is_granted('ROLE_ADMIN') %}
+    <script>
+        var device = localStorage.getItem("device") || generateUUID();
+
+        $.ajax({
+            url: "{{ path("lavaseco_api_sale_point") }}",
+            method: "POST",
+            dataType: "json",
+            data: {
+                "device": device
+            },
+            success: function (result) {
+                if (result.succes) {
+                    localStorage.setItem("device", result.divace);
+                    alert("Este dispositivo es activo como punto de venta " + result.name);
+                }
+                location.reload();
             }
-            
-            function openModalAlerConfirmation(title, content) {
-                $("#titleModalAlertConf").text(title);
-                $("#messageModalAlertConf").text(content);
-                $("#modalAlertConfirmation").modal('show');
+        });
+
+        function generateUUID() {
+            var d = new Date().getTime();
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = (d + Math.random() * 16) % 16 | 0;
+                d = Math.floor(d / 16);
+                return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            return uuid;
+        }
+        ;
+    </script>
+
+    {#   1 para verificar si  el  dispositivo tiene uuid  #}
+{% elseif app.session.get('salePoint') == "1" %}
+    <script>
+        $.ajax({
+            url: "{{ path("lavaseco_api_sale_point_active") }}",
+            method: "POST",
+            dataType: "json",
+            data: {
+                "device": localStorage.getItem("device")
+            },
+            success: function (result) {
             }
-            
-            {% if messagePad is defined %}
-                {% if errorPad is defined %}
-                    openModalAlerErrorSuccess("Error", "{{ messagePad }}");
-                {% else  %}
-                    openModalAlerErrorSuccess("Mensaje", "{{ messagePad }}");
-                {% endif  %}
-            {% endif  %}
-            
-        </script>
-        {% block javascripts %}{% endblock %}
-    </body>
+        });
+    </script>
+{% endif %}
+
+<script src="{{ asset("BootsTrapTheme/js/bootstrap.min.js") }}"></script>    
+<script>
+        var modalSuccessErrorCollback = false;
+        function openModalAlerErrorSuccess(title, content, collback) {
+            $("#titleModalAlert").text(title);
+            $("#messageModalAlert").text(content);
+            $("#modalAlertSuccessError").modal('show');
+            if (collback !== undefined){
+                modalSuccessErrorCollback = collback;
+            }
+        }
+
+        function openModalAlerConfirmation(title, content) {
+            $("#titleModalAlertConf").text(title);
+            $("#messageModalAlertConf").text(content);
+            $("#modalAlertConfirmation").modal('show');
+        }
+
+        function closeModalSuccess() {
+            if (modalSuccessErrorCollback) {
+                modalSuccessErrorCollback();
+            }
+        }
+
+    {% if messagePad is defined %}
+        {% if errorPad is defined %}
+            openModalAlerErrorSuccess("Error", "{{ messagePad }}");
+        {% else  %}
+            openModalAlerErrorSuccess("Mensaje", "{{ messagePad }}");
+        {% endif  %}
+    {% endif  %}
+
+</script>
+{% block javascripts %}{% endblock %}
+</body>
 </html>
