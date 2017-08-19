@@ -6,44 +6,44 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class PrintController extends Controller {
 
-    public function unprintedAction(){
+    public function unprintedAction() {
         $billsResult = array();
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
+
+        $billsTikets = $billRepository->getUnprintedTikets();
+        $bills = $billRepository->getUnprintedBillAndTikets();
+
+        $billsResult["billInfo"] = $this->getBillContent();
         
-        $bills = $billRepository->getUnprinted();
-        
-        $billsResult["BillInfo"] = $this->getBillContent();
-        
-        foreach ($bills as $bill){
-//            $bill = new \LavasecoBundle\Entity\Bill();
-            $customer = $bill->getCustomer();
-            
-            $billsResult ["bills"][] = [
-                    "id" =>$bill->getSalePoint()->getId() . "-" . $bill->getId(),
-                    "customerName" => $customer->getName(),
-                    "currentPoints" => $customer->getPoints(),
-                    "billState" => $bill->getBillState()->getName(),
-                    "paymentAgreement" => $bill->getPaymentAgreement()->getName(),
-                    "pointsBySale" => $this->getPointsBySale($bill),
-                    "discount" => $bill->getDiscount(),
-                    "subTotal" => $bill->getTotal(),
-                    "total" => $bill->getTotal(),
-                    "observation" => $bill->getObservation(),
-                    "billDetails" => $this->getBillDetails($bill),
-                ];
+        foreach ($bills as $bill) {
+            $billsResult ["bills"][] = $this->getBillArray($bill);
+
+            $bill->setPrintBill(false);
+            $bill->setPrintedTiket(false);
+
+            $doctrineManager->persist($bill);
+            $doctrineManager->flush();
         }
         
+        foreach ($billsTikets as $bill) {
+            $billsResult ["billsTikes"][] = $this->getBillArray($bill);
+
+            $bill->setPrintedTiket(false);
+
+            $doctrineManager->persist($bill);
+            $doctrineManager->flush();
+        }
+
         return $this->json($billsResult);
     }
-    
-    
-    private function getBillContent(){
+
+    private function getBillContent() {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billContentRepository = $doctrineManager->getRepository("LavasecoBundle:BillContent");
-        
+
         $billContent = $billContentRepository->find(1);
-        
+
         return [
             "companyName" => $billContent->getCompanyName(),
             "fiscalId" => $billContent->getFiscalId(),
@@ -52,17 +52,36 @@ class PrintController extends Controller {
             "foot" => $billContent->getFoot(),
         ];
     }
-    
-    private function getPointsBySale($bill){
-        return 500;
+
+    private function getPointsBySale(\LavasecoBundle\Entity\Bill $bill) {
+        $bonification = 0;
+        if ($bill->getDiscount() == 0) {
+            $doctrineManager = $this->get('doctrine')->getManager();
+            $loyaltyRepository = $doctrineManager->getRepository("LavasecoBundle:Loyalty");
+
+            $loyalty = $loyaltyRepository->find(1);
+
+            if ($bill->getPaymentAgreement()->getId() == 1) {
+                $bonification = $loyalty->getAdvancePercent();
+            }
+
+            if ($bill->getPaymentAgreement()->getId() == 2) {
+                $bonification = $loyalty->getUponDeliveryPercent();
+            }
+
+            if ($bill->getPaymentAgreement()->getId() == 3) {
+                $bonification = $loyalty->getDepositPercent();
+            }
+        } 
+        return $bonification;
     }
-    
-    private function getBillDetails(\LavasecoBundle\Entity\Bill $bill){
+
+    private function getBillDetails(\LavasecoBundle\Entity\Bill $bill) {
         $billDetailsResult = array();
-        
+
         $billDetails = $bill->getBillDetails();
-        foreach ($billDetails as $billDetail){
-            
+        foreach ($billDetails as $billDetail) {
+
             $billDetailsResult[] = [
                 "serviceName" => $billDetail->getService()->getServiceCategory()->getFullName(),
                 "quantity" => $billDetail->getQuantity(),
@@ -71,19 +90,54 @@ class PrintController extends Controller {
                 "Descriptors" => $this->getDescriptors($billDetail),
             ];
         }
-        
+
         return $billDetailsResult;
     }
-    
-    private function getDescriptors(\LavasecoBundle\Entity\BillDetail $billDetail){
+
+    private function getDescriptors(\LavasecoBundle\Entity\BillDetail $billDetail) {
         $detalist = "";
         $objectStateReceivedServices = $billDetail->getObjectStateReceivedService();
-    
-        foreach ($objectStateReceivedServices as $objectStateReceivedService){
-            $detalist .= $objectStateReceivedService->getStateObjectDescription()->getName() . " ";    
+
+        foreach ($objectStateReceivedServices as $objectStateReceivedService) {
+            $detalist .= $objectStateReceivedService->getStateObjectDescription()->getName() . " ";
         }
-        
+
         return $detalist;
     }
-            
+
+    private function getTiketByBill($bill) {
+        return [
+            "bill" => $bill->getId(),
+            "consecutive" => $bill->getConsecutive(),
+            "seller" => $bill->getSellerUser()->getName(),
+            "customer" => ($bill->getCustomer()) ? $bill->getCustomer()->getName() : "No se Registro Cliente",
+            "phoneNumber" => ($bill->getCustomer()) ? $bill->getCustomer()->getPhoneNumber() : "No se Registro Telefono",
+            "observation" => $bill->getObservation(),
+            "createdAt" => $bill->getCreatedAtString(),
+            "billDetail" => $this->getBillDetails($bill)
+        ];
+    }
+
+    private function getBillArray(\LavasecoBundle\Entity\Bill $bill) {
+        $customer = $bill->getCustomer();
+
+        return [
+            "id" => $bill->getSalePoint()->getId() . "-" . $bill->getId(),
+            "customerName" => ($customer == null)?"":$customer->getName(),
+            "currentPoints" => ($customer == null)?0:$customer->getPoints(),
+            "billState" => $bill->getBillState()->getName(),
+            "paymentAgreement" => $bill->getPaymentAgreement()->getName(),
+            "pointsBySale" => $this->getPointsBySale($bill),
+            "discount" => $bill->getDiscount(),
+            "subTotal" => $bill->getTotalServices(),
+            "total" => $bill->getTotal(),
+            "observation" => $bill->getObservation(),
+            "billDetails" => $this->getBillDetails($bill),
+            "seller" => $bill->getSellerUser()->getName(),
+            "date" => $bill->getCreatedAtString(),
+            "salePoint" => $bill->getSalePoint()->getName(),
+            "tikets" => $this->getTiketByBill($bill)
+        ];
+    }
+
 }
