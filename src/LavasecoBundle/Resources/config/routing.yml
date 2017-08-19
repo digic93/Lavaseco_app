@@ -157,3 +157,8 @@ lavaseco_api_pay_method:
     path:     /api/pay/method
     defaults: { _controller: LavasecoBundle:Bill:getPayMethod }
     methods:  [GET]
+    
+lavaseco_api_print:
+    path:     /api/print/
+    defaults: { _controller: LavasecoBundle:Print:unprinted }
+    methods:  [GET]

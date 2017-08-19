@@ -15,6 +15,14 @@
         <div class="col-md-9"> 
             <div class="well well-sm pull-right">
                 <form class="form-inline">
+                    <button type="button" id="changeStateButton" class="btn btn-success" onclick="changeEstate();">Cambiar de estado</button>
+                    |
+                    <div class="checkbox">
+                        <label>
+                            <input  id="seletedCheckbox" type="checkbox"> Seleccionar Varios
+                        </label>
+                    </div>
+                    |
                     <div class="form-group">
                         <label>
                             Filtrar por
@@ -26,14 +34,6 @@
                             {% endfor %}
                         </select>
                     </div>
-                    |
-                    <div class="checkbox">
-                        <label>
-                            <input  id="seletedCheckbox" type="checkbox"> Seleccionar Varios
-                        </label>
-                    </div>
-                    |
-                    <button type="button" id="changeStateButton" class="btn btn-primary" onclick="changeEstate();">Cambiar de estado</button>
                 </form>                
             </div>
 
