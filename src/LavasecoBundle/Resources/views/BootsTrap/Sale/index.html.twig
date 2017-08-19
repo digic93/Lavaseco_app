@@ -437,7 +437,8 @@
         var summaryServices = {};
 
         $(document).ready(function () {
-            total = 0
+            total = 0;
+            userPoints = 0;
             factura["total"] = 0;
             factura["services"] = [];
             factura["customerId"] = 0;
@@ -773,6 +774,7 @@
                     if (user.phoneNumber !== null) {
                         html += "<strong> numero: </strong>" + user.phoneNumber + "<br>";
                     }
+                    userPoints =  user.points;
                     html += "<strong> Puntos Acumulados: </strong><label id =\"currentPointUser\">" + user.points + "</label><br></p>";
                     $("#infoClientBill").empty();
                     $("#infoClientBill").html(html);
@@ -954,7 +956,7 @@
         function updateRedeemPoints() {
             var redeemedPoints = parseInt($("#redeemPoints").val());
             var currentTotal = factura.total - redeemedPoints;
-            var currentPoints = parseInt($("#currentPointUser").text());
+            var currentPoints = userPoints;
 
             if (redeemedPoints > factura.subtotal) {
                 $("#totalRedeemPoints").val(factura.total);
@@ -978,17 +980,18 @@
         function saveRedeemPoints() {
             if (updateRedeemPoints()) {
                 var points = factura.redeemedPointBill = $("#redeemPoints").val();
-                factura.total = $("#totalRedeemPoints").val();
+                // factura.total = $("#totalRedeemPoints").val();
 
                 $("#modalRedeemPoints").modal('hide');
 
                 $("#redeemedPointBill").html("<strong>$" + $.number(points) + "</strong>");
-                $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
+                $("#totalBill").html("<strong>$" + $.number(factura.total - parseInt(points)) + "</strong>");
                 $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
-                $("#currentPointUser").text($("#currentPointUser").text() - points);
+                $("#currentPointUser").text(userPoints - points);
 
             } else {
                 factura.redeemedPointBill = 0;
+                $("#currentPointUser").text(userPoints);
                 openModalAlerErrorSuccess("Error", "La cantidad de puntos redimibles no puede superar el total de la factura y/o la cantidad de puntos que tiene el cliente");
             }
 

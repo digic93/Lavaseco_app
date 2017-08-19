@@ -90,6 +90,10 @@ class BillController extends Controller {
         $bonification = ($redeemedPointBill == 0) ? $this->getBonificationByPaymentAgreement($paymentAgreement) : 0;
         if ($customer && $paymentAgreement->getId() == 1) {
             $this->updateCustomer($total, $customer, $bonification, $redeemedPointBill);
+        } else if ($redeemedPointBill != 0) {
+            $em = $this->get('doctrine')->getManager();
+            $customer->setPoints($customer->getPoints() - $redeemedPointBill);
+            $em->persist($customer);
         }
 
         $this->saveBillHistory($bill);
@@ -204,7 +208,7 @@ class BillController extends Controller {
 
         //asigno puntos al usuario
         if ($bill->getCustomer()) {
-            $bonification = $this->getBonificationByPaymentAgreement($bill->getPaymentAgreement());
+            $bonification = ($bill->getDiscount() == 0) ? $this->getBonificationByPaymentAgreement($bill->getPaymentAgreement()) : 0;
             $this->updateCustomer($total, $customer, $bonification);
         }
         $this->saveBillHistory($bill);
@@ -482,11 +486,13 @@ class BillController extends Controller {
         $customer->setTotalSpent($totalSpent + $total);
         $customer->setTotalVisits($customer->getTotalVisits() + 1);
 
-        if ($bonification == 0) {
+        if ($redeemedPointBill == 0) {
+            $points = $currentPoints + ($total * $bonification / 100);
+        } else {
             $points = $currentPoints - $redeemedPointBill;
         }
 
-//        $customer->setPoints($points);
+        $customer->setPoints($points);
 
         $em->persist($customer);
     }

@@ -52,5 +52,13 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
 
         return $bills->getResult();
     }
+    
+    public function getUnprinted(){
+        $bills = $this->createQueryBuilder('b')
+                ->where('b.printBill = true')
+                ->getQuery();
+        
+        return $bills->getResult();
+    }
 
 }
