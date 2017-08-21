@@ -280,11 +280,13 @@
                 data: bill,
                 success: function (result) {
                     if (result.error !== undefined) {
-                        openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la factura");
+                        openModalAlerErrorSuccess('Confirmación de Factura', "Error al entregar registrar la factura");
                     } else {
-                        openModalAlerErrorSuccess('Confirmación de Factura', "Se registró la entrega con exito");
-                        $('#wayToPay').modal('hide');
-                        location.reload();
+                        openModalAlerErrorSuccess('Confirmación de Factura', "Se registró la entrega con exito",
+                                function () {
+                                    $('#wayToPay').modal('hide');
+                                    location.reload();
+                                });
                     }
                 }
             });

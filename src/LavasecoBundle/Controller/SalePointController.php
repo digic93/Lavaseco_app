@@ -28,7 +28,7 @@ class SalePointController extends Controller {
                 $em->flush();
 
                 $form = $this->createForm(SalePointType::class, new SalePoint());
-                $data["messagePad"] = "Punto de venta " . $salePoint->getName() . "creado correctamente";
+                $data["messagePad"] = "Punto de venta " . $salePoint->getName() . " creado correctamente";
             } catch (\Doctrine\DBAL\DBALException $e) {
                 $data["messagePad"] = "Punto de venta " . $salePoint->getName() . " no pudo ser creado, verifique que no exista un punto de venta con el mismo nombre";
                 $data["errorPad"] = true;

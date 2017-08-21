@@ -417,7 +417,7 @@ class BillController extends Controller {
         return $billRepository->find($billId);
     }
 
-    private function getTiket($bill) {
+    private function getTiket(Bill $bill) {
         $tiket = [
             "bill" => $bill->getId(),
             "consecutive" => $bill->getConsecutive(),
@@ -425,6 +425,7 @@ class BillController extends Controller {
             "customer" => ($bill->getCustomer()) ? $bill->getCustomer()->getName() : "No se Registro Cliente",
             "phoneNumber" => ($bill->getCustomer()) ? $bill->getCustomer()->getPhoneNumber() : "No se Registro Telefono",
             "observation" => $bill->getObservation(),
+            "salePoint" => $bill->getSalePoint()->getId(),
             "createdAt" => $bill->getCreatedAtString(),
             "billDetail" => $this->getItemsBill($bill)
         ];
