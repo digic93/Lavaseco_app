@@ -79,3 +79,8 @@ fos_user:
     registration:
         confirmation:
             enabled: true   
+    resetting:
+        email:
+            from_email:
+                address:        resetting@example.com
+                sender_name:    Demo Resetting

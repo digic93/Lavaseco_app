@@ -66,7 +66,7 @@
                 <p id="messageModalAlertConf"></p>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-success">Aceptar</button>
+                <button type="button" onclick="closeModalConfirmation();"  class="btn btn-success">Aceptar</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
@@ -125,6 +125,7 @@
 <script src="{{ asset("BootsTrapTheme/js/bootstrap.min.js") }}"></script>    
 <script>
         var modalSuccessErrorCollback = false;
+        var modalSuccessConfirmationCollback = false;
         function openModalAlerErrorSuccess(title, content, collback) {
             $("#titleModalAlert").text(title);
             $("#messageModalAlert").text(content);
@@ -134,15 +135,24 @@
             }
         }
 
-        function openModalAlerConfirmation(title, content) {
+        function openModalAlerConfirmation(title, content, collback) {
             $("#titleModalAlertConf").text(title);
             $("#messageModalAlertConf").text(content);
             $("#modalAlertConfirmation").modal('show');
+            if (collback !== undefined){
+                modalSuccessConfirmationCollback = collback;
+            }
         }
 
         function closeModalSuccess() {
             if (modalSuccessErrorCollback) {
                 modalSuccessErrorCollback();
+            }
+        }
+        
+        function  closeModalConfirmation(){
+            if (modalSuccessConfirmationCollback) {
+                modalSuccessConfirmationCollback();
             }
         }
 

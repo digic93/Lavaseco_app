@@ -47,7 +47,7 @@
                                 {{ form_errors(form.description) }}
                                 <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.description, 'Concepto') }}</label>  
                                 <div class="col-md-5" >
-                                    {{ form_widget(form.description, {'attr': {'class': 'form-control  input-md', 'disabled': editObservations } }) }}
+                                    {{ form_widget(form.description, {'attr': {'class': 'form-control  input-md', 'id':'formCahs', 'disabled': editObservations } }) }}
                                 </div>
                             </div>
 
@@ -55,7 +55,7 @@
                             <div class="form-group">
                                 <label class="col-md-4 control-label" for="singlebutton"></label>
                                 <div class="col-md-5 pull-right">
-                                    <button type="submit" id="openCloseAlert" class="btn {% if title == "Cierre" %} btn-danger {% else %} btn-success {% endif %}" data-type="{{ title }}" style="margin-left: 13px;" type="button">
+                                    <button type="button" id="openCloseAlert" class="btn {% if title == "Cierre" %} btn-danger {% else %} btn-success {% endif %}" data-type="{{ title }}" style="margin-left: 13px;" type="button">
                                         <i class="fa fa-check" aria-hidden="true"></i>
                                         {{ title }} de Caja
                                     </button>
@@ -117,7 +117,10 @@
         {% endif%}
         
         $("#openCloseAlert").on('click', function () {
-           openModalAlerConfirmation("Confirmación {{ title }} de Caja", "En este momento va a dar {{ title }} a la caja, recuerde que este proceso es irreversible. ¿Realmente desea hacer esta transacción?");
+           openModalAlerConfirmation("Confirmación {{ title }} de Caja", "En este momento va a dar {{ title }} a la caja, recuerde que este proceso es irreversible. ¿Realmente desea hacer esta transacción?",
+           function (){
+               $("#formCahs").submit();
+           });
         });
     </script>
 {% endblock %}

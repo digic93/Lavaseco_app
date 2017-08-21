@@ -40,8 +40,8 @@
             <table id="billsTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Factura</th>
-                        <th>Orden</th>
                         <th>Cliente</th>
                         <th>Telefono</th>
                         <th>Estado</th>
@@ -53,7 +53,7 @@
                     {% for bill in bills %}
                         <tr>
                             <td>{{ bill.id }}</td>
-                            <td>{{ bill.consecutive }}</td>
+                            <td>{{ bill.salePoint.id }}-{{ bill.id }}</td>
                             <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
                             <td>{{ bill.customer.phoneNumber | default("No se Registro telefono")}}</td>
                             <td>{{ bill.processState.name}}</td>
@@ -70,13 +70,12 @@
                     <h3 class="panel-title"><i class="fa fa-file-text" aria-hidden="true"></i> Tiket</h3>
                 </div>
                 <div class="panel-body">
-                    <h3 id="orderTiket">Orden</h3>
-                    <h5 id="billTiket">Factura</h5>
-
-                    <h6 id="dateTiket">Fecha: YYYY/MM/DD</h6>
-                    <h6 id="sellerTiket">Vendedor: XXXXXXXXXXXX</h6>
-                    <h6 id="quantityTiket"><strong>Objetos Recibidos: N</strong></h6>
-                    <h6 id="priceTiket"><strong>Total: $XXXXX</strong></h6>
+                    <h3 id="billTiket">Factura</h3>
+                    
+                    <h5 id="dateTiket">Fecha: YYYY/MM/DD</h5>
+                    <h5 id="sellerTiket">Vendedor: XXXXXXXXXXXX</h5>
+                    <h5 id="quantityTiket"><strong>Objetos Recibidos: N</strong></h5>
+                    <h5 id="priceTiket"><strong>Total: $XXXXX</strong></h5>
                     <strong id="customerTiket">Cliente: XXXXXXXXXXXX</strong><br>
                     <strong id="phoneNumberTiket">Numero Telefono: XXXXXXXXXXXX</strong><br>
                     <hr>
@@ -97,7 +96,7 @@
                 </div>
                 <div class="modal-body">
                     <p>
-                        Realizar cambio de estado para las siguientes Ordenes:<br>
+                        Realizar cambio de estado para las siguientes Facturas:<br>
                         <strong id="modalOrdersText"></strong>
                     </p>
                     <div class="form-horizontal">
@@ -182,11 +181,11 @@
         }
 
         function drawTiket(tiket) {
-            $("#orderTiket").html("Orden " + tiket.consecutive);
-            $("#billTiket").html("Factura " + tiket.bill);
+            {#            $("#orderTiket").html("Orden " + tiket.consecutive);#}
+            $("#billTiket").html("Factura " + tiket.salePoint + "-" + tiket.bill);
             $("#dateTiket").html("Fecha: " + tiket.createdAt);
             $("#sellerTiket").html("Vendedor: " + tiket.seller);
-            $("#quantityTiket").html("<strong>Objetos Recividos: " + $.number(tiket.billDetail.quantity) + "</strong>");
+            $("#quantityTiket").html("<strong>Objetos Recibidos: " + $.number(tiket.billDetail.quantity) + "</strong>");
             $("#priceTiket").html("<strong>Total: $" + $.number(tiket.billDetail.total) + "</strong>");
             $("#customerTiket").html("Cliente: " + tiket.customer);
             $("#phoneNumberTiket").html("Numero Telefono: " + tiket.phoneNumber);
@@ -207,8 +206,8 @@
         }
 
         function changeEstate() {
-            if (orderSelected.length === 0) {
-                alert("Seleccione por lo menos una orden para cambiarle el estado.");
+            if (orderSelected [1].length === 0) {
+                openModalAlerErrorSuccess("Alerta","Seleccione por lo menos una factura para cambiarle el estado.");
             } else {
                 var html = "";
                 for (var i in orderSelected [1]) {
