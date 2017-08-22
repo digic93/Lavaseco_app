@@ -47,7 +47,7 @@
                                 {{ form_errors(form.description) }}
                                 <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.description, 'Concepto') }}</label>  
                                 <div class="col-md-5" >
-                                    {{ form_widget(form.description, {'attr': {'class': 'form-control  input-md', 'id':'formCahs', 'disabled': editObservations } }) }}
+                                    {{ form_widget(form.description, {'attr': {'class': 'form-control  input-md', 'id':'formCash', 'disabled': editObservations } }) }}
                                 </div>
                             </div>
 
@@ -119,7 +119,7 @@
         $("#openCloseAlert").on('click', function () {
            openModalAlerConfirmation("Confirmación {{ title }} de Caja", "En este momento va a dar {{ title }} a la caja, recuerde que este proceso es irreversible. ¿Realmente desea hacer esta transacción?",
            function (){
-               $("#formCahs").submit();
+               $("#formCash").submit();
            });
         });
     </script>

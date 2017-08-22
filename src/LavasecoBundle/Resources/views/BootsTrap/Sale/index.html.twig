@@ -814,6 +814,9 @@
                 method: "POST",
                 dataType: "json",
                 data: factura,
+                beforeSend: function (xhr) {
+                    loadingModal("Registrando la factura en el sistema... Espere por favor.");
+                },
                 success: function (result) {
                     $('#wayToPay').modal('hide');
                     openModalAlerErrorSuccess("Confirmación Factura", "Facturado con éxito",

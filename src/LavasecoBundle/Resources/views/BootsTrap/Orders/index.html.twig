@@ -231,6 +231,9 @@
                     "processState": $("#newProcessStates").val(),
                     "observation": $("#observationProccess").val()
                 },
+                beforeSend: function (xhr) {
+                    loadingModal("Guardando los cambios en el sistema... Espere por favor.");
+                },
                 success: function (result) {
                     location.reload();
                     openModalAlerErrorSuccess("Confirmación de Cambios", "Los cambios han sido aplicados con éxito.");
