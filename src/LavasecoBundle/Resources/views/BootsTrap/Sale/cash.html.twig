@@ -119,7 +119,7 @@
         $("#openCloseAlert").on('click', function () {
            openModalAlerConfirmation("Confirmación {{ title }} de Caja", "En este momento va a dar {{ title }} a la caja, recuerde que este proceso es irreversible. ¿Realmente desea hacer esta transacción?",
            function (){
-               $("#formCash").submit();
+               $("form").submit();
            });
         });
     </script>
