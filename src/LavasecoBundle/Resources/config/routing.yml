@@ -46,6 +46,26 @@ lavaseco_setting_loyalty:
     path:     /configuracion/fidelidad
     defaults: { _controller: LavasecoBundle:Loyalty:index }
 
+lavaseco_setting_report_dashboard:
+    path:     /reportes/dashboard
+    defaults: { _controller: LavasecoBundle:Report:dashboard }
+
+lavaseco_setting_report_daily_sale:
+    path:     /reportes/venta/diaria
+    defaults: { _controller: LavasecoBundle:Report:dailySale }
+
+lavaseco_setting_report_service_sale:
+    path:     /reportes/venta/servicios
+    defaults: { _controller: LavasecoBundle:Report:serviceSale }
+
+lavaseco_setting_report_user_sale:
+    path:     /reportes/venta/usuarios
+    defaults: { _controller: LavasecoBundle:Report:userSale }
+
+lavaseco_setting_report_sale_point:
+    path:     /reportes/venta/puntoventa
+    defaults: { _controller: LavasecoBundle:Report:salepoint }
+
 #Ajax Service-------------------------------------------------------------------        
 lavaseco_api_service_category:
     path:     /api/service/category/{serviceCategoryId}
