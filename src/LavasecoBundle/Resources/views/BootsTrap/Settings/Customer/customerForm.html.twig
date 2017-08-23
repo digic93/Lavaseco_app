@@ -170,6 +170,9 @@
                     method: "POST",
                     dataType: "json",
                     data: user,
+                    beforeSend: function (xhr) {
+                        loadingModal("Creando usuario en el sistema... Espere por favor.");
+                    },
                     success: function (result) {
                         openModalAlerErrorSuccess("Confirmación Creación de Usuarios", "El cliente " + result.name + " ha sido creado correctamente.");
                         clearForm();

@@ -278,11 +278,14 @@
                 method: "POST",
                 dataType: "json",
                 data: bill,
+                beforeSend: function (xhr) {
+                    loadingModal("Registrando la entrega en el sistema... Espere por favor.");
+                },
                 success: function (result) {
                     if (result.error !== undefined) {
-                        openModalAlerErrorSuccess('Confirmación de Factura', "Error al entregar registrar la factura");
+                        openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entregar de la factura");
                     } else {
-                        openModalAlerErrorSuccess('Confirmación de Factura', "Se registró la entrega con exito",
+                        openModalAlerErrorSuccess('Confirmación de Factura', "Se registró la entrega con éxito",
                                 function () {
                                     $('#wayToPay').modal('hide');
                                     location.reload();
@@ -365,6 +368,9 @@
                     dataType: "json",
                     data: {
                         "bill": billId
+                    },
+                    beforeSend: function (xhr) {
+                        loadingModal("Registrando el reembolso en el sistema... Espere por favor.");
                     },
                     success: function (result) {
                         openModalAlerErrorSuccess('Confirmación de Reembolso', "Reembolso ha sido efectuado con éxito.");

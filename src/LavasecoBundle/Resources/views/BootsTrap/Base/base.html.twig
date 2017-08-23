@@ -122,7 +122,9 @@
     </script>
 {% endif %}
 
-<script src="{{ asset("BootsTrapTheme/js/bootstrap.min.js") }}"></script>    
+<script src="{{ asset("BootsTrapTheme/js/bootstrap.min.js") }}"></script>   
+<script type="text/javascript" src="{{ asset("BootsTrapTheme/js/bootstrap-waitingfor.js") }}"></script>
+
 <script>
         var modalSuccessErrorCollback = false;
         var modalSuccessConfirmationCollback = false;
@@ -154,6 +156,19 @@
             if (modalSuccessConfirmationCollback) {
                 modalSuccessConfirmationCollback();
             }
+        }
+        
+        function  loadingModal(content){
+            waitingDialog.show(content,{
+                headerText: '<i class="fa fa-spinner" aria-hidden="true"></i> Cargando...',
+                // after the modal was hidden
+                onHide: null,
+                // after the modal was shown
+                onShow: null
+            });
+            setTimeout(function () {
+                waitingDialog.hide();
+            }, 3000); 
         }
 
     {% if messagePad is defined %}
