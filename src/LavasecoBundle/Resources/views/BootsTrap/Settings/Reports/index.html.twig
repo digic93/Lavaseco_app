@@ -2,248 +2,185 @@
 
 {% block stylesheets %}
     <style>
-        .sidebar .li-group {
-            padding: 15px;
-        }
-        @media (min-width: 768px) {
-            #page-wrapper {
-                position: inherit;
-                margin: 0 0 0 250px;
-                padding: 0 30px;
-                border-left: 1px solid #e7e7e7;
-            }
-        }
-        .navbar-top-links {
-            margin-right: 0;
-        }
-        .navbar-top-links li {
-            display: inline-block;
-        }
-        .navbar-top-links li:last-child {
-            margin-right: 15px;
-        }
-        .navbar-top-links li a {
-            padding: 15px;
-            min-height: 50px;
-        }
-        .navbar-top-links .dropdown-menu li {
-            display: block;
-        }
-        .navbar-top-links .dropdown-menu li:last-child {
-            margin-right: 0;
-        }
-        .navbar-top-links .dropdown-menu li a {
-            padding: 3px 20px;
-            min-height: 0;
-        }
-        .navbar-top-links .dropdown-menu li a div {
-            white-space: normal;
-        }
-        .navbar-top-links .dropdown-messages,
-        .navbar-top-links .dropdown-tasks,
-        .navbar-top-links .dropdown-alerts {
-            width: 310px;
-            min-width: 0;
-        }
-        .navbar-top-links .dropdown-messages {
-            margin-left: 5px;
-        }
-        .navbar-top-links .dropdown-tasks {
-            margin-left: -59px;
-        }
-        .navbar-top-links .dropdown-alerts {
-            margin-left: -123px;
-        }
-        .navbar-top-links .dropdown-user {
-            right: 0;
-            left: auto;
-        }
-        .sidebar .sidebar-nav.navbar-collapse {
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .sidebar .sidebar-search {
-            padding: 15px;
-        }
-        .sidebar ul li {
-            border-bottom: 1px solid #e7e7e7;
-        }
-        .sidebar ul li a.active {
-            background-color: #eeeeee;
-        }
-        .sidebar .arrow {
-            float: right;
-        }
-        .sidebar .fa.arrow:before {
-            content: "\f104";
-        }
-        .sidebar .active > a > .fa.arrow:before {
-            content: "\f107";
-        }
-        .sidebar .nav-second-level li,
-        .sidebar .nav-third-level li {
-            border-bottom: none !important;
-        }
-        .sidebar .nav-second-level li a {
-            padding-left: 37px;
-        }
-        .sidebar .nav-third-level li a {
-            padding-left: 52px;
-        }
-        @media (min-width: 768px) {
-            .sidebar {
-                z-index: 1;
-                position: absolute;
-                width: 250px;
-                margin-top: 51px;
-            }
-            .navbar-top-links .dropdown-messages,
-            .navbar-top-links .dropdown-tasks,
-            .navbar-top-links .dropdown-alerts {
-                margin-left: auto;
-            }
-        }
+
     </style>
 {% endblock %} 
 
-{% block body %} 
-    <div id="wrapper">
-
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-
-                        <li class="sidebar-search">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </span>
-                            </div>
-                        </li>
-
-                        <li class="sidebar-search">
-                            <div class="form-group">
-                                <label for="sel1">Seleccione el reporte deseado:</label>
-                                <select class="form-control" >	
-                                    <option>Hot Dog, Fries and a Soda</option>
-                                </select>
-                            </div>
-                        </li>
-
-                        <li class="sidebar-search">
-                            <div class="input-group">
-                                <label for="sel1">Fecha Inicial:</label>
-                                <div class='input-group date' id='datetimepicker1'>
-                                    <input type='text' class="form-control" />
-                                    <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </span>
-                                </div>
-                            </div>
-                        </li>
-
-                        <li class="sidebar-search">
-                            <div class="input-group">
-                                <label for="sel1">Fecha Final:</label>
-                                <div class='input-group date' id='datetimepicker1'>
-                                    <input type='text' class="form-control" />
-                                    <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </span>
-                                </div>
-                            </div>
-                        </li>
-
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
-        </nav>
-
-        <div id="page-wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Dashboard</h1>
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
-            <!-- /.row -->
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Area Chart Example
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Actions
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        <li><a href="#">Action</a>
-                                        </li>
-                                        <li><a href="#">Another action</a>
-                                        </li>
-                                        <li><a href="#">Something else here</a>
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">Separated link</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+{% block body %}
+    <div class="container">
+        <div class="row ">
+            <div class="col-sm-3">
+                <div class="sidebar-nav">
+                    <div class="navbar navbar-default" role="navigation">
+                        <div class="navbar-header">
+                            <button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <p class="navbar-brand">Filtro de Búsqueda</p>
                         </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="morris-area-chart"></div>
-                        </div>
-                        <!-- /.panel-body -->
+                        <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                            <ul class="nav navbar-nav" id="side-menu">
+
+                                <li>
+                                    <div class="input-group custom-search-form">
+                                        <input type="text" class="form-control" placeholder="Search...">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Seleccione el reporte deseado:</label>
+                                        <select class="form-control" >	
+                                            <option>Hot Dog, Fries and a Soda</option>
+                                        </select>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="input-group">
+                                        <label for="sel1">Fecha Inicial:</label>
+                                        <div class='input-group date' id='datetimepicker1'>
+                                            <input type='text' class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="input-group">
+                                        <label for="sel1">Fecha Final:</label>
+                                        <div class='input-group date' id='datetimepicker1'>
+                                            <input type='text' class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div><!--/.nav-collapse -->
                     </div>
                 </div>
-                <!-- /.col-lg-8 -->
-                <div class="col-lg-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bell fa-fw"></i> Notifications Panel
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="list-group">
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-comment fa-fw"></i> New Comment
-                                    <span class="pull-right text-muted small"><em>4 minutes ago</em>
-                                    </span>
-                                </a>
+            </div>
+            <div class="col-sm-9">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Dashboard</h1>
+                    </div>
+                </div>
 
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-bar-chart-o fa-fw"></i> Gráfica
                             </div>
-                            <!-- /.list-group -->
-                            <a href="#" class="btn btn-default btn-block">View All Alerts</a>
+                            <div class="panel-body">
+                                <div id="container"></div>
+                            </div>
                         </div>
-                        <!-- /.panel-body -->
                     </div>
 
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-bell fa-fw"></i> Reportes Actuales
+                            </div>
+                            <div class="panel-body">
+                                <div class="list-group">
+                                    <a href="#" class="list-group-item">
+                                        <i class="fa fa-comment fa-fw"></i> New Comment
+                                        <span class="pull-right text-muted small"><em>4 minutes ago</em>
+                                        </span>
+                                    </a>
+                                </div>
+                                <a href="#" class="btn btn-default btn-block">View All Alerts</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <!-- /.col-lg-4 -->
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /#page-wrapper -->
     </div>
-    <!-- /#wrapper -->
 {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="{{ asset("BootsTrapTheme/highcharts/js/highcharts.js") }}"></script>
-    <script type="text/javascript" src="{{ asset("BootsTrapTheme/highcharts/js/modules/exporting.js") }}"></script>
-    <script>
-        $(function () {
-            $('#datetimepicker1').datetimepicker();
+    <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script type="text/javascript">
+         $(document).ready(function () {
+            $('#datetimepicker1').datepicker();
+        });
+
+        Highcharts.chart('container', {
+            chart: {
+                type: 'area'
+            },
+            title: {
+                text: 'Historic and Estimated Worldwide Population Growth by Region'
+            },
+            subtitle: {
+                text: 'Source: Wikipedia.org'
+            },
+            xAxis: {
+                categories: ['1750', '1800', '1850', '1900', '1950', '1999', '2050'],
+                tickmarkPlacement: 'on',
+                title: {
+                    enabled: false
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Billions'
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value / 1000;
+                    }
+                }
+            },
+            tooltip: {
+                split: true,
+                valueSuffix: ' millions'
+            },
+            plotOptions: {
+                area: {
+                    stacking: 'normal',
+                    lineColor: '#666666',
+                    lineWidth: 1,
+                    marker: {
+                        lineWidth: 1,
+                        lineColor: '#666666'
+                    }
+                }
+            },
+            series: [{
+                    name: 'Asia',
+                    data: [502, 635, 809, 947, 1402, 3634, 5268]
+                }, {
+                    name: 'Africa',
+                    data: [106, 107, 111, 133, 221, 767, 1766]
+                }, {
+                    name: 'Europe',
+                    data: [163, 203, 276, 408, 547, 729, 628]
+                }, {
+                    name: 'America',
+                    data: [18, 31, 54, 156, 339, 818, 1201]
+                }, {
+                    name: 'Oceania',
+                    data: [2, 2, 2, 6, 13, 30, 46]
+                }]
         });
     </script>
 {% endblock %}
