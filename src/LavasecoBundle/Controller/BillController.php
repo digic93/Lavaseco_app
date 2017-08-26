@@ -525,7 +525,7 @@ class BillController extends Controller {
             $configuration = $this->get('lavaseco.app_configuration');
             $billId = $bill->getSalePoint()->getId() . "-" . $bill->getId();
 
-            $message = (new \Swift_Message('Factura ' . $billId . ' se a entregado'))
+            $message = (new \Swift_Message('Factura ' . $billId . ' se ha entregado'))
                     ->setFrom(['noreply@lavasecomodelo.com' => 'Lavaseco Modelo'])
                     ->setTo($customer->getEmail())
                     ->setBody(

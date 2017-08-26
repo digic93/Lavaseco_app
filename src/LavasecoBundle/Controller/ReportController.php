@@ -13,7 +13,8 @@ class ReportController extends Controller {
 
     public function dailySaleAction() {
         $configuration = $this->get('lavaseco.app_configuration');
-        return $this->render($configuration->getViewTheme() . ':Settings/Reports/dailySale.html.twig');
+        return $this->render($configuration->getViewTheme() . ':Settings/Reports/dailySale.html.twig', 
+                ["salePoints" => $this->getAllSalePoints()]);
     }
 
     public function serviceSaleAction() {
@@ -31,4 +32,10 @@ class ReportController extends Controller {
         return $this->render($configuration->getViewTheme() . ':Settings/Reports/salePoint.html.twig');
     }
 
+    private function getAllSalePoints() {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $salePointDescriptions = $doctrineManager->getRepository("LavasecoBundle:SalePoint");
+
+        return $salePointDescriptions->findAll();
+    }
 }
