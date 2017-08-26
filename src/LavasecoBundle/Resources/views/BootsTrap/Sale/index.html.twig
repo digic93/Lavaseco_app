@@ -153,7 +153,7 @@
                     <hr>
 
                     <div id="" class="form-group">
-                        <button type="button" class="btn btn-info btn-block" onclick="openRedeemPoints()">
+                        <button type="button" class="btn btn-info btn-block" onclick="openRedeemPoints();">
                             Redimir Puntos
                             <i class="fa fa-star" aria-hidden="true"></i>
                         </button>
@@ -166,7 +166,7 @@
                         <div class="col-md-7">
                             <div id="checkboxBill" class="checkbox">
                                 <label for="checkboxes-1">
-                                    <input  id="printBill" type="checkbox" value="imprimir">
+                                    <input  id="printBill" type="checkbox" value="imprimir" checked>
                                     Imprimir
                                 </label>
                                 <label for="checkboxes-1">
@@ -519,7 +519,7 @@
 //Functions////////////////////////////////////////////////////////
         function itemShowModal(item) {
             var subCategoryId = $(item).data("subcategoryId");
-            var categories = $(item).data("categoryName") + ", " + $(item).data("subcategoryName");
+            var categories = $(item).data("subcategoryName");
             $("#titleModal").html("Agregar " + categories);
             addServicesSelectImput(subCategoryId);
             summaryServices["total"] = 0;
@@ -769,6 +769,7 @@
                     if (user.email !== null) {
                         html += "<strong> Email Cliente: </strong>" + user.email + "<br>";
                         $("#sendBill").attr('disabled', false);
+                        $("#sendBill").attr('checked', true);
                         notifyByEmail();
                     }
                     if (user.phoneNumber !== null) {
@@ -794,7 +795,7 @@
 
             for (var i in result.notification) {
                 html += "<label for=\"checkboxes-2\">\
-                        <input  type=\"checkbox\" id=\"checkboxes-2-" + result.notification[i].id + "\" value=\"" + result.notification[i].name + "\">"
+                        <input  type=\"checkbox\" id=\"checkboxes-2-" + result.notification[i].id + "\" value=\"" + result.notification[i].name + "\" checked>"
                         + result.notification[i].name +
                         "</label>";
             }
@@ -814,6 +815,7 @@
                 method: "POST",
                 dataType: "json",
                 data: factura,
+                timeout: 30000,
                 beforeSend: function (xhr) {
                     loadingModal("Registrando la factura en el sistema... Espere por favor.");
                 },
@@ -871,7 +873,7 @@
                     addWayToPay();
                 }
             } else {
-                openModalAlerErrorSuccess("Error", "No es posible facturar, aún no ha agregado ningun servicio a la factura.")
+                openModalAlerErrorSuccess("Error", "No es posible facturar, aún no ha agregado ningun servicio a la factura.");
             }
 
         }
@@ -998,8 +1000,7 @@
                 openModalAlerErrorSuccess("Error", "La cantidad de puntos redimibles no puede superar el total de la factura y/o la cantidad de puntos que tiene el cliente");
             }
 
-        }
-        ;
+        };
 
     </script>
 {% endblock %}

@@ -1,0 +1,213 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+    <style>
+
+    </style>
+{% endblock %} 
+
+{% block body %}
+    <div class="container">
+        <div class="row ">
+            <div class="col-sm-3">
+                <div class="sidebar-nav">
+                    <div class="navbar navbar-default" role="navigation">
+                        <div class="navbar-header">
+                            <button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <p class="navbar-brand">Filtro de Búsqueda</p>
+                        </div>
+                        <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                            <ul class="nav navbar-nav" id="side-menu">
+
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Seleccione el reporte deseado:</label>
+                                        <select class="form-control" >	
+                                            <option value="0">Todos</option>
+                                            {% for salePoint in salePoints %}
+                                                <option value="{{ salePoint.name }}" data-id="{{ salePoint.id }}"> {{ salePoint.name }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="input-group">
+                                        <label for="sel1">Fecha Inicial:</label>
+                                        <div class='input-group date' id='datetimepicker1'>
+                                            <input type='text' class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="input-group">
+                                        <label for="sel1">Fecha Final:</label>
+                                        <div class='input-group date' id='datetimepicker1'>
+                                            <input type='text' class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div><!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Venta diaria</h1>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-bar-chart-o fa-fw"></i> Gráfica
+                            </div>
+                            <div class="panel-body">
+                                <div id="container">
+                                    <div id="highchart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-file-text-o" aria-hidden="true"></i> Resumen
+                            </div>
+                            <div class="panel-body">
+                                <div id="resumen">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table id="reportDailySale" class="display" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Factura</th>
+                                <th>Estado</th>
+                                <th>Total</th>
+                                <th>Pago</th>
+                                <th>Vendedor</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bill in bills %}
+                                <tr>
+                                    <td>{{ bill.salePoint.id }}-{{ bill.id }}</td>
+                                    <td>{{ bill.billState.name }}</td>
+                                    <td>{{ bill.total }}</td>
+                                    <td>{{ bill.PaymentAgreement.name }}</td>
+                                    <td>{{ bill.sellerUser.name }}</td>
+                                    <td>{{ bill.createdatString }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>                                
+            </div>                                
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/highcharts/js/highcharts.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/highcharts/js/modules/exporting.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            var table = $("#reportDailySale").DataTable();
+
+            $.ajax({
+                url: "{{ path('lavaseco_api_daily_sale') }}",
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (result) {
+                    var totalPendiente = 0;
+                    var totalCancelado = 0;
+                    drawReport(result);
+                    for (var i in result.series[0].data)
+                        totalCancelado += result.series[0].data[i];
+                    for (var i in result.series[1].data)
+                        totalPendiente += result.series[1].data[i];
+
+                    $("#resumen").html(
+                            "<h3>Venta Total $" + $.number(totalCancelado + totalPendiente) + "</h3>\
+                            <h4>Total Cancelado $" + $.number(totalCancelado) + "</h4>\
+                            <h4>Total Pendiente $" + $.number(totalPendiente) + "</h4>"
+                            );
+                }
+            });
+        });
+
+        {#
+                $('#startDate').datepicker({
+                     format: 'mm/dd/yyyy',
+                     startDate: '-3d'
+                });
+        #}
+            function drawReport(result) {
+
+                Highcharts.chart('highchart', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Venta Diaria'
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Ventas'
+                        }, labels: {
+                            formatter: function () {
+                                return "$" + $.number(this.value);
+                            }
+                        }
+                    },
+                    xAxis: {
+                        title: {
+                            text: 'Punto De Venta'
+                        },
+                        categories: result.categories
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return 'Venta ' + this.series.name + ' en <b>' + this.x + '</b> de <b>$' + $.number(this.y) + '</b>';
+                        }
+                    },
+                    series: result.series
+                });
+            }
+
+    </script>
+{% endblock %}
+

@@ -5,37 +5,98 @@ namespace LavasecoBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class ReportController extends Controller {
-    
+
     public function dashboardAction() {
         $configuration = $this->get('lavaseco.app_configuration');
-        return $this->render($configuration->getViewTheme() . ':Settings/Reports/index.html.twig');
+        return $this->render($configuration->getViewTheme() . ':Reports/index.html.twig');
     }
 
     public function dailySaleAction() {
+        $date = new \DateTime(date('Y-m-d'));
         $configuration = $this->get('lavaseco.app_configuration');
-        return $this->render($configuration->getViewTheme() . ':Settings/Reports/dailySale.html.twig', 
-                ["salePoints" => $this->getAllSalePoints()]);
+        $bills = $this->getDailySale($date, $date);
+        
+        return $this->render($configuration->getViewTheme() . ':Reports/dailySale.html.twig', 
+                [
+                    "bills" => $bills,
+                    "salePoints" => $this->getAllSalePoints(),
+                ]);
     }
 
     public function serviceSaleAction() {
         $configuration = $this->get('lavaseco.app_configuration');
-        return $this->render($configuration->getViewTheme() . ':Settings/Reports/serviceSale.html.twig');
+        return $this->render($configuration->getViewTheme() . ':Reports/serviceSale.html.twig');
     }
 
     public function userSaleAction() {
         $configuration = $this->get('lavaseco.app_configuration');
-        return $this->render($configuration->getViewTheme() . ':Settings/Reports/userSale.html.twig');
+        return $this->render($configuration->getViewTheme() . ':Reports/userSale.html.twig');
     }
 
     public function salePointAction() {
         $configuration = $this->get('lavaseco.app_configuration');
-        return $this->render($configuration->getViewTheme() . ':Settings/Reports/salePoint.html.twig');
+        return $this->render($configuration->getViewTheme() . ':Reports/salePoint.html.twig');
+    }
+
+    public function getDailySaleAction() {
+        $n = 0;
+        $salePoints = array();
+        $dataCancelado = array(0);
+        $dataPendiente = array(0);
+        $date = new \DateTime(date('Y-m-d'));
+
+        $bills = $this->getDailySale($date, $date);
+        if ($bills) {
+            $salePoint = $bills[0]->getSalePoint()->getId();
+            $salePoints [] = $bills[0]->getSalePoint()->getName();
+        }
+
+        foreach ($bills as $bill) {
+            if ($salePoint != $bill->getSalePoint()->getId()) {
+                $salePoints [] = $bill->getSalePoint()->getName();
+                $salePoint = $bill->getSalePoint()->getId();
+                $dataCancelado [] = 0;
+                $dataPendiente [] = 0;
+                $n ++;
+            }
+
+            if ($bill->getPaymentAgreement()->getId() == 1) {//Anticipado
+                $dataCancelado [$n] += $bill->getTotal();
+            } else if ($bill->getPaymentAgreement()->getId() == 2) {//Contra entrega
+                $dataPendiente [$n] += $bill->getTotal();
+            } else if ($bill->getPaymentAgreement()->getId() == 3) {//abono
+                $dataCancelado [$n] += $bill->getPayed();
+                $dataPendiente [$n] += $bill->getTotal() - $bill->getPayed();
+            }
+        }
+
+        return $this->json([
+                    "categories" => $salePoints,
+                    "series" => [
+                        [
+                            "name" => "Cancelado",
+                            "data" => $dataCancelado,
+                        ],
+                        [
+                            "name" => "Pendiente",
+                            "data" => $dataPendiente,
+                        ],
+                    ]
+        ]);
     }
 
     private function getAllSalePoints() {
         $doctrineManager = $this->get('doctrine')->getManager();
-        $salePointDescriptions = $doctrineManager->getRepository("LavasecoBundle:SalePoint");
+        $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:SalePoint");
 
-        return $salePointDescriptions->findAll();
+        return $salePointRepository->findAll();
     }
+
+    private function getDailySale($initialDate, $endDate) {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
+
+        return $billRepository->dailySale($initialDate, $endDate);
+    }
+
 }

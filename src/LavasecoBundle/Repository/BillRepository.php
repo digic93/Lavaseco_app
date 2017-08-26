@@ -52,22 +52,33 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
 
         return $bills->getResult();
     }
-    
-    public function getUnprintedBillAndTikets(){
+
+    public function getUnprintedBillAndTikets() {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.printBill = true')
                 ->andWhere('b.printedTiket = true')
                 ->getQuery();
-        
+
         return $bills->getResult();
     }
-    
-    public function getUnprintedTikets(){
+
+    public function getUnprintedTikets() {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.printBill = false')
                 ->andWhere('b.printedTiket = true')
                 ->getQuery();
-        
+
+        return $bills->getResult();
+    }
+
+    public function dailySale($from, $to) {
+        $bills = $this->createQueryBuilder('b')
+                ->where('b.createdAt BETWEEN :from AND :to')
+                ->andWhere('b.billState != 3')
+                ->orderBy("b.salePoint", "DESC")
+                ->setParameter('from', new \DateTime($from->format("Y-m-d")." 00:00:00"))
+                ->setParameter('to', new \DateTime($to->format("Y-m-d")." 23:59:59"))
+                ->getQuery();
         return $bills->getResult();
     }
 
