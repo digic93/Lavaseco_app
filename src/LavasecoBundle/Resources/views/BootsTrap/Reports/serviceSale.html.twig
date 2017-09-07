@@ -1,18 +1,370 @@
 {% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+    <style>
+        li{
+            margin-bottom: 15px;
+        }
+    </style>
 {% endblock %} 
 
-{% block body %} 
-    Reporte ventas por servicios
-    <br>
-    Motrar filtros (Fechas inicio, fecha final, punto de venta, categorias)
-    <br>
-    motrar Grafica(Servicio vs total venta), talba con los 5 servicios mas vendidos
-    <br>
-    Tabla con los datos del reporte
-{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="row ">
+            <div class="col-sm-3">
+                <div class="sidebar-nav">
+                    <div class="navbar navbar-default" role="navigation">
+                        <div class="navbar-header">
+                            <button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <p class="navbar-brand">Filtro de Búsqueda</p>
+                        </div>
+                        <div class="navbar-collapse collapse sidebar-navbar-collapse" >
+                            <ul class="nav navbar-nav" id="side-menu">
 
-{% block javascripts %}
-{% endblock %}
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Seleccione el Punto de Venta:</label>
+                                        <select class="form-control" id="salePointReport">	
+                                            <option value="0">Todos</option>
+                                            {% for salePoint in salePoints %}
+                                                <option value="{{ salePoint.id }}"> {{ salePoint.name }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </li>
 
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Seleccione la Categoria:</label>
+                                        <select class="form-control" id="salePointReport">	
+                                            <option value="0">Todos</option>
+                                            {% for serviceCategory in serviceCategories %}
+                                                <option value="{{ serviceCategory.id }}"> {{ serviceCategory.name }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Fecha Inicial:</label>
+                                        <div class='input-group date' >
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                            <input type='date' class="form-control" id='startDate'/>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Fecha Final:</label>
+                                        <div class='input-group date' >
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                            <input type='date' class="form-control" id='finalDate'/>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-success btn-block" onclick="generateReport()">
+                                            Generar Informe
+                                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div><!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Ventas de Categorias/Servicios</h1>
+                    </div>
+                </div>
+
+                <!-- Area Chart-->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-bar-chart-o fa-fw"></i> Gráfica
+                            </div>
+                            <div class="panel-body">
+                                <div id="container">
+                                    <div id="highchart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Resumen Venta-->
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-file-text-o" aria-hidden="true"></i> Servicios más Vendidos
+                            </div>
+                            <div class="panel-body">
+                                <div id="resumen">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Puntos de  Venta-->
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-file-text-o" aria-hidden="true"></i> Puntos de Venta
+                            </div>
+                            <div class="panel-body">
+                                {% for salePoint in salePoints %}
+                                    <div class="list-group" id="salesPoints">
+                                        <a href="#" class="list-group-item" data-id="{{ salePoint.id }}" onclick="selectSalePoint(this);">
+                                            <i class="fa fa-laptop" aria-hidden="true"></i> {{ salePoint.name }}
+                                            <span class="pull-right text-muted small"><em>{{ salePoint.id }}</em>
+                                            </span>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table id="reportDailySale" class="display" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Factura</th>
+                                <th>Estado</th>
+                                <th>Total</th>
+                                <th>Pago</th>
+                                <th>Vendedor</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bill in bills %}
+                                <tr>
+                                    <td>{{ bill.salePoint.id }}-{{ bill.id }}</td>
+                                    <td>{{ bill.billState.name }}</td>
+                                    <td>${{ bill.total }}</td>
+                                    <td>{{ bill.PaymentAgreement.name }}</td>
+                                    <td>{{ bill.sellerUser.name }}</td>
+                                    <td>{{ bill.createdatString }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>                                
+            </div>                                
+        </div>
+
+    {% endblock %}
+
+    {% block javascripts %}
+        <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/highcharts/js/highcharts.js") }}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/highcharts/js/modules/exporting.js") }}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+        <script>
+            var salePoint = 0;
+            var category = 0;
+            var startDate = "";
+            var finalDate = "";
+
+            Date.prototype.toDateInputValue = (function () {
+                var local = new Date(this);
+                local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+                return local.toJSON().slice(0, 10);
+            });
+
+            $(document).ready(function () {
+                document.getElementById("startDate").value = new Date().toDateInputValue();
+                document.getElementById("finalDate").value = new Date().toDateInputValue();
+
+                var table = $("#reportDailySale").DataTable();
+                //peticion al servidor
+                loadingData(salePoint, category, startDate, finalDate);
+            });
+
+            function loadingData(salePoint, category, startDate, finalDate) {
+                $.ajax({
+                    url: "{{ path('lavaseco_api_daily_sale') }}/"{#+ salePoint + "/" + category + "/" + startDate + "/" + finalDate#},
+                    method: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (result) {
+                        drawReport(result);
+                    }
+                });
+            }
+
+            function selectSalePoint(buttonSelected) {
+                var salePointID = $(buttonSelected).data("id");
+                $("#salePointReport").val(salePointID);
+                generateReport();
+            }
+
+            function generateReport() {
+                startDate = document.getElementById("startDate").value;
+                finalDate = document.getElementById("finalDate").value;
+                salePoint = $("#salePointReport").val();
+
+                var currentDate = new Date().toDateInputValue();
+
+                if (startDate === '') {
+                    openModalAlerErrorSuccess('Error', 'Verifique el campo de Fecha Inicial.');
+                } else if (finalDate === '') {
+                    openModalAlerErrorSuccess('Error', 'Verifique el campo de Fecha Final.');
+                } else if ((Date.parse(startDate)) > (Date.parse(finalDate))) {
+                    openModalAlerErrorSuccess('Error', 'La fecha inicial no puede ser mayor que la fecha final');
+                } else if (Date.parse(startDate) > Date.parse(currentDate)) {
+                    openModalAlerErrorSuccess('Error', 'La fecha inicial no puede ser mayor que actual');
+                } else if (Date.parse(finalDate) > Date.parse(currentDate)) {
+                    openModalAlerErrorSuccess('Error', 'La fecha final no puede ser mayor que actual');
+                } else {
+                    alert("fecha inicial " + startDate + " Fecha final " + finalDate + " Punto de Venta " + salePoint);
+
+                    //ajax 
+                    //fecha final, fecha inicial y punto de venta
+                    var result = {
+                        "categories": ['Lunes, 28/08/2017', 'Martes, 29/08/2017',
+                            'Miercoles, 30/08/2017', 'Jueves, 31/08/2017', 'Viernes, 01/09/2017',
+                            'Sábado, 02/09/2017', 'Domingo, 03/09/2017', 'Lunes, 04/09/2017'],
+                        "series": [
+                            {
+                                name: 'Camisa',
+                                data: [5000, 32000, 2500, 70000, 20000, 90750, 53200, 24300]
+                            },
+                            {
+                                name: 'Pantalón',
+                                data: [2200, 3400, 2432, 29700, 10000, 30, 0, 80]
+                            },
+                            {
+                                name: 'Chaqueta',
+                                data: [7200, 9400, 3400, 46100, 9800, 30000, 0, 0]
+                            },
+                            {
+                                name: 'Vestido',
+                                data: [3400, 5200, 9400, 44500, 24500, 0, 0, 4350]
+                            }
+                        ]
+                    };
+                    //dibuja la grafica
+                    drawReport(result);
+                    //top más vendidos
+                    bestSeller(result);
+                }
+            }
+
+            function drawReport(result) {
+
+                Highcharts.chart('container', {
+                    chart: {
+                        type: 'area'
+                    },
+                    title: {
+                        text: 'Total Venta por Servicio'
+                    },
+                    subtitle: {
+                        text: 'Source: <a href="http://thebulletin.metapress.com/content/c4120650912x74k7/fulltext.pdf">' +
+                                'thebulletin.metapress.com</a>'
+                    },
+                    xAxis: {
+                        title: {
+                            text: 'Servicios'
+                        },
+                        labels: {
+                            formatter: function () {
+                                return this.value; // clean, unformatted number for year
+                            }
+                        },
+                        allowDecimals: false,
+                        categories: result.categories
+
+                    },
+                    yAxis: {
+                        
+                        labels: {
+                            formatter: function () {
+                                return "$" + $.number(this.value);
+                            }
+                        }
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name} total vendido <b>{point.y:,.0f}</b><br/> el {point.x}'
+                    },
+                    plotOptions: {
+                        area: {
+                            marker: {
+                                enabled: false,
+                                symbol: 'circle',
+                                radius: 2,
+                                states: {
+                                    hover: {
+                                        enabled: true
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    series: result.series
+                });
+            }
+
+            function bestSeller(result) {
+                var sortSeries = [];
+                var totalCategory = 0;
+
+                for (var i in result.series) {
+
+                    for (var j in result.series[i].data) {
+                        totalCategory += result.series[i].data[j];
+                    }
+
+                    var aux = {
+                        "name": result.series[i].name,
+                        "totalSale": totalCategory
+                    };
+                    sortSeries.push(aux);
+                }
+
+                sortSeries.sort(function (x, y) {
+                    return  y.totalSale - x.totalSale; 
+                });
+                
+                drawBestSeller(sortSeries);
+            }
+            
+            function drawBestSeller(array) {
+                var html = '';
+                for (var i in array){
+                    html += "<div class=\"list-group\" id=\"salesPoints\">\
+                                <a class=\"list-group-item\">\
+                                    <i class=\"fa fa-shopping-basket\" aria-hidden=\"true\"></i>" + array[i].name + "\
+                                    <span class=\"pull-right text-muted small\"><em> $ " + $.number(array[i].totalSale) + "</em></span>\
+                                </a>\
+                            </div>";
+                }
+                $("#resumen").html(html);                 
+            }
+        </script>
+    {% endblock %}
