@@ -3,9 +3,9 @@
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
     <style>
-        li{
+        {#li{
             margin-bottom: 15px;
-        }
+        }#}
     </style>
 {% endblock %} 
 
@@ -86,30 +86,31 @@
 
                 <!-- Icon Cards -->
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-4 col-xs-4">
                         <div class="core-box">
                             <div class="heading"> 
-                                <h2>Venta Total</h2>
+                                <h3>Venta Total</h3>
                             </div>
                             <div class="content">
                                 <p><i class="fa fa-usd "></i> <span id="totalSales" style="font-size: 20px;">0</span></p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-4 col-xs-4">
+                        
                         <div class="core-box">
                             <div class="heading">
-                                <h2>Total Cancelado</h2>
+                                <h3>Total Cancelado</h3>
                             </div>
                             <div class="content">
                                 <p><i class="fa fa-usd "></i> <span id="totalCanceled" style="font-size: 20px;">0</span></p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-4 col-xs-4">
                         <div class="core-box">
                             <div class="heading">
-                                <h2>Total Pendiente</h2>
+                                <h3>Total Pendiente</h3>
                             </div>
                             <div class="content">
                                 <p><i class="fa fa-usd "></i> <span id="totalPending" style="font-size: 20px;">0</span></p>
@@ -213,12 +214,16 @@
             loadingData(salePoint, startDate, finalDate);
         });
 
-        function loadingData(salePoint, startDate, finalDate) {
+        function loadingData(salePoint, startDate, finalDate) {        
             $.ajax({
-                url: "{{ path('lavaseco_api_daily_sale') }}/" + salePoint + "/" + startDate + "/" + finalDate,
+                url: "{{ path('lavaseco_api_daily_sale') }}",
                 method: "POST",
-                contentType: 'application/json',
                 dataType: 'json',
+                data: {
+                    "salePoint": salePoint,
+                    "startDate": startDate,
+                    "finalDate": finalDate
+                },
                 success: function (result) {
                     calculateTotals(result);
                     drawReport(result);

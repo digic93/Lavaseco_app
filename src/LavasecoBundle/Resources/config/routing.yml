@@ -186,4 +186,4 @@ lavaseco_api_print:
 lavaseco_api_daily_sale:
     path:     /api/daily/sale
     defaults: { _controller: LavasecoBundle:Report:getDailySale }
-    methods:  [GET]    
+    methods:  [POST]    

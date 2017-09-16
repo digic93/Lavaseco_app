@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/lavaseco/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Reports/userSale.html.twig</file>
-            <file>file:/F:/lavaseco/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Reports/serviceSale.html.twig</file>
-            <file>file:/F:/lavaseco/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Reports/salePoint.html.twig</file>
-            <file>file:/F:/lavaseco/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Reports/index.html.twig</file>
+            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Controller/ReportController.php</file>
+            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Reports/dailySale.html.twig</file>
+            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Repository/BillRepository.php</file>
+            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Orders/index.html.twig</file>
         </group>
     </open-files>
 </project-private>

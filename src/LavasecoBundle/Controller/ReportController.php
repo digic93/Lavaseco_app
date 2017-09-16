@@ -2,6 +2,7 @@
 
 namespace LavasecoBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class ReportController extends Controller {
@@ -14,13 +15,12 @@ class ReportController extends Controller {
     public function dailySaleAction() {
         $date = new \DateTime(date('Y-m-d'));
         $configuration = $this->get('lavaseco.app_configuration');
-        $bills = $this->getDailySale($date, $date);
-        
-        return $this->render($configuration->getViewTheme() . ':Reports/dailySale.html.twig', 
-                [
+        $bills = $this->getDailySale($date, $date, 0);
+
+        return $this->render($configuration->getViewTheme() . ':Reports/dailySale.html.twig', [
                     "bills" => $bills,
                     "salePoints" => $this->getAllSalePoints(),
-                ]);
+        ]);
     }
 
     public function serviceSaleAction() {
@@ -38,14 +38,31 @@ class ReportController extends Controller {
         return $this->render($configuration->getViewTheme() . ':Reports/salePoint.html.twig');
     }
 
-    public function getDailySaleAction() {
+    public function getDailySaleAction(Request $request) {
+        $salePoint = $request->request->get('salePoint');
+        $startDate = $request->request->get('startDate');
+        $finalDate = $request->request->get('finalDate');
+
+        if ($startDate != "" && $finalDate != "") {
+            $dateTo = $this->getLastMonday($startDate);
+            $dateFrom = $this->getNextFriday($finalDate);
+        } else {
+            $dateTo = $this->getLastMonday(date('y-m-d'));
+            $dateFrom = $this->getNextFriday(date('y-m-d'));
+        }
+        
+        $bills = $this->getDailySale($dateTo, $dateFrom, $salePoint);
+        
+    }
+
+    public function _____getDailySaleAction(Resquest $resquest) {
         $n = 0;
         $salePoints = array();
         $dataCancelado = array(0);
         $dataPendiente = array(0);
         $date = new \DateTime(date('Y-m-d'));
 
-        $bills = $this->getDailySale($date, $date);
+        $bills = $this->getDailySale($date, $date, 0);
         if ($bills) {
             $salePoint = $bills[0]->getSalePoint()->getId();
             $salePoints [] = $bills[0]->getSalePoint()->getName();
@@ -92,11 +109,27 @@ class ReportController extends Controller {
         return $salePointRepository->findAll();
     }
 
-    private function getDailySale($initialDate, $endDate) {
+    private function getDailySale($initialDate, $endDate, $salePoint) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
 
-        return $billRepository->dailySale($initialDate, $endDate);
+        return $billRepository->dailySale($initialDate, $endDate, $salePoint);
+    }
+
+    private function getLastMonday($date) {
+        if (jddayofweek(strtotime($date))) {
+            return new \DateTime(date('Y-m-d', strtotime($date . " last Monday")));
+        } else {
+            return new \DateTime(date('Y-m-d', strtotime("2017-2-6")));
+        }
+    }
+
+    private function getNextFriday($date) {
+        if (jddayofweek(strtotime($date)) != 3) {
+            return new \DateTime(date('Y-m-d', strtotime("2017-2-6 next Friday")));
+        } else {
+            return new \DateTime(date('Y-m-d', strtotime("2017-2-6")));
+        }        
     }
 
 }
