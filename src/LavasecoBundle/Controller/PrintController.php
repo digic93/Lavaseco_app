@@ -73,7 +73,7 @@ class PrintController extends Controller {
                 $bonification = $loyalty->getDepositPercent();
             }
         } 
-        return $bonification;
+        return $bonification * $bill->getTotal() / 100 ;
     }
 
     private function getBillDetails(\LavasecoBundle\Entity\Bill $bill) {
