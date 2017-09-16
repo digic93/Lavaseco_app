@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="service_category")
  * @ORM\Entity(repositoryClass="LavasecoBundle\Repository\ServiceCategoryRepository")
  */
-class ServiceCategory
-{
+class ServiceCategory {
+
     /**
      * @var int
      *
@@ -57,12 +57,11 @@ class ServiceCategory
      * @ORM\JoinColumn(name="service_category_id", referencedColumnName="id")
      */
     protected $serviceCategory;
- 
+
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->img = "/CategoryIcons/default.png";
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
         $this->subServiceCategories = new \Doctrine\Common\Collections\ArrayCollection();
@@ -73,8 +72,7 @@ class ServiceCategory
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -85,8 +83,7 @@ class ServiceCategory
      *
      * @return ServiceCategory
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -97,8 +94,7 @@ class ServiceCategory
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -109,8 +105,7 @@ class ServiceCategory
      *
      * @return ServiceCategory
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -121,8 +116,7 @@ class ServiceCategory
      *
      * @return string
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -133,8 +127,7 @@ class ServiceCategory
      *
      * @return ServiceCategory
      */
-    public function setImg($img)
-    {
+    public function setImg($img) {
         $this->img = $img;
 
         return $this;
@@ -145,8 +138,7 @@ class ServiceCategory
      *
      * @return string
      */
-    public function getImg()
-    {
+    public function getImg() {
         return $this->img;
     }
 
@@ -157,8 +149,7 @@ class ServiceCategory
      *
      * @return ServiceCategory
      */
-    public function addService(\LavasecoBundle\Entity\Service $service)
-    {
+    public function addService(\LavasecoBundle\Entity\Service $service) {
         $this->services[] = $service;
 
         return $this;
@@ -169,8 +160,7 @@ class ServiceCategory
      *
      * @param \LavasecoBundle\Entity\Service $service
      */
-    public function removeService(\LavasecoBundle\Entity\Service $service)
-    {
+    public function removeService(\LavasecoBundle\Entity\Service $service) {
         $this->services->removeElement($service);
     }
 
@@ -179,8 +169,7 @@ class ServiceCategory
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getServices()
-    {
+    public function getServices() {
         return $this->services;
     }
 
@@ -191,8 +180,7 @@ class ServiceCategory
      *
      * @return ServiceCategory
      */
-    public function addSubServiceCategory(\LavasecoBundle\Entity\ServiceCategory $subServiceCategory)
-    {
+    public function addSubServiceCategory(\LavasecoBundle\Entity\ServiceCategory $subServiceCategory) {
         $this->subServiceCategories[] = $subServiceCategory;
 
         return $this;
@@ -203,8 +191,7 @@ class ServiceCategory
      *
      * @param \LavasecoBundle\Entity\ServiceCategory $subServiceCategory
      */
-    public function removeSubServiceCategory(\LavasecoBundle\Entity\ServiceCategory $subServiceCategory)
-    {
+    public function removeSubServiceCategory(\LavasecoBundle\Entity\ServiceCategory $subServiceCategory) {
         $this->subServiceCategories->removeElement($subServiceCategory);
     }
 
@@ -213,8 +200,7 @@ class ServiceCategory
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSubServiceCategories()
-    {
+    public function getSubServiceCategories() {
         return $this->subServiceCategories;
     }
 
@@ -225,8 +211,7 @@ class ServiceCategory
      *
      * @return ServiceCategory
      */
-    public function setServiceCategory(\LavasecoBundle\Entity\ServiceCategory $serviceCategory = null)
-    {
+    public function setServiceCategory(\LavasecoBundle\Entity\ServiceCategory $serviceCategory = null) {
         $this->serviceCategory = $serviceCategory;
 
         return $this;
@@ -237,15 +222,14 @@ class ServiceCategory
      *
      * @return \LavasecoBundle\Entity\ServiceCategory
      */
-    public function getServiceCategory()
-    {
+    public function getServiceCategory() {
         return $this->serviceCategory;
     }
-    
-    public function getFullName(){
-        if($this->getServiceCategory()){
+
+    public function getFullName() {
+        if ($this->getServiceCategory()) {
             $superCategory = $this->getServiceCategory();
-            if($superCategory->getServiceCategory()){
+            if ($superCategory->getServiceCategory()) {
                 return $superCategory->getServiceCategory()->getName() . " " .
                         $superCategory->getName() . ", " . $this->getName();
             } else {
@@ -255,4 +239,14 @@ class ServiceCategory
             return $this->getName();
         }
     }
+
+    public function getNameToBill() {
+        if ($this->getServiceCategory()) {
+            $superCategory = $this->getServiceCategory();
+            return $superCategory->getName() . ", " . $this->getName();
+        } else {
+            return $this->getName();
+        }
+    }
+
 }

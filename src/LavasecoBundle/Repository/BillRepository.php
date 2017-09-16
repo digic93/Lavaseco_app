@@ -71,14 +71,21 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $bills->getResult();
     }
 
-    public function dailySale($from, $to) {
+    public function dailySale($from, $to, $salePoint = 0) {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.createdAt BETWEEN :from AND :to')
-                ->andWhere('b.billState != 3')
-                ->orderBy("b.salePoint", "DESC")
-                ->setParameter('from', new \DateTime($from->format("Y-m-d")." 00:00:00"))
-                ->setParameter('to', new \DateTime($to->format("Y-m-d")." 23:59:59"))
+                ->andWhere('b.billState != 3');
+
+        if ($salePoint != 0) {
+            $bills = $bills->andWhere('b.salePoint = salePoint')
+                    ->setParameter('salePoint', $salePoint);
+        }
+
+        $bills = $bills->orderBy("b.salePoint", "DESC")
+                ->setParameter('from', new \DateTime($from->format("Y-m-d") . " 00:00:00"))
+                ->setParameter('to', new \DateTime($to->format("Y-m-d") . " 23:59:59"))
                 ->getQuery();
+
         return $bills->getResult();
     }
 

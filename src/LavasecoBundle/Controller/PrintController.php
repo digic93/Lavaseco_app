@@ -83,7 +83,7 @@ class PrintController extends Controller {
         foreach ($billDetails as $billDetail) {
 
             $billDetailsResult[] = [
-                "serviceName" => $billDetail->getService()->getServiceCategory()->getFullName(),
+                "serviceName" => $billDetail->getService()->getServiceCategory()->getNameToBill(),
                 "quantity" => $billDetail->getQuantity(),
                 "price" => $billDetail->getPrice(),
                 "observations" => $billDetail->getObservation(),
@@ -124,6 +124,7 @@ class PrintController extends Controller {
         return [
             "id" => $bill->getSalePoint()->getId() . "-" . $bill->getId(),
             "customerName" => ($customer == null)?"":$customer->getName(),
+            "customerPhone" => ($customer == null)?"":($customer->getPhoneNumber() == null)?"No Registra":$customer->getPhoneNumber(),
             "currentPoints" => ($customer == null)?0:$customer->getPoints(),
             "billState" => $bill->getBillState()->getName(),
             "paymentAgreement" => $bill->getPaymentAgreement()->getName(),
