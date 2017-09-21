@@ -174,10 +174,12 @@
                         loadingModal("Creando usuario en el sistema... Espere por favor.");
                     },
                     success: function (result) {
+                        closeLoadingModal();
                         openModalAlerErrorSuccess("Confirmación Creación de Usuarios", "El cliente " + result.name + " ha sido creado correctamente.");
                         clearForm();
                     },
                     error: function () {
+                        closeLoadingModal();
                         openModalAlerErrorSuccess("Confirmación Creación de Usuarios", "Error al registrar el usuario");
                     }
                 });
