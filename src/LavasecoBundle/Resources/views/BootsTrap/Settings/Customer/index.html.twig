@@ -29,25 +29,38 @@
         <table id="customersTable" class="display" cellspacing="0" width="100%">
             <thead>
                 <tr>
+                    <th>id</th>
                     <th>Nombre</th>
                     <th>Correo</th>
-                    <th>Telefono</th>
+                    <th>Teléfono</th>
                     <th>Direccion</th>
                     <th>puntos</th>
-                    <th>Utima Visita</th>
+                    <th>Última Visita</th>
                     <th>Fecha Creación</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for customer in customers %}
                     <tr>
+                        <td>{{ customer.id }}</td>
                         <td>{{ customer.name }}</td>
                         <td>{{ customer.email | default("No se Registro Correo") }}</td>
-                        <td>{{ customer.phoneNumber | default("No se Registro Telefono")  }}</td>
+                        <td>{{ customer.phoneNumber | default("No se Registro Teléfono")  }}</td>
                         <td>{{ customer.address | default("No se Registro Dirección")  }}</td>
                         <td>{{ customer.points }}</td>
                         <td>{{ customer.lastVisitString }}</td>
                         <td>{{ customer.createdAtString }}</td>
+                        <td>
+                            <button id="addBillItem" type="button" class="btn btn-info btn-xs" onclick="">
+                                Editar 
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            </button>
+                            <button id="addBillItem" type="button" class="btn btn-danger btn-xs" onclick="deleteClient({{ customer.id }});">
+                                Eliminar 
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -60,7 +73,71 @@
 
     <script>
         $(document).ready(function () {
-            $('#customersTable').DataTable();
+
+            var userTable = $('#customersTable').DataTable({
+                "order": [[0, "Asc"]]
+            });
+
+            $('#customersTable tbody').on('click', 'tr', function () {
+                var data = userTable.row(this).data();
+                $('#divEditClient').html("<button id=\"btnSaveClient\" type=\"submit\"  onclick=\"sendRequestEdit(" + data[0] + ");\" class=\"btn btn-primary btn-block\">Editar</button>");
+                showInfoClient(data);
+            });
         });
+
+        function showInfoClient(data) {
+            $('#client_name').val(data[1]);
+
+            if (data[2] === "No se Registro Correo")
+                $('#client_email').val("");
+            else
+                $('#client_email').val(data[2]);
+
+            if (data[3] === "No se Registro Telefono")
+                $('#client_phone_number').val("");
+            else
+                $('#client_phone_number').val(data[3]);
+
+            if (data[4] === "No se Registro Dirección")
+                $('#client_address').val("");
+            else
+                $('#client_address').val(data[4]);
+        }
+
+        function deleteClient(idClient) {
+            //Ajax para cambiar estado del cliente
+            {#$.ajax({
+                url: "{{ path('lavaseco_api_sale_service_category') }}/" + idClient,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    loadingModal("Editando la información del cliente... Espere por favor.");
+                },
+                success: function () {
+                    closeLoadingModal();
+                }
+            });#}
+        }
+
+        function editClient(idClient) {
+            $('#divEditClient').html("<button id=\"btnSaveClient\" type=\"submit\"  onclick=\"sendRequestEdit(" + idClient + ");\" class=\"btn btn-primary btn-block\">Editar</button>");
+        }
+
+        function sendRequestEdit(idClient) {
+            //Ajax para ediat cliente
+            {#$.ajax({
+                url: "{{ path('lavaseco_api_sale_service_category') }}/" + idClient,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    loadingModal("Editando la información del cliente... Espere por favor.");
+                },
+                success: function () {
+                    closeLoadingModal();
+                }
+            });#}
+        }
     </script>
 {% endblock %}

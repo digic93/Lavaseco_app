@@ -282,6 +282,7 @@
                     loadingModal("Registrando la entrega en el sistema... Espere por favor.");
                 },
                 success: function (result) {
+                    closeLoadingModal();
                     if (result.error !== undefined) {
                         openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entregar de la factura");
                     } else {

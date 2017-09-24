@@ -256,12 +256,14 @@
                         loadingModal("Registrando el Servicio/Categoría en el sistema... Espere por favor.");
                     },
                     success: function (result) {
+                        closeLoadingModal();
                         category["id"] = result.categoryId;
                         addCategoryAtTree(category);
                         openModalAlerErrorSuccess("Confirmación Servicios y Categorías", "El Servicio/Categoría ha sido creado correctamente.");
                         $('#categoriesModal').modal('hide');
                     },
                     error: function () {
+                        closeLoadingModal();
                         openModalAlerErrorSuccess("Confirmación Servicios y Categorías", "Error al cargar los servicios y categorías");
                     }
                 });

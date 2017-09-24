@@ -12,6 +12,10 @@
             cursor: pointer;
             background-color: rgba(255, 0, 0, 0.14);
         }
+        #billTable tbody .hoverService:hover {
+            cursor: pointer;
+            background-color: #A9F5A9;
+        }
 
     </style>
 {% endblock %}
@@ -104,7 +108,7 @@
                     </p>
                     <hr>
                     <p>
-                    <table style="width: 100%;">
+                    <table id="billTable" style="width: 100%;">
                         <thead>
                             <tr style="border-bottom-style: solid; border-bottom-width: 1px">
                                 <th class="text-center">Servicio</th>
@@ -216,7 +220,12 @@
                                         <select id="servicesSelectImput" onChange="changeImputsDescriptions(this);" class="form-control">
                                         </select>
                                     </div>
-                                </div>
+                                </div>                            
+                                <div id="imputsDescriptions"></div>        
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-horizontal">
 
                                 <div class="form-group">
                                     <label id="name_service" class="control-label col-md-5">Valor $</label>
@@ -245,48 +254,22 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
-                                <div id="imputsDescriptions">
-                                </div>
-                                <hr>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-horizontal">
                                 <p> <b> Observaciones </b> </p>
                                 <textarea id="observationService" required="required" class="form-control"></textarea>
                                 <hr>
-                                <button type="button" class="btn btn-primary btn-block" onclick="addService();">Agregar <i class="fa fa-plus" aria-hidden="true"></i></button>
-                            </div>
-                        </div>
-                        <!-- Table Service options -->
-                        <div class="col-md-8">
-                            <div class="table-responsive">
-                                <h5>Servicios a Facturar</h5>
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Tipo Servicio</th>
-                                            <th>Descripción</th>
-                                            <th class="text-right">Cantidad</th>
-                                            <th class="text-right">Precio</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                    <th class="text-center">Total</th>
-                                    <th class="text-center"></th>
-                                    <th class="text-right"></th>
-                                    <th id="summaryServicesTotal" class="text-right">$0</th>
-                                    <th class="text-center"></th>
-                                    <th class="text-center"></th>
-                                    </tfoot>
-                                    <tbody id="summaryDetail">
-                                    </tbody>
-                                </table>
+                                <button id="addBillItem" type="button" class="btn btn-primary btn-block" onclick="addService();">Agregar <i class="fa fa-plus" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" onclick="addServicesInBill();">Añadir Factura</button>
+                <div id="divButtonModal" class="modal-footer">
+                    <button id="editBillItem" type="button" class="btn btn-info" onclick="editItem();" style="display: none;">Guardar</button>
+                    <button id="deleteBillItem" type="button" class="btn btn-danger" onclick="deleteItem()" style="display: none;">Eliminar</button>
+                    <button id="cancelBillItem" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </div>
@@ -363,7 +346,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal Forma de Pago-->
     <div id="wayToPay" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
@@ -434,8 +417,9 @@
 
     <script>
         var factura = {};
-        var summaryServices = {};
-
+        var namecategories = '';
+        var idCategory = 0;
+        
         $(document).ready(function () {
             total = 0;
             userPoints = 0;
@@ -461,6 +445,15 @@
             $('#addServiceModal').on('hidden.bs.modal', function (e) {
                 clearServicesFormImput();
             });
+        });
+
+        //evento para editar detalles de la factura
+        $("#billTable tbody").on("click", ".hoverService", function () {
+            console.log($(this).attr('data-id'));
+            console.log($(this).attr('data-id-service'));
+            addServicesSelectImput($(this).attr('data-id-service'), 'edit');
+            loadBillItem($(this).attr('data-id'));
+            
         });
 
         $('#clientBill').typeahead({
@@ -521,14 +514,114 @@
             var subCategoryId = $(item).data("subcategoryId");
             var categories = $(item).data("subcategoryName");
             $("#titleModal").html("Agregar " + categories);
-            addServicesSelectImput(subCategoryId);
-            summaryServices["total"] = 0;
-            summaryServices["services"] = [];
-            summaryServices["categories"] = categories;
+            addServicesSelectImput(subCategoryId, 'add');
+            namecategories = categories;
+            idCategory = subCategoryId;
         }
 
-        function changeImputsDescriptions(selectServiceCategory) {
-            addImputsDescriptions($(selectServiceCategory).find(':selected').data('id'));
+        //Id category 2do nivel
+        function addServicesSelectImput(categoryId, option) {
+            $.ajax({
+                url: "{{ path('lavaseco_api_sale_service_category') }}/" + categoryId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    loadingModal("Cargando los Servicios Disponibles... Espere por favor.");
+                },
+                success: function (servicesCategories) {
+                    if (!servicesCategories.length) {
+                        openModalAlerErrorSuccess("Error", "Servicios no Disponibles");
+                        return;
+                    }
+                    $('#addServiceModal').modal('show');
+                    addImputsDescriptions(servicesCategories[0].id);
+                    $("#servicesSelectImput").empty();
+
+                    for (var key in servicesCategories) {
+                        var serviceCategory = servicesCategories[key];
+                        addOptionsServicesSelectImput(serviceCategory);
+                    }
+                    
+                    if (option === 'add') {
+                        document.getElementById('addBillItem').style.display = 'block';
+                        document.getElementById('cancelBillItem').style.display = '';   
+                        document.getElementById('editBillItem').style.display = 'none';
+                        document.getElementById('deleteBillItem').style.display = 'none';
+                    }
+                    else if (option === 'edit'){
+                        document.getElementById('editBillItem').style.display = '';
+                        document.getElementById('deleteBillItem').style.display = '';
+                        document.getElementById('addBillItem').style.display = 'none';
+                        document.getElementById('cancelBillItem').style.display = 'none';     
+                    }
+                    closeLoadingModal();
+                }
+            });
+        }
+
+        function addOptionsServicesSelectImput(service) {
+            var html = "<option value=\"" + service.name + "\" data-id=\"" + service.id + "\" data-name=\"" + service.name + "\">" + service.name + "</option>";
+            $("#servicesSelectImput").append(html);
+        }
+
+        function addService() {
+            var serviceDetail = {};
+            var price = parseInt($("#priceServiceImput").val());
+            var quantity = parseInt($("#quantity_service").val());
+            
+            serviceDetail["service"] = $("#servicesSelectImput").find(':selected').data('name');
+            serviceDetail["price"] = price;
+            serviceDetail["quantity"] = quantity;
+            serviceDetail["total"] = price * quantity;
+            serviceDetail["descriptors"] = getDescriptors();
+            serviceDetail["observations"] = $("#observationService").val();
+            serviceDetail["id"] = factura["services"].length;
+            serviceDetail["categories"] = namecategories;
+            serviceDetail["idCategory"] = idCategory;
+            
+            factura["services"].push(serviceDetail);
+            
+            console.log(factura["services"]);
+            console.log(serviceDetail);
+            
+            addToBillSummaryServices(serviceDetail);
+            updateInvoceTotals(serviceDetail.total);
+
+            addImputsDescriptions($("#servicesSelectImput").find(':selected').data('id'));
+            $("#quantity_service").val(1);
+            $("#observationService").val("");
+            $("#imputsDescriptions").empty();
+            serviceDetail = {};
+        }
+
+        function addToBillSummaryServices(serviceDetail) {
+            var html =
+                    "<tr style=\"border-bottom-style: solid; border-bottom-width: 2px\">\
+                        <td colspan=\"3\">" + serviceDetail.categories + "</td>\
+                    </tr>";
+            html +=
+                    "<tr class=\"hoverService\" data-id=\"" + serviceDetail.id + "\" data-id-service=\"" + serviceDetail.idCategory + "\">\
+                            <td>" + serviceDetail.service + "</td>\
+                            <td class=\"text-right\">" + serviceDetail.quantity + "</td>\
+                            <td class=\"text-right\">$" + $.number(serviceDetail.total) + "</td>\
+                        </tr>\
+                        <tr>\
+                            <td colspan=\"3\">" + getDescriptionsToString(serviceDetail.descriptors) + "</td>\
+                        </tr>\
+                        <tr>\
+                            <td colspan=\"3\"> <i> Observaciones : " + serviceDetail.observations + "</i></td>\
+                        </tr>";
+            $("#billDetail").append(html);
+        }
+
+        function updateInvoceTotals(currentTotal) {
+            factura.total = parseInt(currentTotal) + parseInt(factura.total);
+            factura.subtotal = factura.total;
+            total = factura.total;
+
+            $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
+            $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
         }
 
         function addImputsDescriptions(serviceCategoryId) {
@@ -561,55 +654,8 @@
             $("#imputsDescriptions").append(html);
         }
 
-        //Id category 2do nivel
-        function addServicesSelectImput(categoryId) {
-            $.ajax({
-                url: "{{ path('lavaseco_api_sale_service_category') }}/" + categoryId,
-                method: "GET",
-                contentType: 'application/json',
-                dataType: 'json',
-                success: function (servicesCategories) {
-                    if (!servicesCategories.length) {
-                        openModalAlerErrorSuccess("Error", "Servicios no Disponibles");
-                        return;
-                    }
-
-                    $('#addServiceModal').modal('show');
-                    addImputsDescriptions(servicesCategories[0].id);
-                    $("#servicesSelectImput").empty();
-                    for (var key in servicesCategories) {
-                        var serviceCategory = servicesCategories[key];
-                        addOptionsServicesSelectImput(serviceCategory);
-                    }
-                }
-            });
-        }
-
-        function addOptionsServicesSelectImput(service) {
-            var html = "<option value=\"" + service.name + "\" data-id=\"" + service.id + "\" data-name=\"" + service.name + "\">" + service.name + "</option>";
-            $("#servicesSelectImput").append(html);
-        }
-
-        function addService() {
-            var serviceDetail = {};
-            var price = parseInt($("#priceServiceImput").val());
-            var quantity = parseInt($("#quantity_service").val());
-            serviceDetail["id"] = $("#servicesSelectImput").find(':selected').data('id');
-            serviceDetail["service"] = $("#servicesSelectImput").find(':selected').data('name');
-            serviceDetail["price"] = price;
-            serviceDetail["quantity"] = quantity;
-            serviceDetail["total"] = $.number(price * quantity);
-            serviceDetail["descriptors"] = getDescriptors();
-            serviceDetail["observations"] = $("#observationService").val();
-            serviceDetail["idSummaryService"] = summaryServices["services"].length;
-            summaryServices.total += price * quantity;
-            summaryServices["services"].push(serviceDetail);
-            addRowTable(serviceDetail);
-            $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
-            $("#quantity_service").val(1);
-            $("#observationService").val("");
-            $("#imputsDescriptions").empty();
-            addImputsDescriptions(serviceDetail.id);
+        function changeImputsDescriptions(selectServiceCategory) {
+            addImputsDescriptions($(selectServiceCategory).find(':selected').data('id'));
         }
 
         function getDescriptors() {
@@ -626,53 +672,54 @@
             return descriptors;
         }
 
-        function addRowTable(summaryService) {
-            $("#summaryDetail").append(
-                    "<tr class=\"detail_item\" data-service-id=\"" + summaryService.id + "\">\
-                        <td>" + summaryService.service + "</td>\
-                        <td>" + getDescriptionsToString(summaryService.descriptors) + "<p>" + summaryService.observations + "</td>\
-                        <td class=\"text-right\">" + summaryService.quantity + "</td>\
-                        <td class=\"text-right\">$" + summaryService.total + "</td>\
-                        <td>\
-                            <div class=\"btn-group btn-group-xs\" role=\"group\">\
-                                <button type='button' onclick=\"editServiceSummary(" + summaryService.idSummaryService + ");\" class='btn btn-primary'>Editar</button>\
-                                <button type='button' onclick=\"deleteServiceSummary(" + summaryService.idSummaryService + ");\" class='btn btn-danger'>Eliminar</button>\
-                            </div>\
-                        </td>\
-                    </tr>");
-        }
+        function loadBillItem(idService) {
+            for (var i in factura.services) {             
+                if (factura.services[i].id === parseInt(idService)) {
 
-        function editServiceSummary(idService) {
-            for (var i in summaryServices.services) {
-                if (summaryServices.services[i].idSummaryService === idService) {
-                    $("#priceServiceImput").val(summaryServices.services[i].price);
-                    $("#quantity_service").val(summaryServices.services[i].quantity);
-                    $("#observationService").val(summaryServices.services[i].observations);
-                    $("#servicesSelectImput").val(summaryServices.services[i].service);
-                    for (var j in summaryServices.services[i].descriptors) {
-                        var index = summaryServices.services[i].descriptors.indexOf(summaryServices.services[i].descriptors[j]);
-                        $("#description_" + index).val(summaryServices.services[i].descriptors[j].name);
+                    $("#priceServiceImput").val(factura.services[i].price);
+                    $("#quantity_service").val(factura.services[i].quantity);
+                    $("#observationService").val(factura.services[i].observations);
+                    $("#servicesSelectImput").val(factura.services[i].service);
+                    for (var j in factura.services[i].descriptors) {
+                        var index = factura.services[i].descriptors.indexOf(factura.services[i].descriptors[j]);
+                        $("#description_" + index).val(factura.services[i].descriptors[j].name);
                     }
 
-                    var indice = summaryServices.services.indexOf(summaryServices.services[i]); // obtenemos el indice
-                    deleteServiceSummary(indice);
+                    var index = factura.services.indexOf(factura.services[i]); // obtenemos el indice
+                    deleteInvoiceItem(index);
+                    
+                    return ;
                 }
             }
         }
+         function deleteInvoiceItem(idService) {
+            console.log("el valor " + factura.services[idService].total);
+            console.log("Total "+ factura.total );
+            
+            factura.total = factura.subtotal = parseInt(factura.total) - parseInt(factura.services[idService].total);
+            factura.services.splice(idService, 1); // 1 es la cantidad de elemento a eliminar
 
-        function deleteServiceSummary(idService) {
-            summaryServices.total -= parseInt(summaryServices.services[idService].total.replace(",", ""));
-            summaryServices.services.splice(idService, 1); // 1 es la cantidad de elemento a eliminar
-
-            $("#summaryDetail").empty();
-            $("#summaryServicesTotal").html("$" + $.number(summaryServices.total));
-
-            if (summaryServices.services.length > 0) {
-                for (i in summaryServices.services) {
-                    addRowTable(summaryServices.services[i]);
+            $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
+            $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
+            $("#billDetail").empty();
+            
+            if (factura.services.length > 0) {
+                for (var i in factura.services) {
+                    addToBillSummaryServices(factura.services[i]);
                 }
             }
+            
         }
+        function editItem() {
+            addService();
+            $('#addServiceModal').modal('hide');  
+        }
+        
+        function deleteItem() {
+            $('#addServiceModal').modal('hide');  
+        }
+
+       
 
         function getDescriptionsToString(descriptors) {
             var descriptorsResutl = [];
@@ -697,8 +744,7 @@
         }
 
         function clearServicesFormImput() {
-            summaryServices.total = 0;
-            summaryServices["services"] = [];
+            serviceDetail = {};
             $("#summaryDetail").empty();
             $("#servicesSelectImput").empty();
             $("#imputsDescriptions").empty();
@@ -706,46 +752,7 @@
             $("#summaryServicesTotal").html("$0");
             $("#observationService").val("");
         }
-
-        function addToBillSummaryServices() {
-            var html =
-                    "<tr style=\"border-bottom-style: solid; border-bottom-width: 2px\">\
-                        <td colspan=\"3\">" + summaryServices.categories + "</td>\
-                    </tr>";
-            for (var i in summaryServices.services) {
-                html +=
-                        "<tr>\
-                            <td>" + summaryServices.services[i].service + "</td>\
-                            <td class=\"text-right\">" + summaryServices.services[i].quantity + "</td>\
-                            <td class=\"text-right\">$" + $.number(summaryServices.services[i].total) + "</td>\
-                        </tr>\
-                        <tr>\
-                            <td colspan=\"3\">" + getDescriptionsToString(summaryServices.services[i].descriptors) + "</td>\
-                        </tr>\
-                        <tr>\
-                            <td colspan=\"3\"> <i> Observaciones : " + summaryServices.services[i].observations + "</i></td>\
-                        </tr>";
-            }
-            $("#billDetail").append(html);
-        }
-
-        function addServicesInBill() {
-            if (summaryServices.total !== 0) {
-                factura.total += summaryServices.total;
-                factura.subtotal = factura.total;
-                for (i in summaryServices.services)
-                    factura["services"].push(summaryServices.services[i]);
-
-                addToBillSummaryServices();
-                $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
-                $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
-                $('#addServiceModal').modal('hide');
-            } else {
-                openModalAlerErrorSuccess("Error", "Ingrese algún servicio para añadir a la factura");
-            }
-            total = factura.total;
-        }
-
+        
         function displayResult(item) {
             var html = "<p> <strong> Nombre Cliente: </strong>" + item.text + " <br><strong> </p>";
             $("#infoClientBill").html(html);
@@ -775,7 +782,7 @@
                     if (user.phoneNumber !== null) {
                         html += "<strong> numero: </strong>" + user.phoneNumber + "<br>";
                     }
-                    userPoints =  user.points;
+                    userPoints = user.points;
                     html += "<strong> Puntos Acumulados: </strong><label id =\"currentPointUser\">" + user.points + "</label><br></p>";
                     $("#infoClientBill").empty();
                     $("#infoClientBill").html(html);
@@ -820,6 +827,7 @@
                     loadingModal("Registrando la factura en el sistema... Espere por favor.");
                 },
                 success: function (result) {
+                    closeLoadingModal();
                     $('#wayToPay').modal('hide');
                     openModalAlerErrorSuccess("Confirmación Factura", "Facturado con éxito",
                             function () {
@@ -828,6 +836,7 @@
                     );
                 },
                 error: function () {
+                    closeLoadingModal();
                     openModalAlerErrorSuccess("Error al Factura", "Error al registrar la factura");
                 }
             });
@@ -943,18 +952,18 @@
                 openModalAlerErrorSuccess("Error", "No es posible realizar esta acción el cliente no posee puntos para redimir");
             } else {
                 var currentPoints = parseInt($("#currentPointUser").text());
-                
-                if( currentPoints >= factura.total){
+
+                if (currentPoints >= factura.total) {
                     $("#redeemPoints").val(total);
-                }else{
+                } else {
                     $("#redeemPoints").val(currentPoints);
                 }
-                
+
                 $("#modalRedeemPoints").modal('show');
                 $("#totalRedeemPoints").val(factura.total - $("#redeemPoints").val());
                 $("#subtotalRedeemPoints").val(factura.subtotal);
                 //abre ventana modal
-                $("#modalRedeemPoints").modal('show'); 
+                $("#modalRedeemPoints").modal('show');
             }
         }
 
@@ -974,7 +983,7 @@
                 $("#divRedeemPoints").addClass("has-error");
                 return false;
             } else {
-                var currentTotal = factura.total - redeemedPoints;   
+                var currentTotal = factura.total - redeemedPoints;
                 $("#totalRedeemPoints").val(currentTotal);
                 $("#divRedeemPoints").addClass("has-success");
                 $("#divRedeemPoints").removeClass("has-error");
@@ -999,9 +1008,7 @@
                 $("#currentPointUser").text(userPoints);
                 openModalAlerErrorSuccess("Error", "La cantidad de puntos redimibles no puede superar el total de la factura y/o la cantidad de puntos que tiene el cliente");
             }
-
-        };
-
+        }
     </script>
 {% endblock %}
 

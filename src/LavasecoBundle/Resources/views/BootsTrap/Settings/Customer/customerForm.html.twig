@@ -60,7 +60,10 @@
                                 </div>
                             </div>
             -->
-            <button type="submit"  onclick="saveUser();" class="btn btn-success btn-block"/>Guardar</button>
+            <div id="divSaveClient" class="form-group">
+                <button id="btnSaveClient" type="submit"  onclick="saveUser();" class="btn btn-success btn-block"/>Guardar</button>
+            </div>
+            <div id="divEditClient" class="form-group"></div>
         </div>
     </div>
 </div>
@@ -174,10 +177,12 @@
                         loadingModal("Creando usuario en el sistema... Espere por favor.");
                     },
                     success: function (result) {
+                        closeLoadingModal();
                         openModalAlerErrorSuccess("Confirmación Creación de Usuarios", "El cliente " + result.name + " ha sido creado correctamente.");
                         clearForm();
                     },
                     error: function () {
+                        closeLoadingModal();
                         openModalAlerErrorSuccess("Confirmación Creación de Usuarios", "Error al registrar el usuario");
                     }
                 });

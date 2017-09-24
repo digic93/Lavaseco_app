@@ -235,10 +235,12 @@
                     loadingModal("Guardando los cambios en el sistema... Espere por favor.");
                 },
                 success: function (result) {
+                    closeLoadingModal();
                     location.reload();
                     openModalAlerErrorSuccess("Confirmación de Cambios", "Los cambios han sido aplicados con éxito.");
                 },
                 error: function () {
+                    closeLoadingModal();
                     openModalAlerErrorSuccess("Confirmación de Cambios", "Error al guardar los cambios realizados, intente nuevamente.");
                 }
             });
