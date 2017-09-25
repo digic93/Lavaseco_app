@@ -10,4 +10,26 @@ namespace LavasecoBundle\Repository;
  */
 class ServiceCategoryStateRepository extends \Doctrine\ORM\EntityRepository
 {
+    
+    function getAllDescriptorsByCategories(){
+        $result = array();
+        $serviceVategoryStates = $this->getAll();
+
+        foreach ( $serviceVategoryStates  as $serviceVategoryStates ){
+            $serviceVategoryStates = new \LavasecoBundle\Entity\ServiceCategoryState();
+            
+            $descriptors = array();
+            $serviceId = $serviceVategoryStates->getService()->getId();
+            $descriptorName = $serviceVategoryStates->getCategoryStateObject()->getName();
+            
+            foreach ( $serviceVategoryStates->getCategoryStateObject()->getStateObjectDescriptions() as $descriptions ){
+                $descriptors [] = [$descriptions->getId(), $descriptions->getName()];
+            }
+            
+            $result [] =  [$serviceId ,$descriptorName, $descriptors];
+         } 
+         
+        return $result;
+    }
+    
 }

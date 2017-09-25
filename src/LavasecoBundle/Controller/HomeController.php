@@ -23,7 +23,7 @@ class HomeController extends Controller {
             return $this->render($configuration->getViewTheme() . ':Home/index.html.twig');
 
         }
-        return $this->render($configuration->getViewTheme() . ':index.html.twig');
+        return $this->render($configuration->getViewTheme() . ':WebPage/index.html.twig');
     }
 
     private function getSalePointByActive($active) {

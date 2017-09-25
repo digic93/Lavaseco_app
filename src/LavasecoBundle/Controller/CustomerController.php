@@ -50,18 +50,27 @@ class CustomerController extends Controller {
 
     public function registerAction(Request $request) {
         $em = $this->get('doctrine')->getManager();
-
-        $customer = new Customer();
+        $id = $request->request->get('id');
+        
+        
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $customerRepository = $doctrineManager->getRepository("LavasecoBundle:Customer");
+        
+        $customer = $customerRepository->find($id);
+        
+        $customer = (isset($customer))?$customer:new Customer();
+        
+        
         $customer->setName($request->request->get('name'));
         $customer->setEmail($request->request->get('email'));
         $customer->setAddress($request->request->get('address'));
-        $customer->setPoints($this->getStartPoints());
+        if($id  == "0")$customer->setPoints($this->getStartPoints());
         $customer->setPhoneNumber($request->request->get('phoneNumber'));
 
         $em->persist($customer);
         $em->flush();
 
-        if ($customer->getEmail()) {
+        if ($customer->getEmail() && $id == "0") {
             $configuration = $this->get('lavaseco.app_configuration');
             $message = (new \Swift_Message('Bienvenido al Lavaseco Modelo'))
                     ->setFrom(['noreply@lavasecomodelo.com' => 'Lavaseco Modelo'])

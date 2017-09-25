@@ -11,17 +11,17 @@
     <title>Lavaseco Modelo</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset("webPage/vendor/bootstrap/css/bootstrap.min.css") }}" rel="stylesheet">
 
     <!-- Custom fonts for this template -->
-    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="{{ asset("webPage/vendor/font-awesome/css/font-awesome.min.css") }}" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 
     <!-- Custom styles for this template -->
-    <link href="css/agency.min.css" rel="stylesheet">
+    <link href="{{ asset("webPage/css/agency.min.css") }}" rel="stylesheet">
 	
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -48,6 +48,9 @@
             </li>
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#contact">Contáctenos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="{{ path('fos_user_security_login') }}">Login</a>
             </li>
           </ul>
         </div>
@@ -82,7 +85,7 @@
                   <i class="fa fa-plus fa-3x"></i>
                 </div>
               </div>
-              <img class="img-fluid" src="webPage/img/portfolio/01_sastreria.jpg" alt="">
+              <img class="img-fluid" src="{{ asset("/webPage/img/portfolio/01_sastreria.jpg") }}" alt="">
             </a>
             <div class="portfolio-caption">
               <h4>Sastrería</h4>
@@ -97,7 +100,7 @@
                   <i class="fa fa-plus fa-3x"></i>
                 </div>
               </div>
-              <img class="img-fluid" src="webPage/img/portfolio/01_lavado.jpg" alt="">
+              <img class="img-fluid" src="{{ asset("/webPage/img/portfolio/01_lavado.jpg") }}" alt="">
             </a>
             <div class="portfolio-caption">
               <h4>Lavado</h4>
@@ -112,7 +115,7 @@
                   <i class="fa fa-plus fa-3x"></i>
                 </div>
               </div>
-              <img class="img-fluid" src="webPage/img/portfolio/01_planchado.jpg" alt="">
+              <img class="img-fluid" src="{{ asset("/webPage/img/portfolio/01_planchado.jpg") }}" alt="">
             </a>
             <div class="portfolio-caption">
               <h4>Planchado</h4>
@@ -127,7 +130,7 @@
                   <i class="fa fa-plus fa-3x"></i>
                 </div>
               </div>
-              <img class="img-fluid" src="webPage/img/portfolio/01_tintoreria.jpg" alt="">
+              <img class="img-fluid" src="{{ asset("/webPage/img/portfolio/01_tintoreria.jpg2") }}" alt="">
             </a>
             <div class="portfolio-caption">
               <h4>Tintorería</h4>
@@ -184,7 +187,7 @@
             <ul class="timeline">
               <li>
                 <div class="timeline-image">
-                  <img class="rounded-circle img-fluid" src="webPage/img/about/1.jpg" alt="">
+                  <img class="rounded-circle img-fluid" src="{{ asset("/webPage/img/about/1.jpg") }}" alt="">
                 </div>
                 <div class="timeline-panel">
                   <div class="timeline-heading">
@@ -198,7 +201,7 @@
               </li>
               <li class="timeline-inverted">
                 <div class="timeline-image">
-                  <img class="rounded-circle img-fluid" src="webPage/img/about/2.jpg" alt="">
+                  <img class="rounded-circle img-fluid" src="{{ asset("/webPage/img/about/2.jpg") }}" alt="">
                 </div>
                 <div class="timeline-panel">
                   <div class="timeline-heading">
@@ -212,7 +215,7 @@
               </li>
               <li>
                 <div class="timeline-image">
-                  <img class="rounded-circle img-fluid" src="webPage/img/about/3.jpg" alt="">
+                  <img class="rounded-circle img-fluid" src="{{ asset("/webPage/img/about/3.jpg") }}" alt="">
                 </div>
                 <div class="timeline-panel">
                   <div class="timeline-heading">
@@ -226,7 +229,7 @@
               </li>
               <li class="timeline-inverted">
                 <div class="timeline-image">
-                  <img class="rounded-circle img-fluid" src="webPage/img/about/4.jpg" alt="">
+                  <img class="rounded-circle img-fluid" src="{{ asset("/webPage/img/about/4.jpg") }}" alt="">
                 </div>
                 <div class="timeline-panel">
                   <div class="timeline-heading">
@@ -350,7 +353,7 @@
                   <!-- Project Details Go Here -->
                   <h2>Sastrería</h2>
                   <p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
-                  <img class="img-fluid d-block mx-auto" src="webPage/img/portfolio/01_sastreria.jpg" alt="">
+                  <img class="img-fluid d-block mx-auto" src="{{ asset("/webPage/img/portfolio/01_sastreria.jpg") }}" alt="">
                   <p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
                   <button class="btn btn-primary" data-dismiss="modal" type="button">
                     <i class="fa fa-times"></i>
@@ -379,7 +382,7 @@
                   <!-- Project Details Go Here -->
                   <h2>Lavado</h2>
                   <p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
-                  <img class="img-fluid d-block mx-auto" src="webPage/img/portfolio/01_lavado.jpg" alt="">
+                  <img class="img-fluid d-block mx-auto" src="{{ asset("/webPage/img/portfolio/01_lavado.jpg") }}" alt="">
                   <p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
                   <button class="btn btn-primary" data-dismiss="modal" type="button">
                     <i class="fa fa-times"></i>
@@ -408,7 +411,7 @@
                   <!-- Project Details Go Here -->
                   <h2>Planchado</h2>
                   <p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
-                  <img class="img-fluid d-block mx-auto" src="webPage/img/portfolio/01_planchado.jpg" alt="">
+                  <img class="img-fluid d-block mx-auto" src="{{ asset("/webPage/img/portfolio/01_planchado.jpg") }}" alt="">
                   <p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
                   <button class="btn btn-primary" data-dismiss="modal" type="button">
                     <i class="fa fa-times"></i>
@@ -437,7 +440,7 @@
                   <!-- Project Details Go Here -->
                   <h2>Tintorería</h2>
                   <p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
-                  <img class="img-fluid d-block mx-auto" src="webPage/img/portfolio/01_tintoreria.jpg" alt="">
+                  <img class="img-fluid d-block mx-auto" src="{{ asset("/webPage/img/portfolio/01_tintoreria.jpg") }}" alt="">
                   <p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
                   <button class="btn btn-primary" data-dismiss="modal" type="button">
                     <i class="fa fa-times"></i>
@@ -451,19 +454,19 @@
     </div>
 
     <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/popper/popper.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ asset("/webPage/vendor/jquery/jquery.min.js") }}"></script>
+    <script src="{{ asset("/webPage/vendor/popper/popper.min.js") }}"></script>
+    <script src="{{ asset("/webPage/vendor/bootstrap/js/bootstrap.min.js") }}"></script>
 
     <!-- Plugin JavaScript -->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="{{ asset("/webPage/vendor/jquery-easing/jquery.easing.min.js") }}"></script>
 
     <!-- Contact form JavaScript -->
-    <script src="js/jqBootstrapValidation.js"></script>
-    <script src="js/contact_me.js"></script>
+    <script src="{{ asset("/webPage/js/jqBootstrapValidation.js") }}"></script>
+    <script src="{{ asset("/webPage/js/contact_me.js") }}"></script>
 
     <!-- Custom scripts for this template -->
-    <script src="js/agency.min.js"></script>
+    <script src="{{ asset("/webPage/js/agency.min.js") }}"></script>
 
   </body>
 

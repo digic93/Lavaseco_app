@@ -42,6 +42,8 @@
                 </div>
             </div>
 
+            <input  id="client_id" type="hidden"  value="0"/>
+
             <!--pasar al formulario de confirmacion
                             <div class="form-group">
                                 <p>Contraseña<span class="req">*</span></p>
@@ -155,6 +157,7 @@
         function saveUser() {
             if (validName) {
                 var user = {
+                    "id": $("#client_id").val(),
                     "name": $("#client_name").val()
                 };
                 if ($("#client_email").val() !== "") {
@@ -192,6 +195,7 @@
         }
 
         function clearForm() {
+            $("#client_id").val(0);
             $("#client_email").val('');
             $("#client_name").val('');
             $("#client_address").val('');

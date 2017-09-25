@@ -56,10 +56,10 @@
                                 Editar 
                                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                             </button>
-                            <button id="addBillItem" type="button" class="btn btn-danger btn-xs" onclick="deleteClient({{ customer.id }});">
+{#                            <button id="addBillItem" type="button" class="btn btn-danger btn-xs" onclick="deleteClient({{ customer.id }});">
                                 Eliminar 
                                 <i class="fa fa-times" aria-hidden="true"></i>
-                            </button>
+                            </button>#}
                         </td>
                     </tr>
                 {% endfor %}
@@ -80,12 +80,13 @@
 
             $('#customersTable tbody').on('click', 'tr', function () {
                 var data = userTable.row(this).data();
-                $('#divEditClient').html("<button id=\"btnSaveClient\" type=\"submit\"  onclick=\"sendRequestEdit(" + data[0] + ");\" class=\"btn btn-primary btn-block\">Editar</button>");
+               // $('#divEditClient').html("<button id=\"btnSaveClient\" type=\"submit\"  onclick=\"sendRequestEdit(" + data[0] + ");\" class=\"btn btn-primary btn-block\">Editar</button>");
                 showInfoClient(data);
             });
         });
 
         function showInfoClient(data) {
+            $('#client_id').val(data[0]);
             $('#client_name').val(data[1]);
 
             if (data[2] === "No se Registro Correo")
@@ -126,7 +127,7 @@
 
         function sendRequestEdit(idClient) {
             //Ajax para ediat cliente
-            {#$.ajax({
+            $.ajax({
                 url: "{{ path('lavaseco_api_sale_service_category') }}/" + idClient,
                 method: "GET",
                 contentType: 'application/json',
@@ -137,7 +138,7 @@
                 success: function () {
                     closeLoadingModal();
                 }
-            });#}
+            });
         }
     </script>
 {% endblock %}
