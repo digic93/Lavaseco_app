@@ -1,18 +1,335 @@
 {% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+    <style>
+        {#li{
+            margin-bottom: 15px;
+        }#}
+    </style>
 {% endblock %} 
 
-{% block body %} 
-    Reporte ventas por punto de venta
-    <br>
-    Motrar filtros (Fechas inicio, fecha final, categoria)
-    <br>
-    motrar Grafica (Punto de venta vs Total)
-    <br>
-    Tabla con los datos del reporte
+{% block body %}
+    <div class="container">
+        <div class="row ">
+            <div class="col-sm-3">
+                <div class="sidebar-nav">
+                    <div class="navbar navbar-default" role="navigation">
+                        <div class="navbar-header">
+                            <button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <p class="navbar-brand">Filtro de Búsqueda</p>
+                        </div>
+                        <div class="navbar-collapse collapse sidebar-navbar-collapse" >
+                            <ul class="nav navbar-nav" id="side-menu">
+
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Seleccione el Punto de Venta:</label>
+                                        <select class="form-control" id="salePointReport">	
+                                            <option value="0">Todos</option>
+                                            {% for salePoint in salePoints %}
+                                                <option value="{{ salePoint.id }}"> {{ salePoint.name }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Fecha Inicial:</label>
+                                        <div class='input-group date' >
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                            <input type='date' class="form-control" id='startDate'/>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="form-group">
+                                        <label for="sel1">Fecha Final:</label>
+                                        <div class='input-group date' >
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                            <input type='date' class="form-control" id='finalDate'/>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-success btn-block" onclick="generateReport()">
+                                            Generar Informe
+                                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div><!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Venta diaria</h1>
+                    </div>
+                </div>
+
+                <!-- Icon Cards -->
+                <div class="row">
+                    <div class="col-sm-4 col-xs-4">
+                        <div class="core-box">
+                            <div class="heading"> 
+                                <h3>Venta Total</h3>
+                            </div>
+                            <div class="content">
+                                <p><i class="fa fa-usd "></i> <span id="totalSales" style="font-size: 20px;">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-xs-4">
+                        
+                        <div class="core-box">
+                            <div class="heading">
+                                <h3>Total Cancelado</h3>
+                            </div>
+                            <div class="content">
+                                <p><i class="fa fa-usd "></i> <span id="totalCanceled" style="font-size: 20px;">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-xs-4">
+                        <div class="core-box">
+                            <div class="heading">
+                                <h3>Total Pendiente</h3>
+                            </div>
+                            <div class="content">
+                                <p><i class="fa fa-usd "></i> <span id="totalPending" style="font-size: 20px;">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <!-- Area Chart-->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-bar-chart-o fa-fw"></i> Gráfica
+                            </div>
+                            <div class="panel-body">
+                                <div id="container">
+                                    <div id="highchart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Puntos de  Venta-->
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-file-text-o" aria-hidden="true"></i> Puntos de Venta
+                            </div>
+                            <div class="panel-body">
+                                {% for salePoint in salePoints %}
+                                    <div class="list-group" id="salesPoints">
+                                        <a href="#" class="list-group-item" data-id="{{ salePoint.id }}" onclick="selectSalePoint(this);">
+                                            <i class="fa fa-laptop" aria-hidden="true"></i> {{ salePoint.name }}
+                                            <span class="pull-right text-muted small"><em>{{ salePoint.id }}</em>
+                                            </span>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table id="reportDailySale" class="display" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Factura</th>
+                                <th>Estado</th>
+                                <th>Total</th>
+                                <th>Pago</th>
+                                <th>Vendedor</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bill in bills %}
+                                <tr>
+                                    <td>{{ bill.salePoint.id }}-{{ bill.id }}</td>
+                                    <td>{{ bill.billState.name }}</td>
+                                    <td>${{ bill.total }}</td>
+                                    <td>{{ bill.PaymentAgreement.name }}</td>
+                                    <td>{{ bill.sellerUser.name }}</td>
+                                    <td>{{ bill.createdatString }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>                                
+            </div>                                
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
-{% endblock %}
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/highcharts/js/highcharts.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/highcharts/js/modules/exporting.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
 
+    <script>
+        var salePoint = 0;
+        var startDate = "";
+        var finalDate = "";
+
+        Date.prototype.toDateInputValue = (function () {
+            var local = new Date(this);
+            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+            return local.toJSON().slice(0, 10);
+        });
+
+        $(document).ready(function () {
+            document.getElementById("startDate").value = new Date().toDateInputValue();
+            document.getElementById("finalDate").value = new Date().toDateInputValue();
+
+            var table = $("#reportDailySale").DataTable();
+            //peticion al servidor
+            loadingData(salePoint, startDate, finalDate);
+        });
+
+        function loadingData(salePoint, startDate, finalDate) {        
+            $.ajax({
+                url: "{{ path('lavaseco_api_daily_sale') }}",
+                method: "POST",
+                dataType: 'json',
+                data: {
+                    "salePoint": salePoint,
+                    "startDate": startDate,
+                    "finalDate": finalDate
+                },
+                success: function (result) {
+                    calculateTotals(result);
+                    drawReport(result);
+                }
+            });
+        }
+
+        function calculateTotals(result) {
+            var totalPendiente = 0;
+            var totalCancelado = 0;
+
+            for (var i in result.series[0].data)
+                totalCancelado += result.series[0].data[i];
+            for (var i in result.series[1].data)
+                totalPendiente += result.series[1].data[i];
+            
+            $("#totalSales").text($.number(totalCancelado + totalPendiente));
+            $("#totalCanceled").text($.number(totalCancelado));
+            $("#totalPending").text($.number(totalPendiente));
+
+        }
+
+        function selectSalePoint(buttonSelected) {
+            var salePointID = $(buttonSelected).data("id");
+            $("#salePointReport").val(salePointID);
+            generateReport();
+        }
+
+        function generateReport() {
+            startDate = document.getElementById("startDate").value;
+            finalDate = document.getElementById("finalDate").value;
+            salePoint = $("#salePointReport").val();
+
+            var currentDate = new Date().toDateInputValue();
+
+            if (startDate === '') {
+                openModalAlerErrorSuccess('Error', 'Verifique el campo de Fecha Inicial.');
+            } else if (finalDate === '') {
+                openModalAlerErrorSuccess('Error', 'Verifique el campo de Fecha Final.');
+            } else if ((Date.parse(startDate)) > (Date.parse(finalDate))) {
+                openModalAlerErrorSuccess('Error', 'La fecha inicial no puede ser mayor que la fecha final');
+            } else if (Date.parse(startDate) > Date.parse(currentDate)) {
+                openModalAlerErrorSuccess('Error', 'La fecha inicial no puede ser mayor que actual');
+            } else if (Date.parse(finalDate) > Date.parse(currentDate)) {
+                openModalAlerErrorSuccess('Error', 'La fecha final no puede ser mayor que actual');
+            } else {
+                alert("fecha inicial " + startDate + " Fecha final " + finalDate + " Punto de Venta " + salePoint);
+
+                //ajax 
+                //fecha final, fecha inicial y punto de venta
+                var result = {
+                    "categories": ['Lunes, 28/08/2017', 'Martes, 29/08/2017',
+                        'Miercoles, 30/08/2017', 'Jueves, 31/08/2017', 'Viernes, 01/09/2017',
+                        'Sábado, 02/09/2017', 'Domingo, 03/09/2017', 'Lunes, 04/09/2017'],
+                    "series": [
+                        {
+                            name: 'Cancelado',
+                            data: [5000, 32000, 2500, 70000, 20000, 90750, 53200, 24300]
+                        },
+                        {
+                            name: 'Pendiente',
+                            data: [2200, 3400, 2432, 29700, 10000, 30, 0, 80]
+                        }
+                    ]
+                };
+
+                calculateTotals(result);
+                //dibuja la grafica
+                drawReport(result);
+            }
+        }
+
+        function drawReport(result) {
+
+            Highcharts.chart('highchart', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Venta Diaria'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Ventas'
+                    }, labels: {
+                        formatter: function () {
+                            return "$" + $.number(this.value);
+                        }
+                    }
+                },
+                xAxis: {
+                    title: {
+                        text: 'Días de evaluación'
+                    },
+                    categories: result.categories
+                },
+                credits: {
+                    enabled: false
+                },
+                tooltip: {
+                    formatter: function () {
+                        return 'Venta ' + this.series.name + ' en <b>' + this.x + '</b> de <b>$' + $.number(this.y) + '</b>';
+                    }
+                },
+                series: result.series
+            });
+        }
+    </script>
+{% endblock %}

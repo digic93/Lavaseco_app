@@ -15,10 +15,10 @@ class ReportController extends Controller {
     public function dailySaleAction() {
         $date = new \DateTime(date('Y-m-d'));
         $configuration = $this->get('lavaseco.app_configuration');
-        $bills = $this->getDailySale($date, $date, 0);
+        $dailyReports = $this->getDailySale($this->getLastMonday($date), $this->getNextSunday($date), 0);
 
         return $this->render($configuration->getViewTheme() . ':Reports/dailySale.html.twig', [
-                    "bills" => $bills,
+                    "dailyReports" => $dailyReports,
                     "salePoints" => $this->getAllSalePoints(),
         ]);
     }
@@ -53,6 +53,8 @@ class ReportController extends Controller {
         
         $bills = $this->getDailySale($dateTo, $dateFrom, $salePoint);
         
+        
+       
     }
 
     public function _____getDailySaleAction(Resquest $resquest) {
@@ -117,18 +119,20 @@ class ReportController extends Controller {
     }
 
     private function getLastMonday($date) {
+        $date = ($date instanceof \DateTime)?$date->format('Y-m-d'):$date;
         if (jddayofweek(strtotime($date))) {
             return new \DateTime(date('Y-m-d', strtotime($date . " last Monday")));
         } else {
-            return new \DateTime(date('Y-m-d', strtotime("2017-2-6")));
+            return new \DateTime(date('Y-m-d', strtotime($date)));
         }
     }
 
-    private function getNextFriday($date) {
+    private function getNextSunday($date) {
+        $date = ($date instanceof \DateTime)?$date->format('Y-m-d'):$date;
         if (jddayofweek(strtotime($date)) != 3) {
-            return new \DateTime(date('Y-m-d', strtotime("2017-2-6 next Friday")));
+            return new \DateTime(date('Y-m-d', strtotime($date . " next sunday")));
         } else {
-            return new \DateTime(date('Y-m-d', strtotime("2017-2-6")));
+            return new \DateTime(date('Y-m-d', strtotime($date)));
         }        
     }
 

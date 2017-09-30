@@ -31,6 +31,7 @@ security:
         - { path: ^/configuracion/factura, role: ROLE_MANAGER }
         - { path: ^/configuracion/fidelidad, role: ROLE_MANAGER }
         - { path: ^/configuracion/puntoventa, role: ROLE_MANAGER }
+        - { path: ^/configuracion/webpage, role: ROLE_MANAGER }
         
         - { path: ^/venta/caja/, role: ROLE_ADMIN }
         - { path: ^/configuracion/servicios, role: ROLE_ADMIN }

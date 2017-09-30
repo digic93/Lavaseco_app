@@ -576,7 +576,7 @@
             serviceDetail["total"] = price * quantity;
             serviceDetail["descriptors"] = getDescriptors();
             serviceDetail["observations"] = $("#observationService").val();
-            serviceDetail["id"] = factura["services"].length;
+            serviceDetail["id"] = $("#servicesSelectImput").find(':selected').data('id');
             serviceDetail["categories"] = namecategories;
             serviceDetail["idCategory"] = idCategory;
             

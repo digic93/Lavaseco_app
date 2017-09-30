@@ -46,6 +46,10 @@ lavaseco_setting_loyalty:
     path:     /configuracion/fidelidad
     defaults: { _controller: LavasecoBundle:Loyalty:index }
 
+lavaseco_setting_corporation:
+    path:     /configuracion/webpage
+    defaults: { _controller: LavasecoBundle:Corporation:index }
+
 lavaseco_setting_report_dashboard:
     path:     /reportes/dashboard
     defaults: { _controller: LavasecoBundle:Report:dashboard }

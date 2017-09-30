@@ -161,23 +161,21 @@
                     <table id="reportDailySale" class="display" cellspacing="0" width="100%">
                         <thead>
                             <tr>
-                                <th>Factura</th>
-                                <th>Estado</th>
+                                <th>Punto de Venta</th>
                                 <th>Total</th>
-                                <th>Pago</th>
-                                <th>Vendedor</th>
+                                <th>Cancelado</th>
+                                <th>Pendiente</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for bill in bills %}
+                            {% for dailyReport in dailyReports %}
                                 <tr>
-                                    <td>{{ bill.salePoint.id }}-{{ bill.id }}</td>
-                                    <td>{{ bill.billState.name }}</td>
-                                    <td>${{ bill.total }}</td>
-                                    <td>{{ bill.PaymentAgreement.name }}</td>
-                                    <td>{{ bill.sellerUser.name }}</td>
-                                    <td>{{ bill.createdatString }}</td>
+                                    <td>{{ dailyReport.salePoint }}</td>
+                                    <td>${{ dailyReport.total }}</td>
+                                    <td>${{ dailyReport.cancelado }}</td>
+                                    <td>${{ dailyReport.pendiente }}</td>
+                                    <td>{{ dailyReport.fecha }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

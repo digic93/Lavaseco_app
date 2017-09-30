@@ -1,0 +1,61 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <style>
+        textarea {
+            height: 120px !important;
+            width: 297px !important;
+        }
+    </style>
+{% endblock %} 
+
+{% block body %} 
+    <h1>Configuración Contenido Página Principal</h1>
+    <p>
+        Configura el contenido que va a salir en la web corporativa.    
+    </p>
+    <hr>
+    <div class="row">
+        <!--Formulario contenidio-->
+        <div class="col-md-2"></div>  
+        <div class="col-md-8">  
+            {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
+            <fieldset>
+
+                <!-- Form Name -->
+                <legend>Informacion de la compañia</legend>
+
+                <div class="form-group">
+                    {{ form_errors(form.mission) }}
+                    <label class="col-md-4 control-label" for="textarea">{{ form_label(form.mission, 'Mísión') }}</label>
+                    <div class="col-md-4">         
+                        {{ form_widget(form.mission, {'attr': {'class': 'form-control'} }) }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_errors(form.vision) }}
+                    <label class="col-md-4 control-label" for="textarea">{{ form_label(form.vision, 'Visión') }}</label>
+                    <div class="col-md-4">                     
+                        {{ form_widget(form.vision, {'attr': {'class': 'form-control'} }) }}
+                    </div>
+                </div>
+
+                <!-- Button -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="singlebutton"></label>
+                    <div class="col-md-4">
+                        <input type="submit" id="singlebuttonSave" name="singlebutton" class="btn btn-success" value="Guardar">
+                    </div>
+                </div>
+
+            </fieldset>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}
+

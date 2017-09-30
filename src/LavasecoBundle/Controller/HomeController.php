@@ -23,7 +23,8 @@ class HomeController extends Controller {
             return $this->render($configuration->getViewTheme() . ':Home/index.html.twig');
 
         }
-        return $this->render($configuration->getViewTheme() . ':WebPage/index.html.twig');
+        $corporation = $this->getCorporative();
+        return $this->render($configuration->getViewTheme() . ':WebPage/index.html.twig', ['corporation' => $corporation]);
     }
 
     private function getSalePointByActive($active) {
@@ -31,5 +32,14 @@ class HomeController extends Controller {
         $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:SalePoint");
 
         return $salePointRepository->findOneBy(array('isActive' => $active));
+    }
+    
+    private function getCorporative(){
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $corporationRepository = $doctrineManager->getRepository("LavasecoBundle:Corporation");
+
+        $corporation = $corporationRepository->find(1);
+        
+        return (isset($corporation))?$corporation:new \LavasecoBundle\Entity\Corporation();
     }
 }
