@@ -41,11 +41,11 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                    {% if is_granted('ROLE_CASHIER') %} 
+                    {% if (is_granted('ROLE_CASHIER') and app.session.get('salePoint') != "-1") %} 
                         <li><a href="{{ path('lavaseco_sales') }}">Venta <i class="fa fa-shopping-cart" aria-hidden="true"></i></a></li>
                         <li><a href="{{ path('lavaseco_Bills') }}">Facturas <i class="fa fa-file-text" aria-hidden="true"></i></a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_OPERATOR') %} 
+                    {% if (is_granted('ROLE_OPERATOR') and app.session.get('salePoint') != "-1")%} 
                         <li><a href="{{ path('lavaseco_orders') }}">Ordenes <i class="fa fa-cubes" aria-hidden="true"></i></a></li>
                     {% endif %}
 
@@ -95,3 +95,10 @@
 </nav>
 <div style="margin-bottom: 55px;">
 </div>
+            
+{% if (is_granted("IS_AUTHENTICATED_REMEMBERED") and app.session.get('salePoint') == "-1")%} 
+    <div class="alert alert-warning">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> Dispositivo No Esta registrado Como Punto de Venta
+    </div>
+{% endif %}
