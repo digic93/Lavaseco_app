@@ -19,121 +19,90 @@ DELIMITER $$
 USE `lavaseco_db`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saleDailyReport`(IN _from_date DATETIME,IN  _to_date DATETIME,IN  _sale_point_id int)
 BEGIN
-
 	IF _sale_point_id = 0 THEN
-		select 
-			c1.salePoint salePoint,
-			sum(c1.total) total,
-			c1.fecha fecha,
-			sum(c2.cancelado) cancelado,
-			sum(c1.total) - sum(c2.cancelado) pendiente
-		from
-			(
-				select
-					s.id,
-					s.name salePoint,
-					sum(bd.quantity * bd.price) total,
-					date_format(b.created_at, '%Y/%m/%d') fecha
-				from 
-					bill b, sale_point s, bill_detail bd
-				where
-					s.id = b.sale_point_id
-				and b.id = bd.bill_id
-				and b.created_at Between _from_date and _to_date
-				group by b.id
-			) c1,
-			(
-				select 
-					s2.id,
-					s2.name salePoint,
-					pd2.payment cancelado,
-					date_format(pd2.created_at, '%Y/%m/%d') fecha
-				from 
-					bill b2, 
-					sale_point s2,
-					pay_detail pd2
-				where 
-					b2.id = pd2.bill_id
-				and s2.id = b2.sale_point_id
-				and b2.created_at Between _from_date and _to_date        
-				union 
-				select
-					s2.id,
-					s2.name salePoint,
-					0 cancelado,
-					date_format(b2.created_at, '%Y/%m/%d') fecha
-				from 
-					bill b2, 
-					sale_point s2,
-					pay_detail pd2
-				where 
-					b2.payment_agreement_id = 2
-				and s2.id = b2.sale_point_id
-				and b2.created_at Between _from_date and _to_date
-			) c2
-		where 
-			c1.id = c2.id
-		and c1.fecha = c2.fecha
-		group by c1.fecha, c1.salePoint, c2.cancelado;
+            select 
+                ctotal.id,
+                ctotal.salePoint,
+                ctotal.total total,
+                cpagado.total cancelado,
+                ctotal.total - cpagado.total pendiente,
+                ctotal.fecha 
+            from
+            (
+                select 
+                    s.id id,
+                    s.name salePoint,
+                    sum(ifnull(bd.quantity * bd.price, 0)) total,
+                    date_format(b.created_at, '%Y/%m/%d') fecha
+                from 
+                    sale_point s
+                left join bill b on s.id = b.sale_point_id
+                left join bill_detail bd on b.id = bd.bill_id
+                where 
+                    b.created_at between _from_date and _to_date
+                group by s.id, date_format(b.created_at, '%Y/%m/%d')
+            ) ctotal,
+            (
+                select 
+                    s2.id id,
+                    s2.name salePoint,
+                    sum(ifnull(pd.payment, 0)) total,
+                    date_format(b2.created_at, '%Y/%m/%d') fecha
+                from 
+                    sale_point s2
+                left join bill b2 on s2.id = b2.sale_point_id
+                left join pay_detail pd on b2.id = pd.bill_id
+                where 
+                    b2.created_at between _from_date and _to_date
+                group by s2.id, date_format(b2.created_at, '%Y/%m/%d')
+            )cpagado
+        where 
+            cpagado.id = ctotal.id
+        and cpagado.fecha = ctotal.fecha
+        and cpagado.salePoint = ctotal.salePoint;
     ELSE
-		select 
-			c1.salePoint salePoint,
-			sum(c1.total) total,
-			c1.fecha fecha,
-			sum(c2.cancelado) cancelado,
-			sum(c1.total) - sum(c2.cancelado) pendiente
-		from
-			(
-				select
-					s.id,
-					s.name salePoint,
-					sum(bd.quantity * bd.price) total,
-					date_format(b.created_at, '%Y/%m/%d') fecha
-				from 
-					bill b, sale_point s, bill_detail bd
-				where
-					s.id = b.sale_point_id
-				and s.id = _sale_point_id
-				and b.id = bd.bill_id
-				and b.created_at Between _from_date and _to_date
-				group by b.id
-			) c1,
-			(
-				select 
-					s2.id,
-					s2.name salePoint,
-					pd2.payment cancelado,
-					date_format(pd2.created_at, '%Y/%m/%d') fecha
-				from 
-					bill b2, 
-					sale_point s2,
-					pay_detail pd2
-				where 
-					b2.id = pd2.bill_id
-				and s2.id = _sale_point_id
-				and s2.id = b2.sale_point_id
-				and b2.created_at Between _from_date and _to_date        
-				union 
-				select
-					s2.id,
-					s2.name salePoint,
-					0 cancelado,
-					date_format(b2.created_at, '%Y/%m/%d') fecha
-				from 
-					bill b2, 
-					sale_point s2,
-					pay_detail pd2
-				where 
-					b2.payment_agreement_id = 2
-				and s2.id = b2.sale_point_id
-                and s2.id = _sale_point_id
-				and b2.created_at Between _from_date and _to_date
-			) c2
-		where 
-			c1.id = c2.id
-		and c1.fecha = c2.fecha
-		group by c1.fecha, c1.salePoint, c2.cancelado;
+        select 
+            ctotal.id,
+            ctotal.salePoint,
+            ctotal.total total,
+            cpagado.total cancelado,
+            ctotal.total - cpagado.total pendiente,
+            ctotal.fecha 
+        from
+            (
+                select 
+                    s.id id,
+                    s.name salePoint,
+                    sum(ifnull(bd.quantity * bd.price, 0)) total,
+                    date_format(b.created_at, '%Y/%m/%d') fecha
+                from 
+                    sale_point s
+                left join bill b on s.id = b.sale_point_id
+                left join bill_detail bd on b.id = bd.bill_id
+                where 
+                    s.id = _sale_point_id
+                    and b.created_at between _from_date and _to_date
+                group by s.id, date_format(b.created_at, '%Y/%m/%d')
+            ) ctotal,
+            (
+                select 
+                    s2.id id,
+                    s2.name salePoint,
+                    sum(ifnull(pd.payment, 0)) total,
+                    date_format(b2.created_at, '%Y/%m/%d') fecha
+                from 
+                    sale_point s2
+                left join bill b2 on s2.id = b2.sale_point_id
+                left join pay_detail pd on b2.id = pd.bill_id
+                where 
+                    s2.id = _sale_point_id
+                    and b2.created_at between _from_date and _to_date
+                group by s2.id, date_format(b2.created_at, '%Y/%m/%d')
+            )cpagado
+        where 
+            cpagado.id = ctotal.id
+        and cpagado.fecha = ctotal.fecha
+        and cpagado.salePoint = ctotal.salePoint;
     END IF;
 END$$
-
 DELIMITER ;
