@@ -81,9 +81,9 @@ class BillController extends Controller {
 
         $bill = $this->saveBilling($customer, $observation, $paymentAgreement, $notity, $redeemedPointBill);
         $total = $this->saveBillDetail($bill, $request->request->get("services"));
-
+        
         if ($paymentAgreement->getId() != 2) {
-            $payment = ($paymentAgreement->getId() == 1) ? $payment : $cashReceived;
+            $payment = ($paymentAgreement->getId() == 1) ? $total : $cashReceived;
             $this->savePayDetail($payMethodId, $payment, $bill);
         }
 
@@ -212,7 +212,9 @@ class BillController extends Controller {
             $this->updateCustomer($total, $customer, $bonification);
         }
         $this->saveBillHistory($bill);
-        $this->notifyDelivery($bill, $customer);
+        if($bill->getCustomer()){
+            $this->notifyDelivery($bill, $bill->getCustomer());
+        }
 
         return $this->json([true]);
     }
@@ -288,6 +290,7 @@ class BillController extends Controller {
                 $this->saveObjectStateReceivedService($serviceObj, $billDetail, $service["descriptors"]);
             }
         }
+        $em->flush();
         return $total;
     }
 
@@ -334,7 +337,7 @@ class BillController extends Controller {
         $em->persist($payDeatil);
     }
 
-    private function saveCashTransaction($payment, $bill, $abono = 0) {
+    private function saveCashTransaction($payment, Bill $bill, $abono = 0) {
         $em = $this->get('doctrine')->getManager();
         $salePoint = $this->getSalePoint();
 
@@ -344,7 +347,7 @@ class BillController extends Controller {
         $cashTransaction->setSalePoint($salePoint);
         $cashTransaction->setTurn($salePoint->getTurn());
         $cashTransaction->setTypeTransaction($this->getTypeTransactionById(($abono == -1) ? 4 : 3)); //3 es el id de tipo de transaccion ingreso 4 egreso
-        $cashTransaction->setDescription((($abono == -1) ? "Reembolso" : (($abono) ? "Abono" : "Pago")) . " Factura " . $bill->getId());
+        $cashTransaction->setDescription((($abono == -1) ? "Reembolso" : (($bill->getPaymentAgreement()->getId() == 3) ? "Abono" : "Pago")) . " Factura " . $bill->getId());
 
         $em->persist($cashTransaction);
     }
