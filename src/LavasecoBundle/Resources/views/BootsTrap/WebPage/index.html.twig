@@ -52,7 +52,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
             <div class="container">
                 <a class="navbar-brand js-scroll-trigger" href="#page-top">
-                    <img alt="Brand"  height="50" width="97" src="{{ asset( "Logo/logo.png" ) }}" style="margin: -15px 5px;">
+                    <img alt="Brand"  height="50" width="97" src="{{ asset( "Logo/logo_b.png" ) }}" style="margin: -15px 5px;">
                 </a>
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     Menu
@@ -150,7 +150,7 @@
                                     <i class="fa fa-plus fa-3x"></i>
                                 </div>
                             </div>
-                            <img class="img-fluid" src="{{ asset("/webPage/img/portfolio/01_tintoreria.jpg2") }}" alt="">
+                            <img class="img-fluid" src="{{ asset("/webPage/img/portfolio/01_tintoreria.jpg") }}" alt="">
                         </a>
                         <div class="portfolio-caption">
                             <h4>Tintorería</h4>
@@ -344,10 +344,10 @@
                     <div class="col-md-4">
                         <ul class="list-inline quicklinks">
                             <li class="list-inline-item">
-                                <a href="#">Política de Privacidad</a>
+                                <a data-toggle="modal" href="#privacyPolicyModal">Política de Privacidad</a>
                             </li>
                             <li class="list-inline-item">
-                                <a href="#">Términos de Uso</a>
+                                <a data-toggle="modal" href="#termsOfUseModal">Términos de Uso</a>
                             </li>
                         </ul>
                     </div>
@@ -472,6 +472,62 @@
                 </div>
             </div>
         </div>
+                                    
+         <!-- Modal 5 -->
+        <div class="portfolio-modal modal fade" id="termsOfUseModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="close-modal" data-dismiss="modal">
+                        <div class="lr">
+                            <div class="rl"></div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-8 mx-auto">
+                                <div class="modal-body">
+                                    <img class="img-fluid d-block mx-auto" src="{{ asset("Logo/logo.png") }}" alt="">
+                                    <h2>Términos de Uso</h2>
+                                    <p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+                                    <p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
+                                    <button class="btn btn-primary" data-dismiss="modal" type="button">
+                                        <i class="fa fa-times"></i>
+                                        Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                                    
+         <!-- Modal 6 -->
+        <div class="portfolio-modal modal fade" id="privacyPolicyModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="close-modal" data-dismiss="modal">
+                        <div class="lr">
+                            <div class="rl"></div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-8 mx-auto">
+                                <div class="modal-body">
+                                    <img class="img-fluid d-block mx-auto" src="{{ asset("Logo/logo.png") }}" alt="">
+                                    <h2>Política de Privacidad</h2>
+                                    <p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+                                    <p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
+                                    <button class="btn btn-primary" data-dismiss="modal" type="button">
+                                        <i class="fa fa-times"></i>
+                                        Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>                            
 
         <!-- Bootstrap core JavaScript -->
         <script src="{{ asset("/webPage/vendor/jquery/jquery.min.js") }}"></script>
