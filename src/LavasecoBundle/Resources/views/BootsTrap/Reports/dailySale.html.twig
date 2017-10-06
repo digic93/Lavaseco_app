@@ -223,8 +223,8 @@
                     "finalDate": finalDate
                 },
                 success: function (result) {
-                    calculateTotals(result);
-                    drawReport(result);
+                    calculateTotals(result["chart"]);
+                    drawReport(result["chart"]);
                 }
             });
         }

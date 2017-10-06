@@ -44,64 +44,54 @@ class ReportController extends Controller {
         $finalDate = $request->request->get('finalDate');
 
         if ($startDate != "" && $finalDate != "") {
-            $dateTo = $this->getLastMonday($startDate);
-            $dateFrom = $this->getNextFriday($finalDate);
+            $date = $dateTo = $this->getLastMonday($startDate);
+            $dateFrom = $this->getNextSunday($finalDate);
         } else {
-            $dateTo = $this->getLastMonday(date('y-m-d'));
-            $dateFrom = $this->getNextFriday(date('y-m-d'));
+            $date = $dateTo = $this->getLastMonday(date('y-m-d'));
+            $dateFrom = $this->getNextSunday(date('y-m-d'));
         }
         
-        $bills = $this->getDailySale($dateTo, $dateFrom, $salePoint);
-        
-        
-       
-    }
+        $report = $reportData = $this->getDailySale($dateTo, $dateFrom, $salePoint);
 
-    public function _____getDailySaleAction(Resquest $resquest) {
-        $n = 0;
-        $salePoints = array();
-        $dataCancelado = array(0);
-        $dataPendiente = array(0);
-        $date = new \DateTime(date('Y-m-d'));
-
-        $bills = $this->getDailySale($date, $date, 0);
-        if ($bills) {
-            $salePoint = $bills[0]->getSalePoint()->getId();
-            $salePoints [] = $bills[0]->getSalePoint()->getName();
-        }
-
-        foreach ($bills as $bill) {
-            if ($salePoint != $bill->getSalePoint()->getId()) {
-                $salePoints [] = $bill->getSalePoint()->getName();
-                $salePoint = $bill->getSalePoint()->getId();
-                $dataCancelado [] = 0;
-                $dataPendiente [] = 0;
-                $n ++;
+        $categories = array ();
+        $dataCancelado = array ();
+        $dataPendiente = array ();
+        do{
+            $flag = true;
+            $categories [] = $date->format('d/m/Y');
+            foreach ($reportData as $key => $data){
+                if($data["fecha"] == $date->format('d/m/Y')){
+                    $flag = false;
+                    $dataCancelado[] = intval($data["cancelado"]);
+                    $dataPendiente[] = intval($data["pendiente"]);
+                    unset($reportData[$key]);
+                }
             }
-
-            if ($bill->getPaymentAgreement()->getId() == 1) {//Anticipado
-                $dataCancelado [$n] += $bill->getTotal();
-            } else if ($bill->getPaymentAgreement()->getId() == 2) {//Contra entrega
-                $dataPendiente [$n] += $bill->getTotal();
-            } else if ($bill->getPaymentAgreement()->getId() == 3) {//abono
-                $dataCancelado [$n] += $bill->getPayed();
-                $dataPendiente [$n] += $bill->getTotal() - $bill->getPayed();
+            
+            if($flag){
+                $dataCancelado[] = 0;
+                $dataPendiente[] = 0;
             }
-        }
+            
+            $date = $dateTo->modify("+1 day");
+        }while( $date != $dateFrom );
 
-        return $this->json([
-                    "categories" => $salePoints,
-                    "series" => [
-                        [
-                            "name" => "Cancelado",
-                            "data" => $dataCancelado,
-                        ],
-                        [
-                            "name" => "Pendiente",
-                            "data" => $dataPendiente,
-                        ],
-                    ]
-        ]);
+        $series = [
+                [
+                    "name" => "Cancelado",
+                    "data" => $dataCancelado,
+                ],
+                [
+                    "name" => "Pendiente",
+                    "data" => $dataPendiente,
+                ],
+            ];
+        
+        $result = [
+            "report" => $report,
+            "chart" => ["categories" => $categories, "series" => $series]
+        ];
+        return $this->json($result);
     }
 
     private function getAllSalePoints() {

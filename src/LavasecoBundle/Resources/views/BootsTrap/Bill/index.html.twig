@@ -292,6 +292,10 @@
                                     location.reload();
                                 });
                     }
+                },
+                error: function () {
+                    closeLoadingModal();
+                    openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entrega de la factura");
                 }
             });
         }
