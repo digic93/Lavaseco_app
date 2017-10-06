@@ -170,16 +170,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for bill in bills %}
-                                <tr>
-                                    <td>{{ bill.salePoint.id }}-{{ bill.id }}</td>
-                                    <td>{{ bill.billState.name }}</td>
-                                    <td>${{ bill.total }}</td>
-                                    <td>{{ bill.PaymentAgreement.name }}</td>
-                                    <td>{{ bill.sellerUser.name }}</td>
-                                    <td>{{ bill.createdatString }}</td>
-                                </tr>
-                            {% endfor %}
                         </tbody>
                     </table>
                 </div>                                

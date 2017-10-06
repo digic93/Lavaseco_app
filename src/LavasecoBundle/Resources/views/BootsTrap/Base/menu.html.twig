@@ -1,4 +1,6 @@
 <style>
+    body { padding-top: 70px; }
+    
     .btn_log_out:hover{
         border: ridge;
         border-width: 2px;
@@ -100,9 +102,7 @@
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-<div style="margin-bottom: 55px;">
-</div>
-            
+                    
 {% if (is_granted("IS_AUTHENTICATED_REMEMBERED") and app.session.get('salePoint') == "-1")%} 
     <div class="alert alert-warning">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>

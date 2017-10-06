@@ -13,12 +13,8 @@ class ReportController extends Controller {
     }
 
     public function dailySaleAction() {
-        $date = new \DateTime(date('Y-m-d'));
         $configuration = $this->get('lavaseco.app_configuration');
-        $dailyReports = $this->getDailySale($this->getLastMonday($date), $this->getNextSunday($date), 0);
-
         return $this->render($configuration->getViewTheme() . ':Reports/dailySale.html.twig', [
-                    "dailyReports" => $dailyReports,
                     "salePoints" => $this->getAllSalePoints(),
         ]);
     }
@@ -35,7 +31,9 @@ class ReportController extends Controller {
 
     public function salePointAction() {
         $configuration = $this->get('lavaseco.app_configuration');
-        return $this->render($configuration->getViewTheme() . ':Reports/salePoint.html.twig');
+        return $this->render($configuration->getViewTheme() . ':Reports/salePoint.html.twig', [
+                    "salePoints" => $this->getAllSalePoints(),
+        ]);
     }
 
     public function getDailySaleAction(Request $request) {
@@ -119,7 +117,7 @@ class ReportController extends Controller {
 
     private function getNextSunday($date) {
         $date = ($date instanceof \DateTime)?$date->format('Y-m-d'):$date;
-        if (jddayofweek(strtotime($date)) != 3) {
+        if (jddayofweek(strtotime($date)) != 1) {
             return new \DateTime(date('Y-m-d', strtotime($date . " next sunday")));
         } else {
             return new \DateTime(date('Y-m-d', strtotime($date)));
