@@ -123,7 +123,8 @@ BEGIN
 			sum(bd.quantity * bd.price) - c.pagado pendiente,
 			ifnull(cu.name, "No registro cliente")cliente,
 			b.created_at fecha,
-			concat(u.first_name, ' ',u.last_name) vendedor
+			concat(u.first_name, ' ',u.last_name) vendedor,
+            s.name puntoVenta
 		from 
 			bill b
 		inner join sale_point s on s.id = b.sale_point_id
@@ -142,7 +143,8 @@ BEGIN
 			) c on c.id = b.id
 		where
 			b.created_at between _from_date and _to_date
-		group by b.id;
+		group by b.id
+        order by s.id, b.id asc;
 	ELse
 				select
 			concat(b.sale_point_id,'-',b.id) id,
@@ -153,7 +155,8 @@ BEGIN
 			sum(bd.quantity * bd.price) - c.pagado pendiente,
 			ifnull(cu.name, "No registro cliente")cliente,
 			b.created_at fecha,
-			concat(u.first_name, ' ',u.last_name) vendedor
+			concat(u.first_name, ' ',u.last_name) vendedor,
+            s.name puntoVenta
 		from 
 			bill b
 		inner join sale_point s on s.id = b.sale_point_id
@@ -173,7 +176,9 @@ BEGIN
 		where 
 			s.id = _sale_point_id and
 			b.created_at between _from_date and _to_date
-		group by b.id;
+		group by b.id
+        order by s.id, b.id asc;
 	END IF;
 END$$
+
 DELIMITER ;

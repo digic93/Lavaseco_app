@@ -187,6 +187,12 @@ lavaseco_api_print:
     defaults: { _controller: LavasecoBundle:Print:unprinted }
     methods:  [GET]
 
+lavaseco_api_print_bill:
+    path:     /api/print/bill/
+    defaults: { _controller: LavasecoBundle:Print:pirntBill }
+    methods:  [POST]
+
+
 lavaseco_api_report_daily_sale:
     path:     /api/report/daily/sale
     defaults: { _controller: LavasecoBundle:Report:getDailySale }
