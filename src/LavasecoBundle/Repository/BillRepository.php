@@ -71,7 +71,7 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $bills->getResult();
     }
 
-    public function dailySale($from, $to, $salePoint = 0) {
+    public function saleDailyReport($from, $to, $salePoint = 0) {
         $procedure = "CALL saleDailyReport('" . $from->format('Y-m-d 00:00:00') . "', '" . $to->format('Y-m-d 23:59:59') . "'," . $salePoint . ")";
         $em = $this->getEntityManager()->getConnection();
         $sth = $em->prepare($procedure);
@@ -80,4 +80,13 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $sth->fetchAll();
     }
 
+    public function SalePointReport($from, $to, $salePoint = 0) {
+        $procedure = "CALL salePointReport('" . $from->format('Y-m-d 00:00:00') . "', '" . $to->format('Y-m-d 23:59:59') . "'," . $salePoint . ")";
+        $em = $this->getEntityManager()->getConnection();
+        $sth = $em->prepare($procedure);
+        $sth->execute();
+        
+        return $sth->fetchAll();
+    }
+    
 }

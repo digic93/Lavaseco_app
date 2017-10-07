@@ -205,7 +205,7 @@
 
         function loadingData(salePoint, startDate, finalDate) {        
             $.ajax({
-                url: "{{ path('lavaseco_api_daily_sale') }}",
+                url: "{{ path('lavaseco_api_report_daily_sale') }}",
                 method: "POST",
                 dataType: 'json',
                 data: {

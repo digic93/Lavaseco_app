@@ -91,6 +91,23 @@ class ReportController extends Controller {
         ];
         return $this->json($result);
     }
+    
+    public function getSalePointAction(Request $request){
+        $salePoint = $request->request->get('salePoint');
+        $startDate = $request->request->get('startDate');
+        $finalDate = $request->request->get('finalDate');
+        
+        if ($startDate != "" && $finalDate != "") {
+            $dateTo = $this->getLastMonday($startDate);
+            $dateFrom = $this->getNextSunday($finalDate);
+        } else {
+            $dateTo = new \DateTime(date('1-m-Y',strtotime('this month')));
+            $dateFrom = new \DateTime(date('d-m-Y',strtotime('last day of this month')));
+        }
+        
+        $report = $reportData = $this->getSalePointReport($dateTo, $dateFrom, $salePoint);
+        
+    }
 
     private function getAllSalePoints() {
         $doctrineManager = $this->get('doctrine')->getManager();
@@ -103,7 +120,14 @@ class ReportController extends Controller {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
 
-        return $billRepository->dailySale($initialDate, $endDate, $salePoint);
+        return $billRepository->saleDailyReport($initialDate, $endDate, $salePoint);
+    }
+
+    private function getSalePointReport($initialDate, $endDate, $salePoint) {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
+
+        return $billRepository->SalePointReport($initialDate, $endDate, $salePoint);
     }
 
     private function getLastMonday($date) {
