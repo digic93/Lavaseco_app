@@ -82,6 +82,9 @@
                     <p id="billDetailsTiket">
                     </p>
                 </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary" onclick="printBill();">Imprimir Ticket</button>
+                </div>
             </div>
         </div>
     </div>
@@ -133,8 +136,8 @@
     <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
 
     <script>
+        var billTicketId = 0;
         var orderSelected = [[], []];
-
         $(document).ready(function () {
             var billsTable = $('#billsTable').DataTable({
                 "order": [[1, "Desc"]]
@@ -191,6 +194,7 @@
             $("#phoneNumberTiket").html("Numero Telefono: " + tiket.phoneNumber);
             drawDetails(tiket.billDetail.details);
             $("#billDetailsTiket").append("<hr><strong>Observaciones: </strong>" + tiket.observation);
+            billTicketId = tiket.bill;
         }
 
         function drawDetails(billDetails) {
@@ -261,6 +265,33 @@
             if (urlArray.length > 4) {
                 $("#processStateUpdate").val(parseInt(urlArray[4]));
             }
+        }
+        
+        function printBill(){
+            if(billTicketId === 0){
+                openModalAlerErrorSuccess("Error","Por favor seleccione una orden.");
+                return;
+            }
+            
+            $.ajax({
+                url: "{{ path("lavaseco_api_print_bill") }}",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    "bill": billTicketId
+                },
+                beforeSend: function (xhr) {
+                    loadingModal("Espere por favor.");
+                },
+                success: function (result) {
+                    closeLoadingModal();
+                    openModalAlerErrorSuccess("Alerta","Su factura se imprimirá en un momento.");
+                },
+                error: function () {
+                    closeLoadingModal();
+                    openModalAlerErrorSuccess("Confirmación de Cambios", "Error, intente nuevamente.");
+                }
+            });
         }
 
     </script>

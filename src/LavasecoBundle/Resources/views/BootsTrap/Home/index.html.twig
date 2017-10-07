@@ -46,10 +46,12 @@
                     {% endif %}
 
                     {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))%}
-                        <div class="col-sm-6 col-md-4 service-itm" onclick="settingsButton();">
-                            <div class="thumbnail service">
-                                <i class="fa fa-cogs fa-5x" aria-hidden="true"></i>
-                                <h5 class="text-center">Configuración</h5>
+                        <a>
+                            <div class="col-sm-6 col-md-4 service-itm" onclick="settingsButton();">
+                                <div class="thumbnail service">
+                                    <i class="fa fa-cogs fa-5x" aria-hidden="true"></i>
+                                    <h5 class="text-center">Configuración</h5>
+                                </div>
                             </div>
                         </div>
                     {% endif %}

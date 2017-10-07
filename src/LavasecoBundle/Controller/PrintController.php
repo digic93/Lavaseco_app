@@ -2,10 +2,27 @@
 
 namespace LavasecoBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class PrintController extends Controller {
 
+    public function pirntBillAction(Request $request){
+        $bill = $this->getBillById($request->request->get('bill'));
+
+        if (!$bill) {
+            throw new NotFoundHttpException('Factura no encontrada!');
+        }
+
+        $bill->setPrintedTiket(true);
+
+        $em = $this->get('doctrine')->getManager();
+        $em->persist($bill);
+        $em->flush();
+
+        return $this->json([true]);
+    }
+    
     public function unprintedAction() {
         $billsResult = array();
         $doctrineManager = $this->get('doctrine')->getManager();
@@ -124,7 +141,7 @@ class PrintController extends Controller {
         return [
             "id" => $bill->getSalePoint()->getId() . "-" . $bill->getId(),
             "customerName" => ($customer == null)?"":$customer->getName(),
-            "customerPhone" => ($customer == null)?"":($customer->getPhoneNumber() == null)?"No Registra":$customer->getPhoneNumber(),
+            "customerPhone" => ($customer == null)?"":(($customer->getPhoneNumber() == null)?"No Registra":$customer->getPhoneNumber()),
             "currentPoints" => ($customer == null)?0:$customer->getPoints(),
             "billState" => $bill->getBillState()->getName(),
             "paymentAgreement" => $bill->getPaymentAgreement()->getName(),
@@ -139,6 +156,13 @@ class PrintController extends Controller {
             "salePoint" => $bill->getSalePoint()->getName(),
             "tikets" => $this->getTiketByBill($bill)
         ];
+    }
+    
+    private function getBillById($billId) {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
+
+        return $billRepository->find($billId);
     }
 
 }
