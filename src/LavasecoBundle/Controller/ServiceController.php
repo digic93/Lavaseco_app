@@ -77,10 +77,19 @@ class ServiceController extends Controller {
 
     public function addServiceCategoryAction(Request $request) {
         $type = $request->request->get('type');
-        $serviceCategory = new ServiceCategory();
 
         $em = $this->get('doctrine')->getManager();
         $serviceCategoryRepository = $em->getRepository("LavasecoBundle:ServiceCategory");
+
+        if ($request->request->has('id')) {
+            if ($request->request->get('id') != "0") {
+                $serviceCategory = $serviceCategoryRepository->find($request->request->get('id'));
+            } else {
+                $serviceCategory = new ServiceCategory();
+            }
+        } else {
+            $serviceCategory = new ServiceCategory();
+        }
 
         $serviceCategory->setName($request->request->get('name'));
         $serviceCategory->setDescription($request->request->get('description'));
@@ -129,7 +138,7 @@ class ServiceController extends Controller {
         return $this->json($serviceCategoryResult);
     }
 
-    private function addService($price, $descriptors, $serviceCategory) {
+    private function addService($price, $descriptors, ServiceCategory $serviceCategory) {
         $service = new Service();
         $em = $this->get('doctrine')->getManager();
 
@@ -181,4 +190,5 @@ class ServiceController extends Controller {
 
         return $serviceCategoryRepository->find($serviceCategoryId);
     }
+
 }
