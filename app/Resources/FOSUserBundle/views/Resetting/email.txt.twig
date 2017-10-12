@@ -1,16 +1,21 @@
 {% trans_default_domain 'FOSUserBundle' %}
 {% block subject %}
 {%- autoescape false -%}
-{{ 'resetting.email.subject'|trans({'%username%': user.username}) }}
+{{ 'Pepito Perez, aquí tienes el enlace para restablecer tu contraseña.'|trans({'%username%': user.username}) }}
 {%- endautoescape -%}
 {% endblock %}
 
 {% block body_text %}
 {% autoescape false %}
-{{ 'resetting.email.message'|trans({'%username%': user.username, '%confirmationUrl%': confirmationUrl}) }}
+{{ 'Pepito Perez'|trans({'%username%': user.username, '%confirmationUrl%': confirmationUrl}) }}
 {% endautoescape %}
 {% endblock %}
 {% block body_html %}
+    
+    <img alt="Logo" src="{{ absolute_url(asset( "Logo/logo.png" )) }}" style="margin: -15px 5px;">
+    
     Este es el correo para reestablecer la contraseña
     {{ confirmationUrl }}
+    
+    
 {% endblock %}
