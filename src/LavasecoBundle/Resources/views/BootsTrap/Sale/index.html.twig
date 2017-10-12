@@ -43,7 +43,7 @@
         <!--Productos por categoria-->
         <div class="col-md-8">
             <h3>Servicios</h3>
-            <div class="input-group">
+{#            <div class="input-group">
                 <input id="servicesSearch" type="text" class="form-control" placeholder="Buscar...">
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
@@ -57,7 +57,7 @@
                     </button>
                 {% endfor %}
             </div>
-            <hr>
+            <hr>#}
             <div id="servicesItems">
                 {% for serviceCategory in serviceCategories %}
                     {% for subServiceCagory in serviceCategory.subServiceCategories %}
@@ -144,7 +144,7 @@
                         <label for="sel1">Acuerdo de Pago</label>
                         <select class="form-control" id="bill_payAgreement">
                             {% for paymentAgreement in paymentAgreements %}
-                                <option value="{{ paymentAgreement.id }}" data-name="{{ paymentAgreement.name }}">{{ paymentAgreement.name }}</option>
+                                <option {% if paymentAgreement.id == 2 %} selected="selected" {% endif%} value="{{ paymentAgreement.id }}" data-name="{{ paymentAgreement.name }}">{{ paymentAgreement.name }}</option>
                             {% endfor %}
                         </select>
                     </div>

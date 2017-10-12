@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <div class="col-sm-4 col-xs-4">
-                        
+
                         <div class="core-box">
                             <div class="heading">
                                 <h3>Total Cancelado</h3>
@@ -198,14 +198,15 @@
             document.getElementById("startDate").value = new Date().toDateInputValue();
             document.getElementById("finalDate").value = new Date().toDateInputValue();
 
-             table = $("#reportDailySale").DataTable();
+            table = $("#reportDailySale").DataTable();
             //peticion al servidor
             loadingData(salePoint, startDate, finalDate);
         });
 
-        function loadingData(salePoint, startDate, finalDate) {        
+        function loadingData(salePoint, startDate, finalDate) {
+            loadingModal("Espere por favor.");
             $.ajax({
-                url: "{{ path('lavaseco_api_daily_sale') }}",
+                url: "{{ path('lavaseco_api_report_daily_sale') }}",
                 method: "POST",
                 dataType: 'json',
                 data: {
@@ -216,17 +217,26 @@
                 success: function (result) {
                     calculateTotals(result["chart"]);
                     drawReport(result["chart"]);
-                    table.clear().draw();
-                    for(var i in result["report"] )
-                        table.row.add( [
-                            result["report"][i]["salePoint"],
-                            "$" + $.number(result["report"][i]["total"]),
-                            "$" + $.number(result["report"][i]["cancelado"]),
-                            "$" + $.number(result["report"][i]["pendiente"]),
-                            result["report"][i]["fecha"]
-                        ] ).draw().node();
+                    drawData(result["report"]);
+                    closeLoadingModal();
+                },
+                error: function () {
+                    openModalAlerErrorSuccess('Error', 'Error al generar el reporte.');
+                    closeLoadingModal();
                 }
             });
+        }
+
+        function drawData(data) {
+            table.clear().draw();
+            for (var i in data )
+                table.row.add([
+                    data[i]["salePoint"],
+                    "$" + $.number(data[i]["total"]),
+                    "$" + $.number(data[i]["cancelado"]),
+                    "$" + $.number(data[i]["pendiente"]),
+                    data[i]["fecha"]
+                ]).draw().node();
         }
 
         function calculateTotals(result) {
@@ -237,7 +247,7 @@
                 totalCancelado += result.series[0].data[i];
             for (var i in result.series[1].data)
                 totalPendiente += result.series[1].data[i];
-            
+
             $("#totalSales").text($.number(totalCancelado + totalPendiente));
             $("#totalCanceled").text($.number(totalCancelado));
             $("#totalPending").text($.number(totalPendiente));

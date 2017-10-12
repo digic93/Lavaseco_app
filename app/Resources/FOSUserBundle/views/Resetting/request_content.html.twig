@@ -1,13 +1,25 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-<form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
-    <div>
-        <label for="username">{{ 'resetting.request.username'|trans }}</label>
-        <input type="text" id="username" name="username" required="required" />
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
+                
+                <div class="form-group">
+                    <div id="divEmail" class="form-group">
+                        <label class="control-label" for="username">{{ 'Usuario o Email'|trans }}</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+                            <input class="form-control" id="username" name="username" type="email" required="required"/>
+                        </div>
+                        <span id="helpBlockEmail" class="help-block"></span>
+                    </div>
+                    
+                </div>
+
+                <div id="divSaveClient" class="form-group">
+                    <input id="btnSendEmailConformation" type="submit" class="btn btn-success btn-block" value="{{ 'Enviar'|trans }}"/>
+                </div>
+                
+            </form>
+        </div>
     </div>
-    <div>
-        <input type="submit" value="{{ 'resetting.request.submit'|trans }}" />
-    </div>
-</form>
-Este Formulario Fea
-formulario para pide el correro para reestablecer la contraseña

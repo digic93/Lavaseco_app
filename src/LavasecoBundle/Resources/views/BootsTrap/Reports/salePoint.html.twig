@@ -80,7 +80,7 @@
             <div class="col-sm-9">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h1 class="page-header">Venta diaria</h1>
+                        <h1 class="page-header">Puntos de Venta</h1>
                     </div>
                 </div>
 
@@ -163,10 +163,14 @@
                             <tr>
                                 <th>Factura</th>
                                 <th>Estado</th>
-                                <th>Total</th>
                                 <th>Pago</th>
-                                <th>Vendedor</th>
+                                <th>Total</th>
+                                <th>Cancelado</th>
+                                <th>Pendiente</th>
+                                <th>Cliente</th>
                                 <th>Fecha</th>
+                                <th>Vendedor</th>
+                                <th>Punto Venta</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -185,6 +189,7 @@
     <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
 
     <script>
+        var table;
         var salePoint = 0;
         var startDate = "";
         var finalDate = "";
@@ -199,14 +204,15 @@
             document.getElementById("startDate").value = new Date().toDateInputValue();
             document.getElementById("finalDate").value = new Date().toDateInputValue();
 
-            var table = $("#reportDailySale").DataTable();
+            table = $("#reportDailySale").DataTable();
             //peticion al servidor
             loadingData(salePoint, startDate, finalDate);
         });
 
-        function loadingData(salePoint, startDate, finalDate) {        
+        function loadingData(salePoint, startDate, finalDate) {  
+            loadingModal("Espere por favor.");
             $.ajax({
-                url: "{{ path('lavaseco_api_daily_sale') }}",
+                url: "{{ path('lavaseco_api_report_sale_point') }}",
                 method: "POST",
                 dataType: 'json',
                 data: {
@@ -215,10 +221,33 @@
                     "finalDate": finalDate
                 },
                 success: function (result) {
-                    calculateTotals(result);
-                    drawReport(result);
+                    calculateTotals(result["chart"]);
+                    drawReport(result["chart"]);
+                    drawData(result["report"]);
+                    closeLoadingModal();
+                },
+                error: function (){
+                    openModalAlerErrorSuccess('Error', 'Error al generar el reporte.');
+                    closeLoadingModal();
                 }
             });
+        }
+
+        function drawData(data) {
+            table.clear().draw();
+            for (var i in data )
+                table.row.add([
+                    data[i]["id"],
+                    data[i]["estado"],
+                    data[i]["pago"],
+                    "$" + $.number(data[i]["total"]),
+                    "$" + $.number(data[i]["cancelado"]),
+                    "$" + $.number(data[i]["pendiente"]),
+                    data[i]["cliente"],
+                    data[i]["fecha"],
+                    data[i]["vendedor"],
+                    data[i]["puntoVenta"]
+                ]).draw().node();
         }
 
         function calculateTotals(result) {
@@ -260,29 +289,7 @@
             } else if (Date.parse(finalDate) > Date.parse(currentDate)) {
                 openModalAlerErrorSuccess('Error', 'La fecha final no puede ser mayor que actual');
             } else {
-                alert("fecha inicial " + startDate + " Fecha final " + finalDate + " Punto de Venta " + salePoint);
-
-                //ajax 
-                //fecha final, fecha inicial y punto de venta
-                var result = {
-                    "categories": ['Lunes, 28/08/2017', 'Martes, 29/08/2017',
-                        'Miercoles, 30/08/2017', 'Jueves, 31/08/2017', 'Viernes, 01/09/2017',
-                        'Sábado, 02/09/2017', 'Domingo, 03/09/2017', 'Lunes, 04/09/2017'],
-                    "series": [
-                        {
-                            name: 'Cancelado',
-                            data: [5000, 32000, 2500, 70000, 20000, 90750, 53200, 24300]
-                        },
-                        {
-                            name: 'Pendiente',
-                            data: [2200, 3400, 2432, 29700, 10000, 30, 0, 80]
-                        }
-                    ]
-                };
-
-                calculateTotals(result);
-                //dibuja la grafica
-                drawReport(result);
+                loadingData(salePoint, startDate, finalDate);
             }
         }
 

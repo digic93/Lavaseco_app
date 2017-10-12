@@ -235,7 +235,7 @@ class BillController extends Controller {
 
         return $this->json([true]);
     }
-
+    
     private function getBillContentById($billContentId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billContentRepository = $doctrineManager->getRepository("LavasecoBundle:BillContent");
