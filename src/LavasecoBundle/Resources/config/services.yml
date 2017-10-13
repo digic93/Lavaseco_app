@@ -1,4 +1,9 @@
 services:
+    app.form.registration:
+        class: LavasecoBundle\Form\UserType
+        tags:
+            - { name: form.type, alias: lavaseco_user_registration }
+                
     lavaseco.app_configuration:
         class: LavasecoBundle\Services\AppConfiguration
-        arguments: []
+        arguments: []    

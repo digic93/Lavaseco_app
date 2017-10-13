@@ -36,6 +36,7 @@ security:
         - { path: ^/venta/caja/, role: ROLE_ADMIN }
         - { path: ^/configuracion/servicios, role: ROLE_ADMIN }
         - { path: ^/configuracion/descriptores, role: ROLE_ADMIN }
+        - { path: ^/reportes/*, role: ROLE_ADMIN }
         - { path: ^/api/descriptors, role: ROLE_ADMIN }
         - { path: ^/api/service/category, role: ROLE_ADMIN }
         
