@@ -440,6 +440,7 @@
             $("#redeemPoints").number(true);
             $("#subtotalRedeemPoints").number(true);
             $("#totalRedeemPoints").number(true);
+            $("#missingMoney").number(true);
 
             //Evento cerrar ventana modal
             $('#addServiceModal').on('hidden.bs.modal', function (e) {
@@ -912,21 +913,22 @@
 
             if (paymentAgreement !== "3") {//3 es el id del metodo de abono
                 var change = $("#cashReceived").val() - factura.total;
+                var vMissingMoney = factura.total - $("#cashReceived").val();
 
                 if (change < 0) {
                     $("#change").val('');
+                    $("#missingMoney").val(vMissingMoney);
                     $("#divCashReceived").removeClass("has-success");
                     $("#divCashReceived").addClass("has-error");
                     return false;
                 } else {
                     $("#change").val(change);
+                    $("#missingMoney").val('');
                     $("#divCashReceived").addClass("has-success");
                     $("#divCashReceived").removeClass("has-error");
                     return true;
                 }
             } else {
-                var missingMoney = factura.total - $("#cashReceived").val();
-
                 if ($("#cashReceived").val() > factura.total) {
                     $("#change").val('');
                     $("#missingMoney").val('');
@@ -935,7 +937,7 @@
                     return false;
                 } else {
                     $("#change").val(0);
-                    $("#missingMoney").val(missingMoney);
+                    $("#missingMoney").val(vMissingMoney);
                     $("#divCashReceived").addClass("has-success");
                     $("#divCashReceived").removeClass("has-error");
                     return true;
