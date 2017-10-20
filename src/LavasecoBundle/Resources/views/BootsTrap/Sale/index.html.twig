@@ -873,10 +873,9 @@
                     if (factura.customerId === 0) {
                         if (!confirm("¿Desea facturar sin seleccionar un cliente?")) {
                             return;
-                        }else{
-                            ajaxSaleBill();
-                        }
+                        }                                                
                     }
+                    ajaxSaleBill();   
                 } else {
                     $('#paymentTittle').text('Cobro ' + $('#bill_payAgreement option:selected').data('name'));
                     $('#wayToPay').modal('show');
