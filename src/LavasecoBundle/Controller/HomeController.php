@@ -27,6 +27,11 @@ class HomeController extends Controller {
         return $this->render($configuration->getViewTheme() . ':WebPage/index.html.twig', ['corporation' => $corporation]);
     }
 
+    public function termsAction() {
+        $configuration = $this->get('lavaseco.app_configuration');
+        return $this->render($configuration->getViewTheme() . ':WebPage/termOfUse.html.twig');
+    }
+    
     private function getSalePointByActive($active) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:SalePoint");

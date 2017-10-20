@@ -1,7 +1,35 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-{{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
-    {{ form_widget(form) }}
+Este es el formulario para registrar los usuarios del sistema
+
+{#{{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}#}
+{{ form_start(form, {'method': 'post'} ) }}) }}
+
+{{ form_label(form.firstName) }}
+{{ form_widget(form.firstName) }}
+{{ form_errors(form.firstName) }}
+
+{{ form_label(form.lastName) }}
+{{ form_widget(form.lastName) }}
+{{ form_errors(form.lastName) }}
+
+{{ form_label(form.phoneNumber) }}
+{{ form_widget(form.phoneNumber) }}
+{{ form_errors(form.phoneNumber) }}
+
+{{ form_label(form.email) }}
+{{ form_widget(form.email) }}
+{{ form_errors(form.email) }}
+
+{{ form_label(form.plainPassword.first) }}
+{{ form_widget(form.plainPassword.first) }}
+{{ form_errors(form.plainPassword.first) }}
+
+{{ form_label(form.plainPassword.second) }}
+{{ form_widget(form.plainPassword.second) }}
+
+
+
     <div>
         <input type="submit" value="{{ 'registration.submit'|trans }}" />
     </div>

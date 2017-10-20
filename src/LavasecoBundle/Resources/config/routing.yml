@@ -2,6 +2,10 @@ lavaseco_homepage:
     path:     /
     defaults: { _controller: LavasecoBundle:Home:index }
 
+lavaseco_terms:
+    path:     /condiciones
+    defaults: { _controller: LavasecoBundle:Home:terms }
+
 lavaseco_sales:
     path:     /venta
     defaults: { _controller: LavasecoBundle:Sale:index }
