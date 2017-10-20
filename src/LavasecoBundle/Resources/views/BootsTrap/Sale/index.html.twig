@@ -43,21 +43,21 @@
         <!--Productos por categoria-->
         <div class="col-md-8">
             <h3>Servicios</h3>
-{#            <div class="input-group">
-                <input id="servicesSearch" type="text" class="form-control" placeholder="Buscar...">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
-                </span>
-            </div>
-            <br>
-            <div class="btn-group text-center" role="group">
-                {% for serviceCategory in serviceCategories %}
-                    <button type="button" class="btn btn-default" onClick="getServiceByCategoryId({{ serviceCategory.id }});" >
-                        <img src="{{ asset( serviceCategory.img ) }}" style="width: 30px;" /> {{ serviceCategory.name }}
-                    </button>
-                {% endfor %}
-            </div>
-            <hr>#}
+            {#            <div class="input-group">
+                            <input id="servicesSearch" type="text" class="form-control" placeholder="Buscar...">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </span>
+                        </div>
+                        <br>
+                        <div class="btn-group text-center" role="group">
+                            {% for serviceCategory in serviceCategories %}
+                                <button type="button" class="btn btn-default" onClick="getServiceByCategoryId({{ serviceCategory.id }});" >
+                                    <img src="{{ asset( serviceCategory.img ) }}" style="width: 30px;" /> {{ serviceCategory.name }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                        <hr>#}
             <div id="servicesItems">
                 {% for serviceCategory in serviceCategories %}
                     {% for subServiceCagory in serviceCategory.subServiceCategories %}
@@ -454,7 +454,7 @@
             console.log($(this).attr('data-id-service'));
             addServicesSelectImput($(this).attr('data-id-service'), 'edit');
             loadBillItem($(this).attr('data-id'));
-            
+
         });
 
         $('#clientBill').typeahead({
@@ -543,18 +543,17 @@
                         var serviceCategory = servicesCategories[key];
                         addOptionsServicesSelectImput(serviceCategory);
                     }
-                    
+
                     if (option === 'add') {
                         document.getElementById('addBillItem').style.display = 'block';
-                        document.getElementById('cancelBillItem').style.display = '';   
+                        document.getElementById('cancelBillItem').style.display = '';
                         document.getElementById('editBillItem').style.display = 'none';
                         document.getElementById('deleteBillItem').style.display = 'none';
-                    }
-                    else if (option === 'edit'){
+                    } else if (option === 'edit') {
                         document.getElementById('editBillItem').style.display = '';
                         document.getElementById('deleteBillItem').style.display = '';
                         document.getElementById('addBillItem').style.display = 'none';
-                        document.getElementById('cancelBillItem').style.display = 'none';     
+                        document.getElementById('cancelBillItem').style.display = 'none';
                     }
                     closeLoadingModal();
                 }
@@ -570,7 +569,7 @@
             var serviceDetail = {};
             var price = parseInt($("#priceServiceImput").val());
             var quantity = parseInt($("#quantity_service").val());
-            
+
             serviceDetail["service"] = $("#servicesSelectImput").find(':selected').data('name');
             serviceDetail["price"] = price;
             serviceDetail["quantity"] = quantity;
@@ -580,12 +579,12 @@
             serviceDetail["id"] = $("#servicesSelectImput").find(':selected').data('id');
             serviceDetail["categories"] = namecategories;
             serviceDetail["idCategory"] = idCategory;
-            
+
             factura["services"].push(serviceDetail);
-            
+
             console.log(factura["services"]);
             console.log(serviceDetail);
-            
+
             addToBillSummaryServices(serviceDetail);
             updateInvoceTotals(serviceDetail.total);
 
@@ -674,7 +673,7 @@
         }
 
         function loadBillItem(idService) {
-            for (var i in factura.services) {             
+            for (var i in factura.services) {
                 if (factura.services[i].id === parseInt(idService)) {
 
                     $("#priceServiceImput").val(factura.services[i].price);
@@ -688,39 +687,39 @@
 
                     var index = factura.services.indexOf(factura.services[i]); // obtenemos el indice
                     deleteInvoiceItem(index);
-                    
-                    return ;
+
+                    return;
                 }
             }
         }
-         function deleteInvoiceItem(idService) {
+        function deleteInvoiceItem(idService) {
             console.log("el valor " + factura.services[idService].total);
-            console.log("Total "+ factura.total );
-            
+            console.log("Total " + factura.total);
+
             factura.total = factura.subtotal = parseInt(factura.total) - parseInt(factura.services[idService].total);
             factura.services.splice(idService, 1); // 1 es la cantidad de elemento a eliminar
 
             $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
             $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
             $("#billDetail").empty();
-            
+
             if (factura.services.length > 0) {
                 for (var i in factura.services) {
                     addToBillSummaryServices(factura.services[i]);
                 }
             }
-            
+
         }
         function editItem() {
             addService();
-            $('#addServiceModal').modal('hide');  
-        }
-        
-        function deleteItem() {
-            $('#addServiceModal').modal('hide');  
+            $('#addServiceModal').modal('hide');
         }
 
-       
+        function deleteItem() {
+            $('#addServiceModal').modal('hide');
+        }
+
+
 
         function getDescriptionsToString(descriptors) {
             var descriptorsResutl = [];
@@ -753,7 +752,7 @@
             $("#summaryServicesTotal").html("$0");
             $("#observationService").val("");
         }
-        
+
         function displayResult(item) {
             var html = "<p> <strong> Nombre Cliente: </strong>" + item.text + " <br><strong> </p>";
             $("#infoClientBill").html(html);
@@ -871,7 +870,13 @@
                 if (paymentAgreement === "2") {//2 es el id del metodo de contra entrega
                     factura.cashReceived = 0;
                     factura.change = 0;
-                    ajaxSaleBill();
+                    if (factura.customerId === 0) {
+                        if (!confirm("¿Desea facturar sin seleccionar un cliente?")) {
+                            return;
+                        }else{
+                            ajaxSaleBill();
+                        }
+                    }
                 } else {
                     $('#paymentTittle').text('Cobro ' + $('#bill_payAgreement option:selected').data('name'));
                     $('#wayToPay').modal('show');
