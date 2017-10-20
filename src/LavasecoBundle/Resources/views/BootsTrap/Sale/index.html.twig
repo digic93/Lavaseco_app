@@ -933,7 +933,7 @@
                     return true;
                 }
             } else {
-                if ($("#cashReceived").val() > factura.total) {
+                if (parseInt($("#cashReceived").val()) > parseInt(factura.total)) {
                     $("#change").val('');
                     $("#missingMoney").val('');
                     $("#divCashReceived").removeClass("has-success");
@@ -967,7 +967,7 @@
 
                 $("#modalRedeemPoints").modal('show');
                 $("#totalRedeemPoints").val(factura.total - $("#redeemPoints").val());
-                $("#subtotalRedeemPoints").val(factura.subtotal);
+                $("#subtotalRedeemPoints").val(factura.total);
                 //abre ventana modal
                 $("#modalRedeemPoints").modal('show');
             }
@@ -1000,12 +1000,12 @@
         function saveRedeemPoints() {
             if (updateRedeemPoints()) {
                 var points = factura.redeemedPointBill = $("#redeemPoints").val();
-                // factura.total = $("#totalRedeemPoints").val();
+                factura.total = $("#totalRedeemPoints").val();
 
                 $("#modalRedeemPoints").modal('hide');
 
                 $("#redeemedPointBill").html("<strong>$" + $.number(points) + "</strong>");
-                $("#totalBill").html("<strong>$" + $.number(factura.total - parseInt(points)) + "</strong>");
+                $("#totalBill").html("<strong>$" + $.number(factura.total) + "</strong>");
                 $("#subtotalBill").html("<strong>$" + $.number(factura.subtotal) + "</strong>");
                 $("#currentPointUser").text(userPoints - points);
 
