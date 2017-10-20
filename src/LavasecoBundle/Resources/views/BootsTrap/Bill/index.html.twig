@@ -273,31 +273,35 @@
         }
 
         function deliverBill() {
-            $.ajax({
-                url: "{{ path("lavaseco_api_bill_deliver") }}",
-                method: "POST",
-                dataType: "json",
-                data: bill,
-                beforeSend: function (xhr) {
-                    loadingModal("Registrando la entrega en el sistema... Espere por favor.");
-                },
-                success: function (result) {
-                    closeLoadingModal();
-                    if (result.error !== undefined) {
-                        openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entregar de la factura");
-                    } else {
-                        openModalAlerErrorSuccess('Confirmación de Factura', "Se registró la entrega con éxito",
-                                function () {
-                                    $('#wayToPay').modal('hide');
-                                    location.reload();
-                                });
+            if (updateChange()) {
+                $.ajax({
+                    url: "{{ path("lavaseco_api_bill_deliver") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: bill,
+                    beforeSend: function (xhr) {
+                        loadingModal("Registrando la entrega en el sistema... Espere por favor.");
+                    },
+                    success: function (result) {
+                        closeLoadingModal();
+                        if (result.error !== undefined) {
+                            openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entregar de la factura");
+                        } else {
+                            openModalAlerErrorSuccess('Confirmación de Factura', "Se registró la entrega con éxito",
+                                    function () {
+                                        $('#wayToPay').modal('hide');
+                                        location.reload();
+                                    });
+                        }
+                    },
+                    error: function () {
+                        closeLoadingModal();
+                        openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entrega de la factura");
                     }
-                },
-                error: function () {
-                    closeLoadingModal();
-                    openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entrega de la factura");
-                }
-            });
+                });
+            } else {
+                openModalAlerErrorSuccess("Error", "Verifique el dinero dado por el cliente");
+            }
         }
 
         function wayToPay() {
