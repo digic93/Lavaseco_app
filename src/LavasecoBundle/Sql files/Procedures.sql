@@ -146,7 +146,7 @@ BEGIN
 		group by b.id
         order by s.id, b.id asc;
 	ELse
-				select
+                    select
 			concat(b.sale_point_id,'-',b.id) id,
 			bs.name estado,
 			pa.name pago,
@@ -179,6 +179,137 @@ BEGIN
 		group by b.id
         order by s.id, b.id asc;
 	END IF;
+END$$
+
+DELIMITER ;
+
+
+/*Sale Point Report sales/////////////////////////////////////////////////////////////*/
+USE `lavaseco_db`;
+DROP procedure IF EXISTS `cashTransaction`;
+
+DELIMITER $$
+USE `lavaseco_db`$$
+CREATE PROCEDURE `cashTransaction` (IN _from_date DATETIME,IN  _to_date DATETIME,IN  _sale_point_id int)
+BEGIN
+    IF _sale_point_id = 0 THEN
+        select
+            sp.id,
+            sp.name puntoVenta,
+            ifnull(ti.ingresos, 0) ingresos,
+            ifnull(te.egresos, 0) egresos,
+            ifnull(ta.apertura, 0) apertura,
+            ifnull(tc.cierre, 0) cierre
+        from
+            sale_point sp
+        left join
+            (	
+                select 
+                        sp.id id,
+                        floor(avg(cta.payment)) apertura
+                from 
+                        sale_point sp
+                inner join cash_transaction cta on sp.id = cta.sale_point_id
+                        and cta.type_transaction_id = 1
+                where cta.created_at between _from_date and _to_date
+                group by sp.id, sp.name 
+            ) ta on sp.id = ta.id
+        left join
+            (
+                select 
+                        sp.id id,
+                        floor(avg(ctc.payment)) cierre
+                from 
+                        sale_point sp
+                inner join cash_transaction ctc on sp.id = ctc.sale_point_id
+                        and ctc.type_transaction_id = 2
+                where ctc.created_at between _from_date and _to_date
+                group by sp.id, sp.name
+            ) tc on sp.id = tc.id
+        left join 
+            (
+                select 
+                        sp.id id,
+                        sum(cti.payment) ingresos
+                from 
+                        sale_point sp
+                inner join cash_transaction cti on sp.id = cti.sale_point_id
+                        and cti.type_transaction_id = 3
+                where cti.created_at between _from_date and _to_date
+                group by sp.id, sp.name
+            )ti  on sp.id = ti.id
+        left join
+            (
+                select 
+                        sp.id id,
+                        sum(cte.payment) egresos
+                from 
+                        sale_point sp
+                inner join cash_transaction cte on sp.id = cte.sale_point_id
+                        and cte.type_transaction_id = 4
+                where cte.created_at between _from_date and _to_date
+                group by sp.id, sp.name
+            ) te  on sp.id = te.id;
+    ELSE
+        select
+            sp.id,
+            sp.name puntoVenta,
+            ifnull(ti.ingresos, 0) ingresos,
+            ifnull(te.egresos, 0) egresos,
+            ifnull(ta.apertura, 0) apertura,
+            ifnull(tc.cierre, 0) cierre
+        from
+            sale_point sp
+        left join
+            (	
+                select 
+                        sp.id id,
+                        floor(avg(cta.payment)) apertura
+                from 
+                        sale_point sp
+                inner join cash_transaction cta on sp.id = cta.sale_point_id
+                        and cta.type_transaction_id = 1
+                where cta.created_at between _from_date and _to_date
+                group by sp.id, sp.name 
+            ) ta on sp.id = ta.id
+        left join
+            (
+                select 
+                        sp.id id,
+                        floor(avg(ctc.payment)) cierre
+                from 
+                        sale_point sp
+                inner join cash_transaction ctc on sp.id = ctc.sale_point_id
+                        and ctc.type_transaction_id = 2
+                where ctc.created_at between _from_date and _to_date
+                group by sp.id, sp.name
+            ) tc on sp.id = tc.id
+        left join 
+            (
+                select 
+                        sp.id id,
+                        sum(cti.payment) ingresos
+                from 
+                        sale_point sp
+                inner join cash_transaction cti on sp.id = cti.sale_point_id
+                        and cti.type_transaction_id = 3
+                where cti.created_at between _from_date and _to_date
+                group by sp.id, sp.name
+            )ti  on sp.id = ti.id
+        left join
+            (
+                select 
+                        sp.id id,
+                        sum(cte.payment) egresos
+                from 
+                        sale_point sp
+                inner join cash_transaction cte on sp.id = cte.sale_point_id
+                        and cte.type_transaction_id = 4
+                where cte.created_at between _from_date and _to_date
+                group by sp.id, sp.name
+            ) te  on sp.id = te.id
+        where sp.id = _sale_point_id;
+    END IF;
 END$$
 
 DELIMITER ;

@@ -206,8 +206,8 @@ class BillController extends Controller {
 
         $this->savePayDetail($payMethodId, $payment, $bill);
 
-        //asigno puntos al usuario
-        if ($bill->getCustomer()) {
+        //asigno puntos al usuario si el pago es diferente al anicipado
+        if ($bill->getCustomer() && $bill->getPaymentAgreement()->getId() != 1) {
             $bonification = ($bill->getDiscount() == 0) ? $this->getBonificationByPaymentAgreement($bill->getPaymentAgreement()) : 0;
             $this->updateCustomer($total, $customer, $bonification);
         }

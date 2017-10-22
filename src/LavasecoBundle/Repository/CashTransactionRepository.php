@@ -56,5 +56,14 @@ class CashTransactionRepository extends \Doctrine\ORM\EntityRepository {
 
         return $transactions->getResult();
     }
+    
+    public function CashTransactionReport($from, $to, $salePoint = 0){
+        $procedure = "CALL cashTransaction('" . $from->format('Y-m-d 00:00:00') . "', '" . $to->format('Y-m-d 23:59:59') . "'," . $salePoint . ")";
+        $em = $this->getEntityManager()->getConnection();
+        $sth = $em->prepare($procedure);
+        $sth->execute();
+        
+        return $sth->fetchAll();
+    }
 
 }

@@ -63,13 +63,13 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Reportes <i class="fa fa-area-chart" aria-hidden="true"></i></a>
                             <ul class="dropdown-menu">
                                 {% if is_granted('ROLE_MANAGER') %}
-{#                                    <li><a href="{{ path('lavaseco_setting_report_dashboard') }}">Dashboard</a></li>
-                                    <li><a href="{{ path('lavaseco_setting_report_dashboard') }}">Movimientos de Caja</a></li>
-                                    <li role="separator" class="divider"></li>#}
-                                    <li><a href="{{ path('lavaseco_setting_report_daily_sale') }}">Venta Diaria</a></li>
+{#                                    <li><a href="{{ path('lavaseco_report_dashboard') }}">Dashboard</a></li>#}
+                                    <li><a href="{{ path('lavaseco_report_cash_transaction') }}">Movimientos de Caja</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="{{ path('lavaseco_report_daily_sale') }}">Venta Diaria</a></li>
 {#                                    <li><a href="{{ path('lavaseco_setting_report_service_sale') }}">Ventas por Servicio</a></li>
                                     <li><a href="{{ path('lavaseco_setting_report_user_sale') }}">Ventas por Usuario</a></li>
-#}                                    <li><a href="{{ path('lavaseco_setting_report_sale_point') }}">Ventas por Punto Venta</a></li>
+#}                                    <li><a href="{{ path('lavaseco_report_sale_point') }}">Ventas por Punto Venta</a></li>
                                 {% endif %}
                             </ul>
                         </li>

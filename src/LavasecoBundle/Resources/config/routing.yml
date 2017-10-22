@@ -54,25 +54,29 @@ lavaseco_setting_corporation:
     path:     /configuracion/webpage
     defaults: { _controller: LavasecoBundle:Corporation:index }
 
-lavaseco_setting_report_dashboard:
+lavaseco_report_dashboard:
     path:     /reportes/dashboard
     defaults: { _controller: LavasecoBundle:Report:dashboard }
 
-lavaseco_setting_report_daily_sale:
+lavaseco_report_daily_sale:
     path:     /reportes/venta/diaria
     defaults: { _controller: LavasecoBundle:Report:dailySale }
 
-lavaseco_setting_report_service_sale:
+lavaseco_report_service_sale:
     path:     /reportes/venta/servicios
     defaults: { _controller: LavasecoBundle:Report:serviceSale }
 
-lavaseco_setting_report_user_sale:
+lavaseco_report_user_sale:
     path:     /reportes/venta/usuarios
     defaults: { _controller: LavasecoBundle:Report:userSale }
 
-lavaseco_setting_report_sale_point:
+lavaseco_report_sale_point:
     path:     /reportes/venta/puntoventa
     defaults: { _controller: LavasecoBundle:Report:salepoint }
+
+lavaseco_report_cash_transaction:
+    path:     /reportes/movimientos/puntoventa
+    defaults: { _controller: LavasecoBundle:Report:cashTransaction }
 
 #Ajax Service-------------------------------------------------------------------        
 lavaseco_api_service_category:
@@ -205,4 +209,9 @@ lavaseco_api_report_daily_sale:
 lavaseco_api_report_sale_point:
     path:     /api/report/salepoint
     defaults: { _controller: LavasecoBundle:Report:getSalePoint }
+    methods:  [POST]
+
+lavaseco_api_report_cash_transaction:
+    path:     /api/report/transaction
+    defaults: { _controller: LavasecoBundle:Report:getCashTransaction }
     methods:  [POST]
