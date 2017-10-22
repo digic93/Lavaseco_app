@@ -49,6 +49,7 @@
                         <th>Factura</th>
                         <th>Cliente</th>
                         <th>Telefono</th>
+                        <th>Total</th>
                         <th>Estado Proceso</th>
                         <th>Pago</th>
                         <th>Estado Factura</th>
@@ -63,6 +64,7 @@
                             <td>{{ bill.id }}</td>
                             <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
                             <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                            <td>$<span class="total"> {{ bill.total}}</span></td>
                             <td>{{ bill.processState.name}}</td>
                             <td>{{ bill.paymentAgreement.name }}</td>
                             <td>{{ bill.billState.name}}</td>
@@ -82,6 +84,7 @@
                         <th>Factura</th>
                         <th>Cliente</th>
                         <th>Telefono</th>
+                        <th>Total</th>
                         <th>Estado Proceso</th>
                         <th>Pago</th>
                         <th>Estado Factura</th>
@@ -96,6 +99,7 @@
                             <td>{{ bill.id }}</td>
                             <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
                             <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                            <td>$<span class="total"> {{ bill.total}}</span></td>
                             <td>{{ bill.processState.name}}</td>
                             <td>{{ bill.paymentAgreement.name }}</td>
                             <td>{{ bill.billState.name}}</td>
@@ -166,7 +170,6 @@
 
 {% block javascripts %}
     <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
-    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
     <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
 
     <script>
@@ -176,6 +179,7 @@
         var UndeliveredBillSelect = 0;
 
         $(document).ready(function () {
+            $(".total").number(true);
             $("#change").number(true);
             $("#cashReceived").number(true);
 

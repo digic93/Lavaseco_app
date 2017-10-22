@@ -101,7 +101,7 @@ class CashTransactionController extends Controller {
         $em = $this->get('doctrine')->getManager();
         $typeTransactionRepository = $em->getRepository("LavasecoBundle:TypeTransaction");
 
-        if ($salePointIsOpen != null) {
+        if (isset($salePointIsOpen)) {
             $typeTransactionId = ($salePointIsOpen) ? 1 : 2;
         }
 

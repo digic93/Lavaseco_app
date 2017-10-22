@@ -29,6 +29,13 @@ class ReportController extends Controller {
         return $this->render($configuration->getViewTheme() . ':Reports/userSale.html.twig');
     }
 
+    public function cashTransactionAction() {
+        $configuration = $this->get('lavaseco.app_configuration');
+        return $this->render($configuration->getViewTheme() . ':Reports/cashTransaction.html.twig', [
+                    "salePoints" => $this->getAllSalePoints(),
+        ]);
+    }
+
     public function salePointAction() {
         $configuration = $this->get('lavaseco.app_configuration');
         return $this->render($configuration->getViewTheme() . ':Reports/salePoint.html.twig', [
@@ -106,7 +113,7 @@ class ReportController extends Controller {
         }
 
         $report = $reportData = $this->getSalePointReport($dateTo, $dateFrom, $salePoint);
-       
+
         $categories = array();
         $dataCancelado = array();
         $dataPendiente = array();
@@ -115,9 +122,9 @@ class ReportController extends Controller {
         foreach ($report as $data) {
             $salePoint = $data["puntoVenta"];
             if (!in_array($salePoint, $categories)) {
-                if(count($categories)){
-                    $dataCancelado[] = $cancelado;  
-                    $dataPendiente[] = $pendiente;  
+                if (count($categories)) {
+                    $dataCancelado[] = $cancelado;
+                    $dataPendiente[] = $pendiente;
                 }
                 $categories[] = $salePoint;
                 $cancelado = $pendiente = 0;
@@ -125,13 +132,13 @@ class ReportController extends Controller {
             $cancelado += $data["cancelado"];
             $pendiente += $data["pendiente"];
         }
-        
-        if(count($categories)){
-            $dataCancelado[] = $cancelado;  
-            $dataPendiente[] = $pendiente;  
+
+        if (count($categories)) {
+            $dataCancelado[] = $cancelado;
+            $dataPendiente[] = $pendiente;
         }
-        
-         $series = [
+
+        $series = [
             [
                 "name" => "Cancelado",
                 "data" => $dataCancelado,
@@ -142,7 +149,63 @@ class ReportController extends Controller {
             ],
         ];
 
-        
+
+        $result = [
+            "report" => $report,
+            "chart" => ["categories" => $categories, "series" => $series]
+        ];
+        return $this->json($result);
+    }
+
+    public function getCashTransactionAction(Request $request) {
+        $salePoint = $request->request->get('salePoint');
+        $startDate = $request->request->get('startDate');
+        $finalDate = $request->request->get('finalDate');
+
+        if ($startDate != "" && $finalDate != "") {
+            $dateTo = new \DateTime(date('Y-m-d', strtotime($startDate)));
+            $dateFrom = new \DateTime(date('Y-m-d', strtotime($finalDate)));
+        } else {
+            $dateTo = new \DateTime(date('1-m-Y', strtotime('this month')));
+            $dateFrom = new \DateTime(date('d-m-Y', strtotime('last day of this month')));
+        }
+
+        $report = $reportData = $this->getCachTransactionReport($dateTo, $dateFrom, $salePoint);
+
+        $categories = array();
+        $dataIngresos = array();
+        $dataEgresos = array();
+        $dataApertura = array();
+        $dataCierre = array();
+
+        foreach ($report as $data) {
+            $categories[] = $data["puntoVenta"];
+            $dataCierre[] = intval($data["cierre"]);
+            $dataEgresos[] = intval($data["egresos"]);
+            $dataIngresos[] = intval($data["ingresos"]);
+            $dataApertura[] = intval($data["apertura"]);
+        }
+
+        $series = [
+            [
+                "name" => "Ingresos",
+                "data" => $dataIngresos,
+            ],
+            [
+                "name" => "Egresos",
+                "data" => $dataEgresos,
+            ],
+            [
+                "name" => "Avg Apertura",
+                "data" => $dataApertura,
+            ],
+            [
+                "name" => "Avg Cierre",
+                "data" => $dataCierre,
+            ],
+        ];
+
+
         $result = [
             "report" => $report,
             "chart" => ["categories" => $categories, "series" => $series]
@@ -169,6 +232,13 @@ class ReportController extends Controller {
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
 
         return $billRepository->SalePointReport($initialDate, $endDate, $salePoint);
+    }
+
+    private function getCachTransactionReport($initialDate, $endDate, $salePoint) {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $billRepository = $doctrineManager->getRepository("LavasecoBundle:CashTransaction");
+
+        return $billRepository->CashTransactionReport($initialDate, $endDate, $salePoint);
     }
 
     private function getLastMonday($date) {
