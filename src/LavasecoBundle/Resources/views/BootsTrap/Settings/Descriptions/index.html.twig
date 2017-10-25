@@ -3,6 +3,38 @@
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
     {#    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/dataTables.bootstrap.css") }}">#}
+    <style>
+        .iconSettings {
+            margin-top    : 5px;
+            margin-bottom : 10px;
+            font-size     : 12px;
+            position      : relative;
+            top           : 1px;
+            display       : inline-block;
+            font-family   : 'Glyphicons Halflings';
+            font-style    : normal;
+            font-weight   : 400;
+            line-height   : 1;
+            -webkit-font-smoothing : antialiased;
+        }
+
+        td.details-control {
+            cursor     : pointer;
+            text-align : center;
+
+            &:before {
+                @extend .iconSettings;
+                content : '\2b';
+            }
+        }
+
+        tr.shown td.details-control {
+            &:before {
+                @extend .iconSettings;
+                content : '\2212';
+            }
+        } 
+    </style>
 {% endblock %} 
 
 {% block body %} 
@@ -94,20 +126,13 @@
             <table id="descriptorsTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
-                        <th>Descriptor</th>
-                        <th>Tipo Descriptor</th>
                         <th></th>
+                        <th>ID</th>
+                        <th>Descriptor</th>
+                        <th>Edit</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for ObjectDescription in ObjectDescriptions %}
-                        <tr>
-                            <td>{{ ObjectDescription.name }}</td>
-                            <td>{{ ObjectDescription.categoryStateObject.name }}</td>
-                            <td>Editd</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
+
             </table>
         </div>
     </div>
@@ -117,8 +142,75 @@
     <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
 
     <script>
+        /* Formatting function for row details - modify as you need */
+        function format(data) {
+            // `data` is the original data object for the row
+            var html = "";
+            
+            for (var i in data.descriptors) {
+                html += '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                    '<tr>' +
+                    '<td>Nombre Tipo Descriptor:</td>' +
+                    '<td>' + data.descriptors[i].name + '</td>' +
+                    '</tr>' +
+                    '</table>';
+            }
+            
+            return html;
+        }
+
         $(document).ready(function () {
-            $('#descriptorsTable').DataTable();
+            var data = [
+                {
+                    "id": 1,
+                    "name": "Color",
+                    "descriptors": [{"name":"Azul"}, {"name": "Verde"}, {"name": "Amarillo"}, {"name": "Rojo"}]
+                },
+                {
+                    "id": 2,
+                    "name": "Tamaño",
+                    "descriptors": [{"name":"Grande"}, {"name": "Mediano"}, {"name": "Pequeño"}]
+                }
+            ];
+            
+            console.log(data.descriptors);
+            
+            var table = $('#descriptorsTable').DataTable({
+                // Column definitions
+                "columns": [
+                    {
+                        "class": 'details-control',
+                        "orderable": false,
+                        "data": null,
+                        "defaultContent": ''
+                    },
+                    {"data": "id"},
+                    {"data": "name"}
+                ],
+                
+                "order": [[1, 'asc']],
+                
+                data : data
+            });
+
+            // Add event listener for opening and closing details
+            $('#descriptorsTable tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).parents('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.next('tr').removeClass('details-row');
+                    tr.removeClass('shown');
+                } else {
+                    // Open this row
+                    row.child(format(row.data())).show();
+                    tr.next('tr').addClass('details-row');
+                    tr.addClass('shown');
+                }
+            });
+            
         });
     </script>
 {% endblock %}
