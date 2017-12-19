@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Facebook</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+    </head>
+
+    <body>  
+
+        <!-- scroll bar -->
+        <div class="row ">
+            <div class="col-md-3">
+                <div class="form-group">
+
+                    <div id="divAddress" class="form-group">
+                        <div class="input-group">
+                            <span>Panel de Busqueda</span>
+                            <input id="pac-input" class="form-control" id="client_address" type="text" placeholder="Busqueda..."/>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div id="divAddress" class="form-group">
+                        <p>Dirección de Envío</p>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                            <input id="shippingAddress" class="form-control" type="text" disabled="true"/>
+                        </div>
+                    </div>
+
+
+                    <div id="divSaveClient" class="form-group">
+                        <button id="btnSaveClient" type="submit"  onclick="" class="btn btn-success btn-block"/>Guardar</button>
+                    </div>
+
+                </div>
+                <hr>
+            </div>
+
+
+            <div class="col-md-8">
+                <!--map-->
+                <div id="map" style="height:500px;"></div>
+            </div>
+        </div>
+
+
+
+        <!-- Javascript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+
+        <script>window.jQuery || document.write('<script src="js/jquery-1.11.0.min.js"><\/script>')</script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap" async defer></script>
+        <script>
+            var map;
+            var markers = [];
+
+            function initMap() {
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: -34.397, lng: 150.644},
+                    zoom: 6
+                });
+                var infoWindow = new google.maps.InfoWindow({map: map});
+
+                // intentando recuperar geolocalización .
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+
+                        console.log(pos);
+                        //centra el mapa en la posición 
+                        map.setCenter(pos);
+                        //hace zoom al mapa
+                        map.setZoom(17);
+
+                        //Crea el marcador
+                        markers.push(createPlaceMarker(map, pos));
+                    }, function () {
+                        // fallo al reconocer la ubicacion actual
+                        handleLocationError(true, infoWindow, map.getCenter());
+                    });
+                } else {
+                    // El navegador no soporta la geolocalización
+                    handleLocationError(false, infoWindow, map.getCenter());
+                }
+
+                //genera el nuevo marcador 
+                google.maps.event.addListener(map, 'click', function (event) {
+                    var marker = createPlaceMarker(map, event.latLng)
+                    markers.push(marker);
+                });
+
+                
+                // busqueda por 
+                searchBox();
+
+            }
+
+            function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+                infoWindow.setPosition(pos);
+                infoWindow.setContent(browserHasGeolocation ?
+                        'Error: El servicio de Geolocalización Fallo.' :
+                        'Error: Tu navegador no soporta el servicio de geolocalización');
+            }
+
+            //Funcion para crear el marker
+            function createPlaceMarker(map, location) {
+                var marker;
+
+                deletePlaceMarker();
+                //crea en nuevo marcador de acuerdo a la seleccion en el mapa
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    draggable: true,
+                    animation: google.maps.Animation.DROP
+                });
+
+                return marker;
+            }
+
+            function deletePlaceMarker() {
+                if (markers.length > 0) {
+                    // Borra los marcadores
+                    markers.forEach(function (marker) {
+                        marker.setMap(null);
+                    });
+                    markers = [];
+                }
+            }
+
+            function searchBox() {
+                // Create the search box and link it to the UI element.
+                var input = document.getElementById('pac-input');
+                var searchBox = new google.maps.places.SearchBox(input);
+
+                // Bias the SearchBox results towards current map's viewport.
+                map.addListener('bounds_changed', function () {
+                    searchBox.setBounds(map.getBounds());
+                });
+
+                // Listen for the event fired when the user selects a prediction and retrieve
+                // more details for that place.
+                searchBox.addListener('places_changed', function () {
+                    var places = searchBox.getPlaces();
+
+                    if (places.length === 0) {
+                        return;
+                    }
+
+                    deletePlaceMarker();
+
+                    //  por cada lugar obtiene el nombre y la localización.
+                    var bounds = new google.maps.LatLngBounds();
+                    places.forEach(function (place) {
+                        if (!place.geometry) {
+                            console.log("El lugar encontrado no contiene geometría");
+                            return;
+                        }
+                        // crea un marcador por cada lugar encontrado
+                        markers.push(new google.maps.Marker({
+                            map: map,
+                            title: place.name,
+                            position: place.geometry.location
+                        }));
+
+                        if (place.geometry.viewport) {
+                            // Solo los códigos geográficos tienen ventana gráfica.
+                            bounds.union(place.geometry.viewport);
+                        } else {
+                            bounds.extend(place.geometry.location);
+                        }
+
+                        document.getElementById('shippingAddress').value = place.formatted_address;
+                    });
+                    map.fitBounds(bounds);
+                });
+
+
+
+            }
+
+            // Todos los markers del mapa.
+            function hideMarkers() {
+                setMapOnAll(null);
+            }
+
+        </script>
+
+
+    </body>
+</html>
