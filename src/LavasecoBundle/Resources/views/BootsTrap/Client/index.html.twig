@@ -1,0 +1,84 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <style> 
+        .req {
+            margin:2px;
+            color:#1ab188;
+        }
+    </style>
+{% endblock %} 
+
+{% block body %} 
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">  
+            <div class="form-group">
+                <div id="divUser" class="form-group">
+                    <p>Usuario<span class="req">*</span></p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                        <input class="form-control" id="textUser" type="text" required autocomplete="off" />
+                    </div>
+                    <span id="helpBlockUser" class="help-block"></span>
+                </div>
+
+                <div id="divPassword" class="form-group">
+                    <p>Contraseña<span class="req">*</span></p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i></span>
+                        <input class="form-control" id="textPassword" type="number" required autocomplete="off"/>
+                    </div>
+                    <span id="helpBlockPassword" class="help-block"></span>
+                </div>
+
+                <div id="divLogin" class="form-group">
+                    <button id="btnLoginClient" type="submit"  onclick="login();" class="btn btn-success btn-block"/>Iniciar Sesión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+        var validVariables = false;
+        
+        $('#textUser').focusout(function () {
+            var user = $("#textUser").val();
+
+            if (user === null || user.length === 0 || /^\s+$/.test(user)) {
+                $("#divUser").removeClass("has-success");
+                $("#divUser").addClass("has-error");
+                $("#helpBlockUser").text("Campo Obligatorio");
+                validVariables = false;
+            } else {
+                $("#divUser").addClass("has-success");
+                $("#divUser").removeClass("has-error");
+                $("#helpBlockUser").text("");
+                validVariables = true;
+            }
+        });
+        
+        $('#textPassword').focusout(function () {
+            var password = $("#textPassword").val();
+
+            if (password === null || password.length === 0 || /^\s+$/.test(password)) {
+                $("#divUser").removeClass("has-success");
+                $("#divUser").addClass("has-error");
+                $("#helpBlockUser").text("Campo Obligatorio");
+                validVariables = false;
+            } else {
+                $("#divPassword").addClass("has-success");
+                $("#divPassword").removeClass("has-error");
+                $("#helpBlockPassword").text("");
+                validVariables = true;
+            }
+        });
+        
+        function login() {
+            if (validVariables) {
+                alert  ("Inicio de sesión Exitoso");
+            }
+        }
+    </script>
+{% endblock %}
