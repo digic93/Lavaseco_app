@@ -25,7 +25,7 @@
     </div>
     <div class="row">
         <!--facturas-->
-        <div class="col-md-12"> 
+        <div class="col-md-9"> 
             <div class="well well-sm pull-right">
                 {% if salePointIsOpen %}
                     <form class="form-inline">
@@ -46,7 +46,7 @@
             <table id="billsUndeliveredTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
-                        <th>Factura</th>
+                        <th>No. Fac</th>
                         <th>Cliente</th>
                         <th>Telefono</th>
                         <th>Total</th>
@@ -81,7 +81,7 @@
             <table id="billsDeliveredTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
-                        <th>Factura</th>
+                        <th>No. Fac</th>
                         <th>Cliente</th>
                         <th>Telefono</th>
                         <th>Total</th>
@@ -111,6 +111,30 @@
                 </tbody>
             </table>
         </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-file-text" aria-hidden="true"></i> Detalle de la Factura</h3>
+                </div>
+                <div class="panel-body">
+                    <h3 id="billTicket">Factura No. ***</h3>
+                    
+                    <h5 id="dateTicket">Fecha: DD/MM/YYY hh:mm</h5>
+                    <hr>                   
+                    <strong id="customerTicket">Cliente: XXXXXXXXXXXX</strong><br>
+                    <strong id="phoneNumberTicket">Numero Telefono: XXXXXXXXXXXX</strong><br>
+                    <hr>
+                    <h5 id="sellerTicket">Vendedor: XXXXXXXXXXXX</h5>
+                    <h5 id="quantityTicket"><strong>No. de artículos: N</strong></h5>
+                    <hr>
+                    <p id="billDetailsTicket">
+                    </p>
+                </div>
+                <div class="panel-footer">
+                    <h5 id="priceTicket" class="text-right"><strong>Total: $XXXXX</strong></h5>
+                </div>
+            </div>
+        </div>        
     </div>
     <!-- Modal -->
     <div id="wayToPay" class="modal fade" role="dialog">
@@ -200,6 +224,7 @@
                 $(this).toggleClass('selected');
 
                 collapseProcessLine(data[0]);
+                getTicket(data[0]);
             });
 
             $('#billsDeliveredTable tbody').on('click', 'tr', function () {
@@ -211,6 +236,7 @@
                 $(this).toggleClass('selected');
 
                 collapseProcessLine(data[0]);
+                getTicket(data[0]);
             });
         });
 
@@ -250,6 +276,45 @@
                         </li>";
             $("#listLineTime").append(html);
         }
+        
+        
+        function getTicket(billId) {
+            $.ajax({
+                url: "{{ path('lavaseco_api_orders_tikets') }}/" + billId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (ticket) {
+                    drawTicket(ticket);
+                }
+            });
+        }
+
+        function drawTicket(ticket) {
+            {#            $("#orderTiket").html("Orden " + tiket.consecutive);#}
+            $("#billTicket").html("Factura No. " + ticket.salePoint + "-" + ticket.bill);
+            $("#dateTicket").html("Fecha: " + ticket.createdAt);
+            $("#sellerTicket").html("Vendedor: " + ticket.seller);
+            $("#quantityTicket").html("<strong>No. de artículos: " + $.number(ticket.billDetail.quantity) + "</strong>");
+            $("#priceTicket").html("<strong>Total: $" + $.number(ticket.billDetail.total) + "</strong>");
+            $("#customerTicket").html("Cliente: " + ticket.customer);
+            $("#phoneNumberTicket").html("Numero Telefono: " + ticket.phoneNumber);
+            drawDetails(ticket.billDetail.details);
+            $("#billDetailsTicket").append("<hr><strong>Observaciones: </strong>" + ((ticket.observation === "")? "Ninguna":ticket.observation));
+        }
+
+        function drawDetails(billDetails) {
+            $("#billDetailsTicket").empty();
+            for (var i in billDetails) {
+                var html = "<strong>" + billDetails[i].quantity + " x " + billDetails[i].serviceName + "</strong><br>";
+                for (var j in billDetails[i].descriptors) {
+                    html += billDetails[i].descriptors[j] + ", ";
+                }
+                html += "<br><strong> Observación: </strong>" + ((billDetails[i].observation === "")? "Ninguna":billDetails[i].observation) + "<p/>";
+                $("#billDetailsTicket").append(html);
+            }
+        }
+        
 
         function delivered() {
             if (UndeliveredBillSelect === 0) {

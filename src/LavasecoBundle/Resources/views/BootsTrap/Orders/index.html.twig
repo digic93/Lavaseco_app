@@ -15,6 +15,8 @@
         <div class="col-md-9"> 
             <div class="well well-sm pull-right">
                 <form class="form-inline">
+                    <span id="buttonGroupPayBill"></span>
+                    |
                     <button type="button" id="changeStateButton" class="btn btn-success" onclick="changeEstate();">Cambiar de estado</button>
                     |
                     <div class="checkbox">
@@ -129,6 +131,80 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal Forma de Pago-->
+    <div id="modalPayInvoice" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <label id="paymentTittle">Pago de Factura</label>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-10 col-md-offset-1">
+                            <div class="form-group">
+                                <p>Acuerdo de Pago</p>
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectPaymentAgreement" onChange="" class="form-control">
+                                        <option value="1" selected="selected" data-name="Totalidad">Pagar Total</option>
+                                        <option value="3" data-name="Abono">Abonar</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            
+                            <div class="form-group">
+                                <p>Forma de Pago</p>
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectWayToPay" onChange="" class="form-control">
+                                        <option selected="selected" value="1" data-name="Efectivo">Efectivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div class="form-group">
+                                <div id="divTotalBill">
+                                    <p class='text-right'>
+                                        <strong>Total Factura: $ 
+                                            <span id="lblTotalBill"></span>
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <p>Dinero Recibido<span class="req">*</span></p>
+                                <div class="input-group" id="divCashReceived">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="cashReceived" type="text" autocomplete="off" onkeyup="updateChange();"/>
+                                </div>
+                            </div>
+
+                            <div id="divChange" class="form-group">
+                                <p>Vueltas</p>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="change" type="text" autocomplete="off" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit"  onclick="paymentInvoice();" class="btn btn-success"/>Cobrar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+                                    
 {% endblock %}
 
 {% block javascripts %}
@@ -146,7 +222,9 @@
             $("#seletedCheckbox").change(function () {
                 if (!this.checked) {
                     $(".selected").toggleClass('selected');
+                    drawBtnPayInvoice(true);
                 }
+                drawBtnPayInvoice(true);
             });
 
             $('#billsTable tbody').on('click', 'tr', function () {
@@ -157,15 +235,18 @@
                     $(".selected").toggleClass('selected');
                     orderSelected[0] = [];
                     orderSelected[1] = [];
+                    drawBtnPayInvoice(false, data[0]);
                 }
-
+                
+                if(!$('#seletedCheckbox').is(":checked")){
+                    
+                }
+                
                 $(this).toggleClass('selected');
 
                 getTiket(data[0]);
-
                 orderSelected[0].push(data[0]);
                 orderSelected[1].push(data[1]);
-
             });
 
             updateSelectUpdaateUrl();
@@ -206,6 +287,79 @@
                 }
                 html += "<strong>" + billDetails[i].observation + "</strong><br>";
                 $("#billDetailsTiket").append(html);
+            }
+        }
+        
+        function drawBtnPayInvoice(boolean, invoiceId){
+            var html = "";
+            
+            if (boolean === false){
+                html = "<button type=\"button\" id=\"btnPayBill\" class=\"btn btn-info\" onclick=\"payInvoice("+ invoiceId +");\">Pagar Factura</button>"
+            }
+            $("#buttonGroupPayBill").html(html);
+        }
+        
+        function payInvoice(invoiceId) { 
+            $.ajax({
+                url: "{{ path('lavaseco_api_orders_tikets') }}/" + invoiceId,
+                method: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    $('#paymentTittle').text('Pago de la factura No. '+ data.salePoint + "-" + data.bill);
+                    $('#lblTotalBill').html("<strong>"+ data.billDetail.total + "</strong>");
+                    $('#modalPayInvoice').modal('show');
+                },
+                error: function (){
+                    openModalAlerErrorSuccess("Error", "Error al cargar la factura");
+                }            
+            });           
+        }
+        
+        function paymentInvoice(){
+            if (updateChange()) {
+                alert("pago la factura desde ordenes");
+            } else {
+                openModalAlerErrorSuccess("Error", "Verifique el dinero dado por el cliente");
+            }
+        }
+        
+        function updateChange() {
+            var paymentAgreement = $('#selectPaymentAgreement').val();
+            console.log($('#lblTotalBill').text());
+            console.log ("medotdo de pago" + paymentAgreement)
+            
+            if (paymentAgreement !== "3") {//3 es el id del metodo de abono
+                var change = $("#cashReceived").val() - $('#lblTotalBill').text();
+                var vMissingMoney = $('#lblTotalBill').text() - $("#cashReceived").val();
+                
+                if (change < 0) {
+                    $("#change").val('');
+                    $("#missingMoney").val(vMissingMoney);
+                    $("#divCashReceived").removeClass("has-success");
+                    $("#divCashReceived").addClass("has-error");
+                    return false;
+                } else {
+                    $("#change").val(change);
+                    $("#missingMoney").val('');
+                    $("#divCashReceived").addClass("has-success");
+                    $("#divCashReceived").removeClass("has-error");
+                    return true;
+                }
+            } else {
+                if (parseInt($("#cashReceived").val()) > ($('#lblTotalBill').text())) {
+                    $("#change").val('');
+                    $("#missingMoney").val('');
+                    $("#divCashReceived").removeClass("has-success");
+                    $("#divCashReceived").addClass("has-error");
+                    return false;
+                } else {
+                    $("#change").val(0);
+                    $("#missingMoney").val(vMissingMoney);
+                    $("#divCashReceived").addClass("has-success");
+                    $("#divCashReceived").removeClass("has-error");
+                    return true;
+                }
             }
         }
 
