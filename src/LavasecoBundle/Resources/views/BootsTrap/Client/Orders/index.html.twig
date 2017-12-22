@@ -21,7 +21,7 @@
                             Filtrar por
                         </label>
                         <select id="processStateUpdate" class="form-control" onchange="updateUrl(this);">
-                            <option value="0" selected>Todos los estados</option>
+                            <option value="0" selected>Todos las categorías</option>
 
                         </select>
                     </div>
@@ -77,7 +77,7 @@
                                     </td>
                                     <td>5000</td> 
                                     <td>
-                                        <button id="addShoppingCart" type="button" class="btn btn-info btn-xs" onclick="">
+                                        <button id="addShoppingCart" type="button" class="btn btn-info btn-xs" onclick="addProduct()">
                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                             Agregar  
                                         </button>
@@ -129,14 +129,96 @@
                         <tbody id="ShoppingCartDetail">
                         </tbody>
                     </table>
+                    <hr>
+
+                    <label>Dirección de Entrega</label>
+                    <select class="form-control" id="bill_payAgreement">
+                        <option selected="selected" value="1" data-name="Recoger en Tienda">Recoger en Tienda</option>
+                        <option value="2" data-name="Despacho a Domicilio">Despacho a Domicilio</option>
+                    </select>
+
+                    <div id="divDeliveryInfo" class="form-group" style="display: none;">
+                        <p/>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                            <input id="shippingAddressSelected" class="form-control" type="text" disabled="true"/>
+                        </div>
+                        <p/>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="textarea">Observaciones</label>
+                            <br>
+                            <textarea id="observationProcessShippingAddress" class="form-control" id="textarea" name="textarea" placeholder="Número apartamento/ bloque/ casa/ torre..."></textarea>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="panel-footer">
                     <button type="button" class="btn btn-primary" onclick="">Guardar</button>
-                    <button type="button" class="btn btn-success" onclick="">Pagar</button>
+                    <button type="button" class="btn btn-success" onclick="payment();">Pagar</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade bs-example-modal-lg" id="deliveryAddress" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        <i class="fa fa-motorcycle" aria-hidden="true"></i>
+                        <label id="ShippmentAddressTitle">Selecciona la Dirección de Entrega</label>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="panel-body">
+                            {% include 'LavasecoBundle:BootsTrap:Client/Delivery/index.html.twig' %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="saveChange();">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                    <h4 class="modal-title" id="myModalLabel">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        Eligir Método de Pago
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-md-5 control-label" for="selectbasic">Forma de Pago</label>
+                            <div class="col-md-6">
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectWayToPay" onChange="" class="form-control">
+                                        <option selected="selected" value="1" data-name="Efectivo">Efectivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="saveChange();">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>                        
 {% endblock %}
 
 {% block javascripts %}
@@ -147,28 +229,51 @@
         var detailOrder = {};
         var billTicketId = 0;
         var orderSelected = [[], []];
+        var data;
+
         $(document).ready(function () {
             detailOrder["total"] = 0;
             detailOrder["services"] = [];
             detailOrder["subtotal"] = 0;
             detailOrder["delivery"] = 0;
             detailOrder["customerId"] = 0;
-            
+
             var table = $('#productsTable').DataTable({
                 "order": [[0, "Desc"]]
             });
 
             $('#productsTable tbody').on('click', 'tr', function () {
                 if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
+                    console.log("estaba seleccionada");
                 } else {
-                    table.$('tr.selected').removeClass('selected');
-                    $(this).addClass('selected');
-                    var data = table.row(this).data();
-                    addProduct(data);
+                    console.log("no estaba seleccionada");
+                    data = table.row(this).data();
                 }
             });
 
+        });
+
+        $('select').on('change', function () {
+            var divElement = document.getElementById("divDeliveryInfo");
+            if (this.value === "2") {
+
+                $("#deliveryAddress").modal('toggle');
+
+                if (divElement.style.display === "none") {
+                    var address = $("#shippingAddress").val();
+                    $("#shippingAddressSelected").val(address);
+                    divElement.style.display = "block";
+                } else {
+                    divElement.style.display = "none";
+                }
+
+            } else {
+                if (divElement.style.display === "block") {
+                    divElement.style.display = "none";
+                } else {
+                    divElement.style.display = "none";
+                }
+            }
         });
 
         function quantityServiceChange(add) {
@@ -193,11 +298,11 @@
             }
         }
 
-        function addProduct(data) {
+        function addProduct() {
             var shoppingCartDetail = {};
             var price = parseInt(data[3]);
             var quantity = parseInt($("#quantity_service").val());
-                    
+
             shoppingCartDetail["id"] = parseInt(data[0]);
             shoppingCartDetail["name"] = $("#nameService").text();
             shoppingCartDetail["price"] = price;
@@ -214,7 +319,7 @@
 
             shoppingCartDetail = {};
         }
-        
+
         function addProductToShoppingCart(productDetail) {
             var html = "<tr class=\"hoverService\" data-id=\"" + productDetail.id + "\">\
                             <td>" + productDetail.name + "</td>\
@@ -222,6 +327,10 @@
                             <td class=\"text-right\">$" + $.number(productDetail.total) + "</td>\
                         </tr>";
             $("#ShoppingCartDetail").append(html);
+        }
+
+        function payment() {
+            $("#paymentModal").modal('toggle');
         }
 
         function updateShoppingCartTotals(currentTotal) {
