@@ -35,13 +35,16 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $bills->getResult();
     }
 
-    public function findDelivered() {
+    public function findDelivered($limit = null) {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.processState = 7')
                 ->orWhere('b.billState = 3')
-                ->getQuery();
+                ->orderBy('b.id', 'DESC');
+        if($limit != null){
+            $bills = $bills->setMaxResults($limit);
+        }
 
-        return $bills->getResult();
+        return $bills->getQuery()->getResult();
     }
 
     public function findUndelivered() {
