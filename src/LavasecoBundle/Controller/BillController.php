@@ -21,7 +21,7 @@ class BillController extends Controller {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
 
-        $billsDelivered = $billRepository->findDelivered();
+        $billsDelivered = $billRepository->findDelivered(100);
         $billsUndelivered = $billRepository->findUndelivered();
 
         return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', [
