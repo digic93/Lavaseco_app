@@ -1,0 +1,345 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+{% endblock %} 
+
+{% block body %} 
+    <h3 >Carrito de Compras</h3>
+    <p>
+        En esta pagina puedes agregar el tipo de prenda que quieres enviar a la lavandería.
+    </p>
+    <hr>
+    <div class="row">
+        <!--Productos por categoria-->
+        <div class="col-md-9"> 
+            <div class="well well-sm pull-right">
+                <form class="form-inline">
+                    |
+                    <div class="form-group">
+                        <label>
+                            Filtrar por
+                        </label>
+                        <select id="processStateUpdate" class="form-control" onchange="updateUrl(this);">
+                            <option value="0" selected>Todos las categorías</option>
+
+                        </select>
+                    </div>
+                </form>                
+            </div>
+
+            <table id="productsTable" class="display" cellspacing="0" width="100%">
+                <thead align="center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Valor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for serviceCagory in serviceCagories %}
+                        {% for subServiceCategory in serviceCagory.subServiceCategories %}
+                            {% for service in subServiceCategory.subServiceCategories %}
+                                <tr>
+                                    <td>{{service.id}}</td>
+                                    <td>
+                                        <table class="text-center">
+                                            <tr>
+                                                <td>
+                                                    <img src="/serviceImg/servicio.jpg" style="width: 150px; height: 150px" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p id="nameService">{{service.name}}<p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-7">
+                                            <div class="input-group">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-success" type="button" onclick="quantityServiceChange(false);">
+                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                    </button>
+                                                </span>
+                                                <input id="quantity_service" type="text" class="form-control text-center" value="1" size="3">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-success" type="button" onclick="quantityServiceChange(true);">
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>5000</td> 
+                                    <td>
+                                        <button id="addShoppingCart" type="button" class="btn btn-info btn-xs" onclick="addProduct()">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                            Agregar  
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <i class="fa fa-shopping-cart" aria-hidden="true"></i> 
+                        Carrito de Compras
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table id="billTable" style="width: 100%;">
+                        <thead>
+                            <tr style="border-bottom-style: solid; border-bottom-width: 1px">
+                                <th class="text-center">Servicio</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">Precio</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr style="border-top-style: solid; border-top-width: 1px">
+                                <td>Subtotal</td>
+                                <td></td>
+                                <td id="subtotalShoppingCart" class="text-right"><strong>$0</strong></td>
+
+                            </tr>
+
+                            <tr>
+                                <td>Valor del Domicilio</td>
+                                <td></td>
+                                <td id="deliveryCost" class="text-right"><strong>$0</strong></td>
+                            </tr>
+
+                            <tr style="border-top-style: solid; border-top-width: 1px">
+                                <td><strong>Total</strong></td>
+                                <td></td>
+                                <td id="totalShoppingCart" class="text-right"><strong>$0</strong></td>
+                            </tr>
+                        </tfoot>
+                        <tbody id="ShoppingCartDetail">
+                        </tbody>
+                    </table>
+                    <hr>
+
+                    <label>Dirección de Entrega</label>
+                    <select class="form-control" id="bill_payAgreement">
+                        <option selected="selected" value="1" data-name="Recoger en Tienda">Recoger en Tienda</option>
+                        <option value="2" data-name="Despacho a Domicilio">Despacho a Domicilio</option>
+                    </select>
+
+                    <div id="divDeliveryInfo" class="form-group" style="display: none;">
+                        <p/>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                            <input id="shippingAddressSelected" class="form-control" type="text" disabled="true"/>
+                        </div>
+                        <p/>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="textarea">Observaciones</label>
+                            <br>
+                            <textarea id="observationProcessShippingAddress" class="form-control" id="textarea" name="textarea" placeholder="Número apartamento/ bloque/ casa/ torre..."></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary" onclick="">Guardar</button>
+                    <button type="button" class="btn btn-success" onclick="payment();">Pagar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade bs-example-modal-lg" id="deliveryAddress" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        <i class="fa fa-motorcycle" aria-hidden="true"></i>
+                        <label id="ShippmentAddressTitle">Selecciona la Dirección de Entrega</label>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="panel-body">
+                            {% include 'LavasecoBundle:BootsTrap:Client/Delivery/index.html.twig' %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="saveChange();">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                    <h4 class="modal-title" id="myModalLabel">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        Eligir Método de Pago
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-md-5 control-label" for="selectbasic">Forma de Pago</label>
+                            <div class="col-md-6">
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectWayToPay" onChange="" class="form-control">
+                                        <option selected="selected" value="1" data-name="Efectivo">Efectivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="saveChange();">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>                        
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        var detailOrder = {};
+        var billTicketId = 0;
+        var orderSelected = [[], []];
+        var data;
+
+        $(document).ready(function () {
+            detailOrder["total"] = 0;
+            detailOrder["services"] = [];
+            detailOrder["subtotal"] = 0;
+            detailOrder["delivery"] = 0;
+            detailOrder["customerId"] = 0;
+
+            var table = $('#productsTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
+
+            $('#productsTable tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    console.log("estaba seleccionada");
+                } else {
+                    console.log("no estaba seleccionada");
+                    data = table.row(this).data();
+                }
+            });
+
+        });
+
+        $('select').on('change', function () {
+            var divElement = document.getElementById("divDeliveryInfo");
+            if (this.value === "2") {
+
+                $("#deliveryAddress").modal('toggle');
+
+                if (divElement.style.display === "none") {
+                    var address = $("#shippingAddress").val();
+                    $("#shippingAddressSelected").val(address);
+                    divElement.style.display = "block";
+                } else {
+                    divElement.style.display = "none";
+                }
+
+            } else {
+                if (divElement.style.display === "block") {
+                    divElement.style.display = "none";
+                } else {
+                    divElement.style.display = "none";
+                }
+            }
+        });
+
+        function quantityServiceChange(add) {
+            var quantity = parseInt($("#quantity_service").val());
+            if (add) {
+                quantity++;
+            } else {
+                if (quantity <= 1) {
+                    quantity = 1;
+                } else {
+                    quantity--;
+                }
+            }
+            $("#quantity_service").val(quantity);
+        }
+
+        function updateSelectUpdaateUrl() {
+            var url = window.location.href;
+            var urlArray = url.split("/");
+            if (urlArray.length > 4) {
+                $("#processStateUpdate").val(parseInt(urlArray[4]));
+            }
+        }
+
+        function addProduct() {
+            var shoppingCartDetail = {};
+            var price = parseInt(data[3]);
+            var quantity = parseInt($("#quantity_service").val());
+
+            shoppingCartDetail["id"] = parseInt(data[0]);
+            shoppingCartDetail["name"] = $("#nameService").text();
+            shoppingCartDetail["price"] = price;
+            shoppingCartDetail["quantity"] = quantity;
+            shoppingCartDetail["total"] = price * quantity;
+
+            detailOrder["services"].push(shoppingCartDetail);
+
+            console.log(detailOrder["services"]);
+            console.log(shoppingCartDetail);
+
+            addProductToShoppingCart(shoppingCartDetail);
+            updateShoppingCartTotals(shoppingCartDetail.total);
+
+            shoppingCartDetail = {};
+        }
+
+        function addProductToShoppingCart(productDetail) {
+            var html = "<tr class=\"hoverService\" data-id=\"" + productDetail.id + "\">\
+                            <td>" + productDetail.name + "</td>\
+                            <td class=\"text-right\">" + productDetail.quantity + "</td>\
+                            <td class=\"text-right\">$" + $.number(productDetail.total) + "</td>\
+                        </tr>";
+            $("#ShoppingCartDetail").append(html);
+        }
+
+        function payment() {
+            $("#paymentModal").modal('toggle');
+        }
+
+        function updateShoppingCartTotals(currentTotal) {
+            detailOrder.total = parseInt(currentTotal) + parseInt(detailOrder.total);
+            detailOrder.subtotal = detailOrder.total;
+
+            $("#totalShoppingCart").html("<strong>$" + $.number(detailOrder.total) + "</strong>");
+            $("#subtotalShoppingCart").html("<strong>$" + $.number(detailOrder.subtotal) + "</strong>");
+        }
+
+    </script>
+{% endblock %}

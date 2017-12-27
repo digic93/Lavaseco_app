@@ -30,7 +30,7 @@ class ServiceController extends Controller {
         foreach ($serviceCagories as $serviceCagory) {
             $serviceCagoriesResponse [] = [
                 "id" => $serviceCagory->getId(),
-                "name" => $serviceCagory->getName()
+                "name" => $serviceCagory->getName(),
             ];
         }
 
