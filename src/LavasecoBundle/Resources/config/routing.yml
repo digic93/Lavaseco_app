@@ -77,6 +77,22 @@ lavaseco_report_sale_point:
 lavaseco_report_cash_transaction:
     path:     /reportes/movimientos/puntoventa
     defaults: { _controller: LavasecoBundle:Report:cashTransaction }
+#app Service-------------------------------------------------------------------        
+lavaseco_client_home:
+    path:     /app
+    defaults: { _controller: LavasecoBundle:Client:index }
+
+lavaseco_client_login:
+    path:     /app/login
+    defaults: { _controller: LavasecoBundle:Client:login }
+    
+lavaseco_client_orders:
+    path:     /app/venta
+    defaults: { _controller: LavasecoBundle:Client:orders }
+
+lavaseco_client_invoice:
+    path:     /app/facturas
+    defaults: { _controller: LavasecoBundle:Client:invoice }
 
 #Ajax Service-------------------------------------------------------------------        
 lavaseco_api_service_category:
