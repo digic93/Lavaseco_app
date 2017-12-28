@@ -130,12 +130,14 @@
                     $(".selected").toggleClass('selected');
                     orderSelected[0] = [];
                     orderSelected[1] = [];
+                    orderSelected[2] = [];
                 }
 
                 $(this).toggleClass('selected');
                 getTicket(data[0]);
                 orderSelected[0].push(data[0]);
                 orderSelected[1].push(data[1]);
+                orderSelected[2].push(data[4]);
             });
             updateSelectUpdaateUrl();
         });
@@ -243,6 +245,7 @@
             };
 
             for (var i in result.invoices) {
+                console.log(result.invoices[i])
                 html = drawInvoice(result.invoices[i]);
                 $("#invoiceDetail").append(html);
             }
@@ -252,7 +255,7 @@
             var html = "";
             html = "<tr>\
                         <td>"+ invoice.id +"</td>\
-                        <td>"+ invoice.id - invoice.idInvoice + "</td>\
+                        <td>"+ invoice.id +"-"+ invoice.idInvoice + "</td>\
                         <td>"+ invoice.dateInvoice +"</td>\
                         <td>"+ invoice.stateInvoice +"</td>\
                         <td>"+ invoice.deliveryAddress +"</td>\
