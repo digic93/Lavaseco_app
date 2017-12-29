@@ -85,8 +85,34 @@
                     </table>
                     <hr>
 
+                    <label>Dirección de Recogida</label>
+                    <select class="form-control" id="orderCollectionAddress">
+                        <option selected="selected" value="1" data-name="Entregar en Tienda">Entregar en Tienda</option>
+                        <option value="2" data-name="Recogida a Domicilio">Recogida a Domicilio</option>
+                    </select>
+                    
+                    <div id="divCollectionInfo" class="form-group" style="display: none;">
+                        <p/>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                            <input id="collectionAddressSelected" class="form-control" type="text" disabled="true"/>
+                        </div>
+                        <p/>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="textarea">Observaciones</label>
+                            <br>
+                            <textarea id="observationCollectionAddress" class="form-control" id="textarea" name="textarea" placeholder="Número apartamento/ bloque/ casa/ torre..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button id="btnChangeAddress" type="submit"  onclick="openModalDeliveryAddress()" class="btn btn-warning btn-block"/>Cambiar Dirección</button>
+                        </div>
+                    </div>
+                    
+
+                    <hr>
+
                     <label>Dirección de Entrega</label>
-                    <select class="form-control" id="bill_payAgreement">
+                    <select class="form-control" id="orderShippingAddress">
                         <option selected="selected" value="1" data-name="Recoger en Tienda">Recoger en Tienda</option>
                         <option value="2" data-name="Despacho a Domicilio">Despacho a Domicilio</option>
                     </select>
@@ -101,7 +127,7 @@
                         <div class="form-group">
                             <label class="col-md-4 control-label" for="textarea">Observaciones</label>
                             <br>
-                            <textarea id="observationProcessShippingAddress" class="form-control" id="textarea" name="textarea" placeholder="Número apartamento/ bloque/ casa/ torre..."></textarea>
+                            <textarea id="observationShippingAddress" class="form-control" id="textarea" name="textarea" placeholder="Número apartamento/ bloque/ casa/ torre..."></textarea>
                         </div>
                         <div class="form-group">
                             <button id="btnChangeAddress" type="submit"  onclick="openModalDeliveryAddress()" class="btn btn-warning btn-block"/>Cambiar Dirección</button>
@@ -198,31 +224,21 @@
             loadProducts();
 
             var table = $('#productsTable').DataTable({
-                "order": [[0, "Desc"]],
+                "order": [[0, "asc"]],
             });
-
-            $('#productsTable tbody').on('click', 'tr', function () {
-                data = table.row(this).data();
-                alert('id ' + data[0] + ' Price ' + data[4]);
-            });
-
-            $('#productsTable tbody tr:eq(0)').click();
         });
 
         $('select').on('change', function () {
+            
+            if 
             var divElement = document.getElementById("divDeliveryInfo");
             if (this.value === "2") {
-
                 $("#deliveryAddress").modal('toggle');
-
                 if (divElement.style.display === "none") {
-                    var address = $("#shippingAddress").val();
-                    $("#shippingAddressSelected").val(address);
                     divElement.style.display = "block";
                 } else {
                     divElement.style.display = "none";
                 }
-
             } else {
                 if (divElement.style.display === "block") {
                     divElement.style.display = "none";
@@ -231,6 +247,8 @@
                 }
             }
         });
+        
+        
 
         function loadProducts() {
             var html = "";
@@ -256,7 +274,9 @@
             var html = "";
 
             html = "<tr>\
-                        <td>" + product.id + "</td>\
+                        <td>\
+                            <p id=\"idProduct" + product.id + "\">" + product.id + "<p>\
+                        </td>\
                         <td>\
                             <table class=\"text-center\">\
                                 <tr>\
@@ -271,7 +291,8 @@
                                 </tr>\
                             </table>\
                         </td>\
-                        <td>" + product.category + "</td>\
+                        <td>\
+                            <p id=\"categoryProduct" + product.id + "\">" + product.category + "<p>\
                         <td>\
                             <div class=\"col-md-7\">\
                                 <div class=\"input-group\">\
@@ -282,16 +303,18 @@
                                     </span>\
                                     <input id=\"quantity_service" + product.id + "\" type=\"text\" class=\"form-control text-center\" value=\"1\" size=\"5\">\
                                     <span class=\"input-group-btn\">\
-                                        <button class=\"btn btn-success\" type=\"button\" onclick=\"quantityServiceChange(true);\">\
+                                        <button class=\"btn btn-success\" type=\"button\" onclick=\"quantityServiceChange(true,"+product.id+" );\">\
                                             <i class=\"fa fa-plus\" aria-hidden=\"true\"></i>\
                                         </button>\
                                     </span>\
                                 </div>\
                             </div>\
                         </td>\
-                        <td>" + product.price + "</td>\
                         <td>\
-                            <button id=\"addShoppingCart\" type=\"button\" class=\"btn btn-info btn-xs\" onclick=\"addProduct()\">\
+                            <p id=\"priceProduct" + product.id + "\">" + product.price + "<p>\
+                        </td>\
+                        <td>\
+                            <button id=\"addShoppingCart\" type=\"button\" class=\"btn btn-info btn-xs\" onclick=\"addProduct("+ product.id +")\">\
                                 <i class=\"fa fa-plus\" aria-hidden=\"true\"></i>\
                                 Agregar\
                             </button>\
@@ -300,8 +323,8 @@
             return html;
         }
 
-        function quantityServiceChange(add) {
-            var quantity = parseInt($("#quantity_service" + data[0] + "").val());
+        function quantityServiceChange(add, idProduct) {
+            var quantity = parseInt($("#quantity_service" + idProduct + "").val());
             if (add) {
                 quantity++;
             } else {
@@ -311,7 +334,7 @@
                     quantity--;
                 }
             }
-            $("#quantity_service" + data[0] + "").val(quantity);
+            $("#quantity_service" + idProduct + "").val(quantity);
         }
 
         function updateSelectUpdaateUrl() {
@@ -322,13 +345,13 @@
             }
         }
 
-        function addProduct() {
+        function addProduct(idProduct) {
             var shoppingCartDetail = {};
-            var price = parseInt(data[4]);
-            var quantity = parseInt($("#quantity_service" + data[0] + "").val());
+            var price = parseInt($("#priceProduct" + idProduct + "").text());
+            var quantity = parseInt($("#quantity_service" + idProduct + "").val());
 
-            shoppingCartDetail["id"] = parseInt(data[0]);
-            shoppingCartDetail["name"] = $("#nameProduct" + data[0] + "").text();
+            shoppingCartDetail["id"] = parseInt(idProduct);
+            shoppingCartDetail["name"] = $("#nameProduct" + idProduct + "").text();
             shoppingCartDetail["price"] = price;
             shoppingCartDetail["quantity"] = quantity;
             shoppingCartDetail["total"] = price * quantity;
@@ -367,8 +390,8 @@
             $("#shippingAddressSelected").val($("#shippingAddress").val());
             $("#deliveryAddress").modal('hide');
         }
-        
-        function openModalDeliveryAddress(){
+
+        function openModalDeliveryAddress() {
             $("#deliveryAddress").modal('toggle');
         }
 
