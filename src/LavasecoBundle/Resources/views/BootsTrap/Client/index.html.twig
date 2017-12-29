@@ -11,12 +11,12 @@
 
 {% block body %} 
     <div class="row">
-        <div class="col-md-10 col-md-offset-1">  
+        <div class="col-md-6 col-md-offset-3">  
             <div class="form-group">
                 <div id="divUser" class="form-group">
                     <p>Usuario<span class="req">*</span></p>
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
+                        <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
                         <input class="form-control" id="textUser" type="text" required autocomplete="off" />
                     </div>
                     <span id="helpBlockUser" class="help-block"></span>
@@ -25,14 +25,14 @@
                 <div id="divPassword" class="form-group">
                     <p>Contraseña<span class="req">*</span></p>
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i></span>
-                        <input class="form-control" id="textPassword" type="number" required autocomplete="off"/>
+                        <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                        <input class="form-control" id="textPassword" type="password" required autocomplete="off"/>
                     </div>
                     <span id="helpBlockPassword" class="help-block"></span>
                 </div>
 
                 <div id="divLogin" class="form-group">
-                    <button id="btnLoginClient" type="submit"  onclick="login();" class="btn btn-success btn-block"/>Iniciar Sesión</button>
+                    <button id="btnLoginClient" type="submit"  onclick="login();" class="btn btn-success"/>Iniciar Sesión</button>
                 </div>
             </div>
         </div>
@@ -41,7 +41,8 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        var validVariables = false;
+        var validUser = false;
+        var validPassword = false;
         
         $('#textUser').focusout(function () {
             var user = $("#textUser").val();
@@ -50,12 +51,12 @@
                 $("#divUser").removeClass("has-success");
                 $("#divUser").addClass("has-error");
                 $("#helpBlockUser").text("Campo Obligatorio");
-                validVariables = false;
+                validUser = false;
             } else {
                 $("#divUser").addClass("has-success");
                 $("#divUser").removeClass("has-error");
                 $("#helpBlockUser").text("");
-                validVariables = true;
+                validUser = true;
             }
         });
         
@@ -63,21 +64,35 @@
             var password = $("#textPassword").val();
 
             if (password === null || password.length === 0 || /^\s+$/.test(password)) {
-                $("#divUser").removeClass("has-success");
-                $("#divUser").addClass("has-error");
-                $("#helpBlockUser").text("Campo Obligatorio");
-                validVariables = false;
+                $("#divPassword").removeClass("has-success");
+                $("#divPassword").addClass("has-error");
+                $("#helpBlockPassword").text("Campo Obligatorio");
+                validPassword = false;
             } else {
                 $("#divPassword").addClass("has-success");
                 $("#divPassword").removeClass("has-error");
                 $("#helpBlockPassword").text("");
-                validVariables = true;
+                validPassword = true;
             }
         });
         
         function login() {
-            if (validVariables) {
+            console.log("valid user " + validUser);
+            console.log("valid password " + validPassword);
+            
+            if (validUser === true && validPassword === true) {
                 alert  ("Inicio de sesión Exitoso");
+                window.location = "{{ path('lavaseco_client_home') }}"
+            }
+            else{
+                if (validUser === false) {
+                    $("#divUser").addClass("has-error");
+                    $("#helpBlockUser").text("Campo Obligatorio");
+                }
+                if(validPassword === false){
+                    $("#divPassword").addClass("has-error");
+                    $("#helpBlockPassword").text("Campo Obligatorio");
+                }
             }
         }
     </script>

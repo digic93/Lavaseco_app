@@ -29,9 +29,7 @@
                         </label>
                         <select id="processStateUpdate" class="form-control" onchange="updateUrl(this);">
                             <option value="0" selected>Todos los estados</option>
-                            {% for processState in processStates%}
-                                <option value="{{ processState.id }}">{{ processState.name }}</option>
-                            {% endfor %}
+                            
                         </select>
                     </div>
                 </form>                
@@ -47,16 +45,7 @@
                         <th>Dir. Envío</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for bill in bills %}
-                        <tr>
-                            <td>{{ bill.id }}</td>
-                            <td>{{ bill.salePoint.id }}-{{ bill.id }}</td>
-                            <td>{{ bill.CreatedAtString}}</td>
-                            <td>{{ bill.processState.name}}</td>
-                            <td>{{ bill.customer.phoneNumber | default("Recoger en tienda")}}</td>  
-                        </tr>
-                    {% endfor %}
+                <tbody id="invoiceDetail">  
                 </tbody>
             </table>
         </div>
@@ -124,6 +113,8 @@
         var billTicketId = 0;
         var orderSelected = [[], []];
         $(document).ready(function () {
+            loadInvoice();
+            
             var billsTable = $('#billsTable').DataTable({
                 "order": [[0, "Desc"]]
             });
@@ -139,12 +130,14 @@
                     $(".selected").toggleClass('selected');
                     orderSelected[0] = [];
                     orderSelected[1] = [];
+                    orderSelected[2] = [];
                 }
 
                 $(this).toggleClass('selected');
                 getTicket(data[0]);
                 orderSelected[0].push(data[0]);
                 orderSelected[1].push(data[1]);
+                orderSelected[2].push(data[4]);
             });
             updateSelectUpdaateUrl();
         });
@@ -160,81 +153,115 @@
             });
         }
         function drawTicket(ticket) {
-        {#            $("#orderTiket").html("Orden " + ticket.consecutive);#}
-                $("#billTiket").html("Factura " + ticket.salePoint + "-" + ticket.bill);
-                $("#dateTiket").html("Fecha: " + ticket.createdAt);
-                $("#sellerTiket").html("Vendedor: " + ticket.seller);
-                $("#quantityTiket").html("<strong>Objetos Recibidos: " + $.number(ticket.billDetail.quantity) + "</strong>");
-                $("#priceTiket").html("<strong>Total: $" + $.number(ticket.billDetail.total) + "</strong>");
-                $("#customerTiket").html("Cliente: " + ticket.customer);
-                $("#phoneNumberTiket").html("Numero Telefono: " + ticket.phoneNumber);
-                drawDetails(ticket.billDetail.details);
-                $("#billDetailsTiket").append("<hr><strong>Observaciones: </strong>" + ticket.observation);
-                billTicketId = ticket.bill;
-            }
-            function drawDetails(billDetails) {
-                $("#billDetailsTiket").empty();
-                for (var i in billDetails) {
-                    var html = "<strong>" + billDetails[i].quantity + " x " + billDetails[i].serviceName + "</strong><br>";
-                    for (var j in billDetails[i].descriptors) {
-                        html += billDetails[i].descriptors[j] + ", ";
-                    }
-                    html += "<strong>" + billDetails[i].observation + "</strong><br>";
-                    $("#billDetailsTiket").append(html);
+            $("#billTiket").html("Factura " + ticket.salePoint + "-" + ticket.bill);
+            $("#dateTiket").html("Fecha: " + ticket.createdAt);
+            $("#sellerTiket").html("Vendedor: " + ticket.seller);
+            $("#quantityTiket").html("<strong>Objetos Recibidos: " + $.number(ticket.billDetail.quantity) + "</strong>");
+            $("#priceTiket").html("<strong>Total: $" + $.number(ticket.billDetail.total) + "</strong>");
+            $("#customerTiket").html("Cliente: " + ticket.customer);
+            $("#phoneNumberTiket").html("Numero Telefono: " + ticket.phoneNumber);
+            drawDetails(ticket.billDetail.details);
+            $("#billDetailsTiket").append("<hr><strong>Observaciones: </strong>" + ticket.observation);
+            billTicketId = ticket.bill;
+        }
+        function drawDetails(billDetails) {
+            $("#billDetailsTiket").empty();
+            for (var i in billDetails) {
+                var html = "<strong>" + billDetails[i].quantity + " x " + billDetails[i].serviceName + "</strong><br>";
+                for (var j in billDetails[i].descriptors) {
+                    html += billDetails[i].descriptors[j] + ", ";
                 }
+                html += "<strong>" + billDetails[i].observation + "</strong><br>";
+                $("#billDetailsTiket").append(html);
             }
+        }
 
-            function changeShippingAddress() {
-                if (orderSelected [1].length === 0) {
-                    openModalAlerErrorSuccess("Alerta", "Seleccione por lo menos una factura para cambiarle la dirección de entrega.");
-                } else {
-                    var html = "";
-                    for (var i in orderSelected [1]) {
-                        html += orderSelected [1][i];
-                        html += parseInt(i) + 1 === orderSelected[1].length ? "." : ", ";
-                    }
-                    $("#invoicesModified").empty();
-                    $("#invoicesModified").html(html);
-                    $("#changeModal").modal('toggle');
+        function changeShippingAddress() {
+            if (orderSelected [1].length === 0) {
+                openModalAlerErrorSuccess("Alerta", "Seleccione por lo menos una factura para cambiarle la dirección de entrega.");
+            } else {
+                var html = "";
+                for (var i in orderSelected [1]) {
+                    html += orderSelected [1][i];
+                    html += parseInt(i) + 1 === orderSelected[1].length ? "." : ", ";
                 }
+                $("#invoicesModified").empty();
+                $("#invoicesModified").html(html);
+                $("#changeModal").modal('toggle');
             }
-            function saveChange() {
-                $.ajax({
-                    url: "{{ path("lavaseco_api_order_change_processState") }}",
-                    method: "POST",
-                    dataType: "json",
-                    data: {
-                        "bills": orderSelected[0],
-                        "processState": $("#newProcessStates").val(),
-                        "observation": $("#observationProccess").val()
-                    },
-                    beforeSend: function (xhr) {
-                        loadingModal("Guardando los cambios en el sistema... Espere por favor.");
-                    },
-                    success: function (result) {
-                        closeLoadingModal();
-                        location.reload();
-                        openModalAlerErrorSuccess("Confirmación de Cambios", "Los cambios han sido aplicados con éxito.");
-                    },
-                    error: function () {
-                        closeLoadingModal();
-                        openModalAlerErrorSuccess("Confirmación de Cambios", "Error al guardar los cambios realizados, intente nuevamente.");
-                    }
-                });
-            }
-            function updateUrl(processState) {
-                if ($(processState).val() === "0") {
-                    window.location = "{{ path("lavaseco_orders") }}";
-                } else {
-                    window.location = "{{ path("lavaseco_orders") }}/" + $(processState).val();
+        }
+        function saveChange() {
+            $.ajax({
+                url: "{{ path("lavaseco_api_order_change_processState") }}",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    "bills": orderSelected[0],
+                    "processState": $("#newProcessStates").val(),
+                    "observation": $("#observationProccess").val()
+                },
+                beforeSend: function (xhr) {
+                    loadingModal("Guardando los cambios en el sistema... Espere por favor.");
+                },
+                success: function (result) {
+                    closeLoadingModal();
+                    location.reload();
+                    openModalAlerErrorSuccess("Confirmación de Cambios", "Los cambios han sido aplicados con éxito.");
+                },
+                error: function () {
+                    closeLoadingModal();
+                    openModalAlerErrorSuccess("Confirmación de Cambios", "Error al guardar los cambios realizados, intente nuevamente.");
                 }
+            });
+        }
+        function updateUrl(processState) {
+            if ($(processState).val() === "0") {
+                window.location = "{{ path("lavaseco_orders") }}";
+            } else {
+                window.location = "{{ path("lavaseco_orders") }}/" + $(processState).val();
             }
-            function updateSelectUpdaateUrl() {
-                var url = window.location.href;
-                var urlArray = url.split("/");
-                if (urlArray.length > 4) {
-                    $("#processStateUpdate").val(parseInt(urlArray[4]));
-                }
+        }
+        function updateSelectUpdaateUrl() {
+            var url = window.location.href;
+            var urlArray = url.split("/");
+            if (urlArray.length > 4) {
+                $("#processStateUpdate").val(parseInt(urlArray[4]));
             }
+        }
+
+        function updateShippingAddress() {
+
+            $("#deliveryAddress").modal('hide');
+        }
+
+        function loadInvoice() {
+            var html = "";
+            var result = {"invoices":
+                        [
+                            {"id": 1, "idInvoice": 20, "dateInvoice": "31/10/2017 20:49", "stateInvoice": "Pendiente Por Entregar", "deliveryAddress":"Recoger en Tienda"},
+                            {"id": 2, "idInvoice": 39, "dateInvoice": "20/10/2017 21:27", "stateInvoice": "Mostrador", "deliveryAddress":"Recoger en Tienda"},
+                            {"id": 3, "idInvoice": 57, "dateInvoice": "20/10/2017 17:21", "stateInvoice": "Mostrador", "deliveryAddress":"Recoger en Tienda"}
+                        ]
+            };
+
+            for (var i in result.invoices) {
+                console.log(result.invoices[i])
+                html = drawInvoice(result.invoices[i]);
+                $("#invoiceDetail").append(html);
+            }
+        }
+
+        function drawInvoice(invoice) {
+            var html = "";
+            html = "<tr>\
+                        <td>"+ invoice.id +"</td>\
+                        <td>"+ invoice.id +"-"+ invoice.idInvoice + "</td>\
+                        <td>"+ invoice.dateInvoice +"</td>\
+                        <td>"+ invoice.stateInvoice +"</td>\
+                        <td>"+ invoice.deliveryAddress +"</td>\
+                    </tr>";
+            return html;
+        }
+
     </script>
 {% endblock %}
