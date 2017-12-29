@@ -90,7 +90,7 @@
                         <option selected="selected" value="1" data-name="Entregar en Tienda">Entregar en Tienda</option>
                         <option value="2" data-name="Recogida a Domicilio">Recogida a Domicilio</option>
                     </select>
-                    
+
                     <div id="divCollectionInfo" class="form-group" style="display: none;">
                         <p/>
                         <div class="input-group">
@@ -107,7 +107,7 @@
                             <button id="btnChangeAddress" type="submit"  onclick="openModalDeliveryAddress()" class="btn btn-warning btn-block"/>Cambiar Dirección</button>
                         </div>
                     </div>
-                    
+
 
                     <hr>
 
@@ -117,7 +117,7 @@
                         <option value="2" data-name="Despacho a Domicilio">Despacho a Domicilio</option>
                     </select>
 
-                    <div id="divDeliveryInfo" class="form-group" style="display: none;">
+                    <div id="divShippingInfo" class="form-group" style="display: none;">
                         <p/>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-info fa-fw"></i></span>
@@ -229,26 +229,48 @@
         });
 
         $('select').on('change', function () {
+            var nameIdSelect = $(this).attr("id");
             
-            if 
-            var divElement = document.getElementById("divDeliveryInfo");
-            if (this.value === "2") {
-                $("#deliveryAddress").modal('toggle');
-                if (divElement.style.display === "none") {
-                    divElement.style.display = "block";
+            console.log(nameIdSelect);
+
+            if (nameIdSelect === "orderCollectionAddress") {
+                var divElement = document.getElementById("divCollectionInfo");
+                if (this.value === "2") {
+                    $("#deliveryAddress").modal('toggle');
+                    if (divElement.style.display === "none") {
+                        divElement.style.display = "block";
+                    } else {
+                        divElement.style.display = "none";
+                    }
                 } else {
-                    divElement.style.display = "none";
+                    if (divElement.style.display === "block") {
+                        divElement.style.display = "none";
+                    } else {
+                        divElement.style.display = "none";
+                    }
                 }
-            } else {
-                if (divElement.style.display === "block") {
-                    divElement.style.display = "none";
+
+            } else if (nameIdSelect === "orderShippingAddress") {
+                var divElement = document.getElementById("divShippingInfo");
+                if (this.value === "2") {
+                    $("#deliveryAddress").modal('toggle');
+                    if (divElement.style.display === "none") {
+                        divElement.style.display = "block";
+                    } else {
+                        divElement.style.display = "none";
+                    }
                 } else {
-                    divElement.style.display = "none";
+                    if (divElement.style.display === "block") {
+                        divElement.style.display = "none";
+                    } else {
+                        divElement.style.display = "none";
+                    }
                 }
             }
+
         });
-        
-        
+
+
 
         function loadProducts() {
             var html = "";
@@ -303,7 +325,7 @@
                                     </span>\
                                     <input id=\"quantity_service" + product.id + "\" type=\"text\" class=\"form-control text-center\" value=\"1\" size=\"5\">\
                                     <span class=\"input-group-btn\">\
-                                        <button class=\"btn btn-success\" type=\"button\" onclick=\"quantityServiceChange(true,"+product.id+" );\">\
+                                        <button class=\"btn btn-success\" type=\"button\" onclick=\"quantityServiceChange(true," + product.id + " );\">\
                                             <i class=\"fa fa-plus\" aria-hidden=\"true\"></i>\
                                         </button>\
                                     </span>\
@@ -314,7 +336,7 @@
                             <p id=\"priceProduct" + product.id + "\">" + product.price + "<p>\
                         </td>\
                         <td>\
-                            <button id=\"addShoppingCart\" type=\"button\" class=\"btn btn-info btn-xs\" onclick=\"addProduct("+ product.id +")\">\
+                            <button id=\"addShoppingCart\" type=\"button\" class=\"btn btn-info btn-xs\" onclick=\"addProduct(" + product.id + ")\">\
                                 <i class=\"fa fa-plus\" aria-hidden=\"true\"></i>\
                                 Agregar\
                             </button>\
