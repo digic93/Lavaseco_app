@@ -172,7 +172,7 @@
                             <div class="form-group">
                                 <div id="divTotalBill">
                                     <p class='text-right'>
-                                        <strong>Total Factura: $ 
+                                        <strong>Total a Pagar: $ 
                                             <span id="lblTotalBill"></span>
                                         </strong>
                                     </p>
@@ -198,7 +198,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit"  onclick="paymentInvoice();" class="btn btn-success"/>Cobrar</button>
+                    <button id="btnSubmitPayment" type="submit"  onclick="paymentInvoice();" class="btn btn-success"/>Cobrar</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -215,6 +215,8 @@
         var billTicketId = 0;
         var orderSelected = [[], []];
         $(document).ready(function () {
+            $("#cashReceived").number( true );
+            $("#change").number( true );
             var billsTable = $('#billsTable').DataTable({
                 "order": [[0, "Desc"]]
             });
@@ -295,19 +297,30 @@
             
             if (boolean === false){
                 html = "<button type=\"button\" id=\"btnPayBill\" class=\"btn btn-info\" onclick=\"payInvoice("+ invoiceId +");\">Pagar Factura</button>"
+                $("#btnSubmitPayment").attr('onclick','paymentInvoice(' + invoiceId + ');');
+            }else{
+                $("#btnSubmitPayment").attr('onclick','paymentInvoice();');
             }
             $("#buttonGroupPayBill").html(html);
         }
         
         function payInvoice(invoiceId) { 
             $.ajax({
-                url: "{{ path('lavaseco_api_orders_tikets') }}/" + invoiceId,
+                url: "{{ path('lavaseco_api_bill') }}/" + invoiceId,
                 method: "GET",
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function (data) {
-                    $('#paymentTittle').text('Pago de la factura No. '+ data.salePoint + "-" + data.bill);
-                    $('#lblTotalBill').html("<strong>"+ data.billDetail.total + "</strong>");
+                    
+                    if(data.billState === 2){
+                        openModalAlerErrorSuccess("Alerta","Factura " + data.id + " ya cancelada");
+                        $('#modalPayInvoice').modal('hide');
+                        return;
+                    }
+                    
+                    var totalPago = parseInt(data.total) - parseInt(data.payed);
+                    $('#paymentTittle').text('Pago de la factura No. ' + data.id);
+                    $('#lblTotalBill').html("<strong>"+ totalPago + "</strong>");
                     $('#modalPayInvoice').modal('show');
                 },
                 error: function (){
@@ -316,9 +329,41 @@
             });           
         }
         
-        function paymentInvoice(){
+        function paymentInvoice(billSelected){
+            if(billSelected === undefined){
+                return;
+            }
+        
             if (updateChange()) {
-                alert("pago la factura desde ordenes");
+                 $.ajax({
+                        url: "{{ path("lavaseco_api_bill_paymet") }}",
+                        method: "POST",
+                        dataType: "json",
+                        data: {
+                            "bill": billSelected,
+                            "cashReceived": parseInt($("#cashReceived").val()),
+                            "paymentAgreement": $('#selectPaymentAgreement').val()
+                        },
+                        beforeSend: function (xhr) {
+                            loadingModal("Espere por favor.");
+                        },
+                        success: function (result) {
+                            closeLoadingModal();
+                            if(!result.error)
+                                openModalAlerErrorSuccess("Alerta","Transacción realizada con exito.");
+                            else
+                                openModalAlerErrorSuccess("Error", result.error);
+                            
+                            $('#modalPayInvoice').modal('hide');
+                            $("#cashReceived").val('');
+                            
+                        },
+                        error: function () {
+                            closeLoadingModal();
+                            openModalAlerErrorSuccess("Error", "Error, intente nuevamente.");
+                        }
+                    });
+                
             } else {
                 openModalAlerErrorSuccess("Error", "Verifique el dinero dado por el cliente");
             }
@@ -326,9 +371,7 @@
         
         function updateChange() {
             var paymentAgreement = $('#selectPaymentAgreement').val();
-            console.log($('#lblTotalBill').text());
-            console.log ("medotdo de pago" + paymentAgreement)
-            
+
             if (paymentAgreement !== "3") {//3 es el id del metodo de abono
                 var change = $("#cashReceived").val() - $('#lblTotalBill').text();
                 var vMissingMoney = $('#lblTotalBill').text() - $("#cashReceived").val();

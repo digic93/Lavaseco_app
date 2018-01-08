@@ -185,6 +185,46 @@ class BillController extends Controller {
 
         return $this->json($billResult);
     }
+    
+    public function paymentAction(Request $request){
+        $payMethodId = 1;
+        $billId = $request->request->get("bill");
+        $cashReceived = $request->request->get("cashReceived");
+        $paymentAgreementId = $request->request->get("paymentAgreement");
+        
+        $bill = $this->getBillById($billId);
+        
+        if($bill === null){
+            return $this->json(['error' => "Factura " . $billId . " No encontrada" ]);
+        }
+        $customer = $bill->getCustomer();
+        
+        $paymentAgreement = $this->getPaymentAgreementById($paymentAgreementId);
+        $bill->setPaymentAgreement($paymentAgreement);
+
+        $total = $bill->getTotal() - $bill->getPayed();
+
+        $payment = ($paymentAgreement->getId() == 1) ? $total : $cashReceived;
+        $this->savePayDetail($payMethodId, $payment, $bill);
+        
+        $bonification = ($bill->getDiscount() == 0) ? $this->getBonificationByPaymentAgreement($paymentAgreement) : 0;
+        if ($customer && $paymentAgreement->getId() == 1) {
+            $this->updateCustomer($total, $customer, $bonification);
+        }
+        
+        if($paymentAgreement->getId() == 1){
+            $bill->setBillState($this->getBillStateById(2)); // cambia el estado de la factura a canceladdo 
+        }
+        
+        
+        $em = $this->get('doctrine')->getManager();
+
+        $em->persist($bill);
+        $em->flush();
+        
+        return $this->json(['error' => false ]);
+        
+    }
 
     public function deliverAction(Request $request) {
         $payMethodId = 1; //por ahora solo metodo de pago en efectivo

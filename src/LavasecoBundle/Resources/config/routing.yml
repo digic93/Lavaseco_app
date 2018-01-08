@@ -232,3 +232,8 @@ lavaseco_api_report_cash_transaction:
     path:     /api/report/transaction
     defaults: { _controller: LavasecoBundle:Report:getCashTransaction }
     methods:  [POST]
+    
+lavaseco_api_bill_paymet:
+    path:     /api/bill/payment
+    defaults: { _controller: LavasecoBundle:Bill:payment }
+    methods:  [POST]
