@@ -78,9 +78,9 @@ fos_user:
         sender_name:    Lavaseco App    
     registration:
         form:
-            name: lavaseco_user_registration
-        confirmation:
-            enabled: true   
+            type: LavasecoBundle\Form\RegistrationType
+#        confirmation:
+#            enabled: true   
     resetting:
         email:
             from_email:

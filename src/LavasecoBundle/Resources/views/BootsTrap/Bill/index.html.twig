@@ -29,9 +29,12 @@
             <div class="well well-sm pull-right">
                 {% if salePointIsOpen %}
                     <form class="form-inline">
-                        <button type="button" id="deleveryButton" class="btn btn-default" onclick="delivered();">Entregar</button> |
-                        <button type="button" id="refundButton" class="btn btn-default" onclick="refund();">Reembolso</button>
-                        {#                    <div class="form-group">
+                        <button type="button" id="deleveryButton" class="btn btn-default" onclick="delivered();">Entregar</button> 
+                        {% if is_granted('ROLE_ADMIN') %}
+                            | <button type="button" id="refundButton" class="btn btn-default" onclick="refund();">Reembolso</button>
+                        {% endif  %}
+
+            {#                    <div class="form-group">
                                                 <select class="form-control" id="sel1">
                                                     <option>Seleccione un estado </option>
                                                 </select>

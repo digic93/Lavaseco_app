@@ -2,7 +2,7 @@
 
 {% block subject %}
     {%- autoescape false -%}
-    {{ 'Pepito Perez, aquí tienes el enlace para restablecer tu contraseña.'|trans({'%username%': user.username}) }}
+    {{ 'Con el enlace puedes restablecer tu contraseña.'|trans({'%username%': user.username}) }}
     {%- endautoescape -%}
 {% endblock %}
 
@@ -13,9 +13,8 @@
 {% endblock %}
 
 {% block body_html %}
-
-       Este es el correo para reestablecer la contraseña
-        {{ confirmationUrl }}
+    Con el enlace puedes restablecer tu contraseña
+    {{ confirmationUrl }}
 
 {% endblock %}
 

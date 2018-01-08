@@ -1,6 +1,6 @@
 <style>
     body { padding-top: 70px; }
-    
+
     .btn_log_out:hover{
         border: ridge;
         border-width: 2px;
@@ -34,11 +34,11 @@
             <a class="navbar-brand" href="{{ path("lavaseco_homepage") }}">
                 <img alt="Brand"  height="50" width="97" src="{{ asset( "Logo/logo.png" ) }}" style="margin: -15px 5px;">
             </a>
-{#            <a class="navbar-brand" href="{{ path("lavaseco_homepage") }}">
-                <nav class="navbar navbar-default">
-                <span class="glyphicon glyphicon-leaf" aria-hidden="true"></span> 
-                Lavaseco Modelo
-            </a>#}
+            {#            <a class="navbar-brand" href="{{ path("lavaseco_homepage") }}">
+                            <nav class="navbar navbar-default">
+                            <span class="glyphicon glyphicon-leaf" aria-hidden="true"></span> 
+                            Lavaseco Modelo
+                        </a>#}
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -53,26 +53,27 @@
                     {% if (is_granted('ROLE_CASHIER') and app.session.get('salePoint') != "-1") %} 
                         <li><a href="{{ path('lavaseco_sales') }}">Venta <i class="fa fa-shopping-cart" aria-hidden="true"></i></a></li>
                         <li><a href="{{ path('lavaseco_Bills') }}">Facturas <i class="fa fa-file-text" aria-hidden="true"></i></a></li>
-                    {% endif %}
-                    {% if (is_granted('ROLE_OPERATOR') and app.session.get('salePoint') != "-1")%} 
+                            {% endif %}
+                            {% if (is_granted('ROLE_OPERATOR') and app.session.get('salePoint') != "-1")%} 
                         <li><a href="{{ path('lavaseco_orders') }}">Ordenes <i class="fa fa-pencil" aria-hidden="true"></i></a></li>
-                    {% endif %}
+                            {% endif %}
 
-                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))%}
-                        <li>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Reportes <i class="fa fa-area-chart" aria-hidden="true"></i></a>
-                            <ul class="dropdown-menu">
-                                {% if is_granted('ROLE_MANAGER') %}
-{#                                    <li><a href="{{ path('lavaseco_report_dashboard') }}">Dashboard</a></li>#}
+                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')) %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Reportes <i class="fa fa-area-chart" aria-hidden="true"></i></a>
+                                <ul class="dropdown-menu">
+                                    {#                                    <li><a href="{{ path('lavaseco_report_dashboard') }}">Dashboard</a></li>#}
                                     <li><a href="{{ path('lavaseco_report_cash_transaction') }}">Movimientos de Caja</a></li>
                                     <li role="separator" class="divider"></li>
                                     <li><a href="{{ path('lavaseco_report_daily_sale') }}">Venta Diaria</a></li>
-{#                                    <li><a href="{{ path('lavaseco_setting_report_service_sale') }}">Ventas por Servicio</a></li>
-                                    <li><a href="{{ path('lavaseco_setting_report_user_sale') }}">Ventas por Usuario</a></li>
-#}                                    <li><a href="{{ path('lavaseco_report_sale_point') }}">Ventas por Punto Venta</a></li>
-                                {% endif %}
-                            </ul>
-                        </li>
+                                        {#                                    <li><a href="{{ path('lavaseco_setting_report_service_sale') }}">Ventas por Servicio</a></li>
+                                                                            <li><a href="{{ path('lavaseco_setting_report_user_sale') }}">Ventas por Usuario</a></li>
+                                        #}                                    <li><a href="{{ path('lavaseco_report_sale_point') }}">Ventas por Punto Venta</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+
                         <li>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuración <i class="fa fa-wrench" aria-hidden="true"></i></a>
                             <ul class="dropdown-menu">
@@ -81,15 +82,17 @@
                                     <li><a href="{{ path('lavaseco_setting_sale_point') }}">Puntos de Venta</a></li>
                                     <li><a href="{{ path('lavaseco_setting_corporation') }}">Página Corporativa</a></li>
                                     <li role="separator" class="divider"></li>
-                                {% endif %}
+                                    {% endif %}
 
                                 <li><a href="{{ path('lavaseco_setting_descriptions') }}">Descriptores</a></li>
                                 <li><a href="{{ path('lavaseco_setting_service_categories') }}">Categorias y Servicios</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ path('lavaseco_setting_customers') }}">Clientes</a></li>
-                                {% if is_granted('ROLE_MANAGER') %}
+                                    {% if is_granted('ROLE_MANAGER') %}
                                     <li><a href="{{ path('lavaseco_setting_loyalty') }}">Fidelización</a></li>
-                                {% endif %}
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="{{ path('fos_user_registration_register') }}">Creacion de usuarios</a></li>
+                                    {% endif %}
                             </ul>
                         </li>
                     {% endif %}
@@ -102,7 +105,7 @@
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-                    
+
 {% if (is_granted("IS_AUTHENTICATED_REMEMBERED") and app.session.get('salePoint') == "-1")%} 
     <div class="alert alert-warning">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
