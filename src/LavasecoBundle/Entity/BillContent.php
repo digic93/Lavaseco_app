@@ -40,13 +40,7 @@ class BillContent
      *
      * @ORM\Column(name="address", type="string", length=80)
      */
-    private $address;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="head", type="text")
-     */
+    
     private $head;
 
     /**
@@ -55,8 +49,7 @@ class BillContent
      * @ORM\Column(name="foot", type="text")
      */
     private $foot;
-
-
+    
     /**
      * Get id
      *
@@ -116,30 +109,6 @@ class BillContent
     }
 
     /**
-     * Set address
-     *
-     * @param string $address
-     *
-     * @return BillContent
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    /**
-     * Get address
-     *
-     * @return string
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
      * Set head
      *
      * @param string $head
@@ -186,4 +155,6 @@ class BillContent
     {
         return $this->foot;
     }
+    
+    
 }
