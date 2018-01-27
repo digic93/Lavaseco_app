@@ -20,9 +20,10 @@ class BillController extends Controller {
         $salePoint = $this->get('session')->get('salePoint');
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
-
-        $billsDelivered = $billRepository->findDelivered(100);
-        $billsUndelivered = $billRepository->findUndelivered();
+        $branchOfficeId = $salePoint->getBranchOffice()->getId();
+        
+        $billsDelivered = $billRepository->findDelivered($branchOfficeId, 200);
+        $billsUndelivered = $billRepository->findUndelivered($branchOfficeId);
 
         return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', [
                     "billsDelivered" => $billsDelivered,

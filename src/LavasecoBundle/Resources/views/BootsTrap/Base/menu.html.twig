@@ -45,16 +45,16 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                    <li><p class="navbar-text"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ app.user.firstName }} {{ app.user.lastName }}</p></li>
+                    <li><p class="navbar-text"><span class="glyphicon glyphicon-user" aria  -hidden="true"></span> {{ app.user.firstName }} {{ app.user.lastName }} {% if salePointSession != null %}- {{ app.session.get('brnachOfficeName')}}: {{ salePointSession.Name }} {% endif %}</p></li>
                     {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                    {% if (is_granted('ROLE_CASHIER') and app.session.get('salePoint') != "-1") %} 
+                    {% if (is_granted('ROLE_CASHIER') and salePointSession != null) %} 
                         <li><a href="{{ path('lavaseco_sales') }}">Venta <i class="fa fa-shopping-cart" aria-hidden="true"></i></a></li>
                         <li><a href="{{ path('lavaseco_Bills') }}">Facturas <i class="fa fa-file-text" aria-hidden="true"></i></a></li>
                             {% endif %}
-                            {% if (is_granted('ROLE_OPERATOR') and app.session.get('salePoint') != "-1")%} 
+                            {% if (is_granted('ROLE_OPERATOR') and salePointSession != null)%} 
                         <li><a href="{{ path('lavaseco_orders') }}">Ordenes <i class="fa fa-pencil" aria-hidden="true"></i></a></li>
                             {% endif %}
 
@@ -79,6 +79,7 @@
                             <ul class="dropdown-menu">
                                 {% if is_granted('ROLE_MANAGER') %}
                                     <li><a href="{{ path('lavaseco_setting_bill_content') }}">Factura</a></li>
+                                    <li><a href="{{ path('lavaseco_setting_branch_office') }}">Sucursales</a></li>
                                     <li><a href="{{ path('lavaseco_setting_sale_point') }}">Puntos de Venta</a></li>
                                     <li><a href="{{ path('lavaseco_setting_corporation') }}">Página Corporativa</a></li>
                                     <li role="separator" class="divider"></li>
@@ -106,7 +107,7 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-{% if (is_granted("IS_AUTHENTICATED_REMEMBERED") and app.session.get('salePoint') == "-1")%} 
+{% if (is_granted("IS_AUTHENTICATED_REMEMBERED") and salePointSession == null)%} 
     <div class="alert alert-warning">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> Dispositivo No Esta registrado Como Punto de Venta

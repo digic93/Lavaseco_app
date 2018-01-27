@@ -93,6 +93,13 @@ class SalePoint {
      * @ORM\OneToMany(targetEntity="Bill", mappedBy="salePoint")
      */
     protected $bills;
+    
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="BranchOffice", inversedBy="salePoints")
+     * @ORM\JoinColumn(name="branch_office_id", referencedColumnName="id")
+     */
+    protected $branchOffice;
 
     
     /**

@@ -41,6 +41,7 @@
 
 </head>
 <body>
+    {% set salePointSession = app.session.get('salePoint') %}
     {% include 'LavasecoBundle:BootsTrap:Base/menu.html.twig' %}
     <div class="container">
         <div class="row">
@@ -92,7 +93,7 @@
 </div>    
 
 {#  0 si el usuario es  administrador y hay un punto de venta que regustrar #}
-{% if app.session.get('salePoint') == "0" and is_granted('ROLE_ADMIN') %}
+{% if app.session.get('newSalePoint') and is_granted('ROLE_ADMIN') %}
     <script>
         var device = localStorage.getItem("device") || generateUUID();
 
@@ -124,20 +125,22 @@
         ;
     </script>
 
-    {#   1 para verificar si  el  dispositivo tiene uuid  #}
-{% elseif app.session.get('salePoint') == "1" %}
+    {#   verificar si  el  dispositivo tiene uuid  #}
+{% elseif app.session.get('getSalePoint') %}
     <script>
-        $.ajax({
-            url: "{{ path("lavaseco_api_sale_point_active") }}",
-            method: "POST",
-            dataType: "json",
-            data: {
-                "device": localStorage.getItem("device")
-            },
-            success: function (result) {
-                location.reload();
-            }
+        $( document ).ready(function() {
+            $.ajax({
+                url: "{{ path("lavaseco_api_sale_point_active") }}",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    "device": localStorage.getItem("device")
+                },
+                success: function (result) {
+                }
+            });
         });
+        
     </script>
 {% endif %}
 

@@ -10,18 +10,25 @@ class HomeController extends Controller {
     public function indexAction() {
         $securityContext = $this->container->get('security.authorization_checker');
         $configuration = $this->get('lavaseco.app_configuration');
+        
         if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $salePointSession = $this->get('session')->get('salePoint');
-
-            if (!$salePointSession instanceof SalePoint && $salePointSession != "-1") {
-                //falta validar si es administrador 
+             
+            //si esta cargado el punto de venta y es administrador 
+            if (!$salePointSession instanceof SalePoint && $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+                
                 //si exite algun ponto de venta por registrar
                 $salePoint = $this->getSalePointByActive(false);
-
-                $this->get('session')->set('salePoint', ($salePoint) ? "0" : "1");
+                
+                if($salePoint){
+                    $this->get('session')->set('newSalePoint', true);
+                }
             }
+            
             return $this->render($configuration->getViewTheme() . ':Home/index.html.twig');
 
+        }else{
+                $this->get('session')->set('getSalePoint', true);
         }
         $corporation = $this->getCorporative();
         return $this->render($configuration->getViewTheme() . ':WebPage/index.html.twig', ['corporation' => $corporation]);
