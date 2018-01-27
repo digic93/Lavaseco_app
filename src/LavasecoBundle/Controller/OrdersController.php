@@ -11,6 +11,7 @@ class OrdersController extends Controller {
     public function indexAction($processId) {
         $data = array();
         $doctrineManager = $this->get('doctrine')->getManager();
+        $salePoint = $this->get('session')->get('salePoint');
         $configuration = $this->get('lavaseco.app_configuration');
 
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
@@ -19,7 +20,8 @@ class OrdersController extends Controller {
         $data["processStates"] = $processStateRepository->getProces();
 
         if ($processId == 0 || $processId >= 7) {
-            $bills = $billRepository->findUndelivered();
+            $branchOfficeId = $salePoint->getBranchOffice()->getId();
+            $bills = $billRepository->findUndelivered($branchOfficeId);
         } else {
 
             $bills = $billRepository->getBillsByProcessId($processId);

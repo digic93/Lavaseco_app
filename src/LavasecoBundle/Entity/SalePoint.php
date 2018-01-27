@@ -93,6 +93,13 @@ class SalePoint {
      * @ORM\OneToMany(targetEntity="Bill", mappedBy="salePoint")
      */
     protected $bills;
+    
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="BranchOffice", inversedBy="salePoints")
+     * @ORM\JoinColumn(name="branch_office_id", referencedColumnName="id")
+     */
+    protected $branchOffice;
 
     
     /**
@@ -392,5 +399,34 @@ class SalePoint {
     public function getBills()
     {
         return $this->bills;
+    }
+
+    /**
+     * Set branchOffice
+     *
+     * @param \LavasecoBundle\Entity\BranchOffice $branchOffice
+     *
+     * @return SalePoint
+     */
+    public function setBranchOffice(\LavasecoBundle\Entity\BranchOffice $branchOffice = null)
+    {
+        $this->branchOffice = $branchOffice;
+
+        return $this;
+    }
+
+    /**
+     * Get branchOffice
+     *
+     * @return \LavasecoBundle\Entity\BranchOffice
+     */
+    public function getBranchOffice()
+    {
+        return $this->branchOffice;
+    }
+    
+    public function getBranchOfficeName()
+    {
+        return $this->branchOffice->getName();
     }
 }

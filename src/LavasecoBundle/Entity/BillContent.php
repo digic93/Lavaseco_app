@@ -57,6 +57,11 @@ class BillContent
     private $foot;
 
     /**
+     * @ORM\OneToMany(targetEntity="BranchOffice", mappedBy="billContent")
+     */
+    protected $branchOffices;
+    
+    /**
      * Get id
      *
      * @return int
@@ -175,4 +180,45 @@ class BillContent
         return $this->foot;
     }
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->branchOffices = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add branchOffice
+     *
+     * @param \LavasecoBundle\Entity\BranchOffice $branchOffice
+     *
+     * @return BillContent
+     */
+    public function addBranchOffice(\LavasecoBundle\Entity\BranchOffice $branchOffice)
+    {
+        $this->branchOffices[] = $branchOffice;
+
+        return $this;
+    }
+
+    /**
+     * Remove branchOffice
+     *
+     * @param \LavasecoBundle\Entity\BranchOffice $branchOffice
+     */
+    public function removeBranchOffice(\LavasecoBundle\Entity\BranchOffice $branchOffice)
+    {
+        $this->branchOffices->removeElement($branchOffice);
+    }
+
+    /**
+     * Get branchOffices
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBranchOffices()
+    {
+        return $this->branchOffices;
+    }
 }

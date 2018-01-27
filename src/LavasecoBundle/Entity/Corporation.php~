@@ -94,3 +94,4 @@ class Corporation
         return $this->vision;
     }
 }
+

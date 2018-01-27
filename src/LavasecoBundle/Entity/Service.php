@@ -222,6 +222,9 @@ class Service
     public function getServiceName(){
         $serviceCategory = $this->getServiceCategory();
         $superServiceCategory = $serviceCategory->getServiceCategory();
+        if($superServiceCategory == null){
+            return null;
+        }
         
         $name = " " . $superServiceCategory->getName();
         $name .= ", " . $serviceCategory->getName();

@@ -136,6 +136,7 @@ class Bill {
      * Constructor
      */
     public function __construct() {
+        $this->setDiscount(0);
         $this->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         $this->payDetails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->billDetails = new \Doctrine\Common\Collections\ArrayCollection();
@@ -446,11 +447,21 @@ class Bill {
         return $this->createdAt->format('d/m/Y H:i');
     }
 
-    public function getTotal() {
+    public function getTotalServices() {
         $total = 0;
         foreach ($this->billDetails as $billDetail) {
             $total += $billDetail->getPrice() * $billDetail->getQuantity();
         }
+        return $total;
+    }
+    
+    public function getTotal() {
+        $total = $this->getTotalServices();
+        
+        if($this->getDiscount() != 0){
+            $total -= $this->getDiscount();
+        }
+        
         return $total;
     }
 
@@ -574,4 +585,28 @@ class Bill {
         return $this->notifyDelivered;
     }
 
+
+    /**
+     * Set discount
+     *
+     * @param integer $discount
+     *
+     * @return Bill
+     */
+    public function setDiscount($discount)
+    {
+        $this->discount = $discount;
+
+        return $this;
+    }
+
+    /**
+     * Get discount
+     *
+     * @return integer
+     */
+    public function getDiscount()
+    {
+        return $this->discount;
+    }
 }
