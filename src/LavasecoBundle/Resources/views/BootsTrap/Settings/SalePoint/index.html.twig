@@ -71,6 +71,7 @@
                         <th>Activo</th>
                         <th>Actualizado</th>
                         <th>Fecha Creacion</th>
+                        <th>Editar</th>
                     </tr>
                 </thead>
                 <tbody> 
@@ -84,6 +85,7 @@
                             <td>{{ salePoint.isActive }}</td>
                             <td>{{ salePoint.updateAt }}</td>
                             <td>{{ salePoint.createdAt}}</td>
+                            <td><a href="{{ path('lavaseco_setting_sale_point', {'salePointId': salePoint.id}) }}">Editar</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
