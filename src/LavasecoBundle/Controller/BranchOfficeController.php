@@ -9,12 +9,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class BranchOfficeController extends Controller {
 
-    public function indexAction(Request $request) {
+    public function indexAction($branchOfficeId, Request $request) {
         $data = array();
         $configuration = $this->get('lavaseco.app_configuration');
 
         $branchOffice = new BranchOffice();
       
+        if($branchOfficeId != 0){
+            $branchOffice  = $this->getBranchOfficeById($branchOfficeId);
+        }
+        
         $form = $this->createForm(BranchOfficeType::class, $branchOffice);
 
         $form->handleRequest($request);
@@ -43,6 +47,12 @@ class BranchOfficeController extends Controller {
         $doctrineManager = $this->get('doctrine')->getManager();
         $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:BranchOffice");
         return $salePointRepository->findAll();
+    }
+    
+    protected function getBranchOfficeById($branchOfficeId){
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:BranchOffice");
+        return $salePointRepository->findOneById($branchOfficeId);
     }
     
     protected function getBillContent(){

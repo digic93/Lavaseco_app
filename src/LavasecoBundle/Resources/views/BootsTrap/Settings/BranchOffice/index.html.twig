@@ -77,6 +77,7 @@
                         <th>Nombre</th>
                         <th>Direccion</th>
                         <th>Telefono</th>
+                        <th>Editar</th>
                     </tr>
                 </thead>
                 <tbody> 
@@ -86,6 +87,7 @@
                             <td>{{ branchOffice.name }}</td>
                             <td>{{ branchOffice.address }}</td>
                             <td>{{ branchOffice.phoneNumber }}</td>
+                            <td><a href="{{ path('lavaseco_setting_branch_office', {'branchOfficeId': branchOffice.id}) }}" >Editar</a> </td>
                         </tr>
                     {% endfor %}
                 </tbody>

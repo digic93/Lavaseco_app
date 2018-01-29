@@ -43,13 +43,17 @@ lavaseco_setting_customers:
     defaults: { _controller: LavasecoBundle:Customer:create }
 
 lavaseco_setting_sale_point:
-    path:     /configuracion/puntoventa
-    defaults: { _controller: LavasecoBundle:SalePoint:index }
+    path:     /configuracion/puntoventa/{salePointId}
+    defaults: { _controller: LavasecoBundle:SalePoint:index, salePointId: 0 }   
+    requirements:
+        salePointId:  \d+
 
 lavaseco_setting_branch_office:
-    path:     /configuracion/sucursal
-    defaults: { _controller: LavasecoBundle:BranchOffice:index }
-
+    path:     /configuracion/sucursal/{branchOfficeId}
+    defaults: { _controller: LavasecoBundle:BranchOffice:index, branchOfficeId: 0 }
+    requirements:
+        branchOfficeId:  \d+
+        
 lavaseco_setting_loyalty:
     path:     /configuracion/fidelidad
     defaults: { _controller: LavasecoBundle:Loyalty:index }
