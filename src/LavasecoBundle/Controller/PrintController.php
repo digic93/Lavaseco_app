@@ -23,15 +23,17 @@ class PrintController extends Controller {
         return $this->json([true]);
     }
     
-    public function unprintedAction() {
+    public function unprintedAction($officeBranchId, Request $request) {
         $billsResult = array();
+        $salePoints = json_decode($request->getContent())->salePoints;
+   
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
 
-        $billsTikets = $billRepository->getUnprintedTikets();
-        $bills = $billRepository->getUnprintedBillAndTikets();
+        $billsTikets = $billRepository->getUnprintedTikets($salePoints);
+        $bills = $billRepository->getUnprintedBillAndTikets($salePoints);
 
-        $billsResult["billInfo"] = $this->getBillContent();
+        $billsResult["billInfo"] = $this->getBillContent($officeBranchId);
         
         foreach ($bills as $bill) {
             $billsResult ["bills"][] = $this->getBillArray($bill);
@@ -55,16 +57,19 @@ class PrintController extends Controller {
         return $this->json($billsResult);
     }
 
-    private function getBillContent() {
+    private function getBillContent($officeBranchId) {
         $doctrineManager = $this->get('doctrine')->getManager();
-        $billContentRepository = $doctrineManager->getRepository("LavasecoBundle:BillContent");
+        $branchOfficeRepository = $doctrineManager->getRepository("LavasecoBundle:BranchOffice");
 
-        $billContent = $billContentRepository->find(1);
+        $branchOffice = $branchOfficeRepository->find($officeBranchId); 
+        $billContent = $branchOffice->getBillContent();
 
         return [
             "companyName" => $billContent->getCompanyName(),
             "fiscalId" => $billContent->getFiscalId(),
-            "address" => $billContent->getAddress(),
+            "branchOffice" => $branchOffice->getName(),
+            "address" => $branchOffice->getAddress(),
+            "phoneNumber" => $branchOffice->getPhoneNumber(),
             "head" => $billContent->getHead(),
             "foot" => $billContent->getFoot(),
         ];
