@@ -78,19 +78,23 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $bills->getQuery()->getResult();
     }
 
-    public function getUnprintedBillAndTikets() {
+    public function getUnprintedBillAndTikets($salePoints) {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.printBill = true')
                 ->andWhere('b.printedTiket = true')
+                ->andWhere('b.salePoint in (:salePoints)')
+                ->setParameter('salePoints', array_values($salePoints))
                 ->getQuery();
 
         return $bills->getResult();
     }
 
-    public function getUnprintedTikets() {
+    public function getUnprintedTikets($salePoints) {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.printBill = false')
                 ->andWhere('b.printedTiket = true')
+                ->andWhere('b.salePoint in (:salePoints)')
+                ->setParameter('salePoints', array_values($salePoints))
                 ->getQuery();
 
         return $bills->getResult();

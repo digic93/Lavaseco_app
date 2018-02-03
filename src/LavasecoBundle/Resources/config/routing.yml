@@ -216,9 +216,9 @@ lavaseco_api_pay_method:
     methods:  [GET]
     
 lavaseco_api_print:
-    path:     /api/print/
+    path:     /api/print/{officeBranchId}
     defaults: { _controller: LavasecoBundle:Print:unprinted }
-    methods:  [GET]
+    methods:  [POST]
 
 lavaseco_api_print_bill:
     path:     /api/print/bill/
