@@ -34,6 +34,13 @@ class Customer {
      * @ORM\Column(name="email", type="string", length=70, nullable=true, unique=true)
      */
     private $email;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", length=100)
+     */
+    private $password;
 
     /**
      * @var string
@@ -141,6 +148,28 @@ class Customer {
     public function getEmail() {
         return $this->email;
     }
+    
+    /**
+     * Set password
+     *
+     * @param string $password
+     *
+     * @return Customer
+     */
+    public function setPassword($password) {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string
+     */
+    public function getPassword() {
+        return $this->password;
+    }    
 
     /**
      * Set phoneNumber
