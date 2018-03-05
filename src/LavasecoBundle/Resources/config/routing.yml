@@ -85,6 +85,10 @@ lavaseco_report_sale_point:
 lavaseco_report_cash_transaction:
     path:     /reportes/movimientos/puntoventa
     defaults: { _controller: LavasecoBundle:Report:cashTransaction }
+
+lavaseco_report_inventory:
+    path:     /reportes/inventario
+    defaults: { _controller: LavasecoBundle:Report:inventory }   
     
 #app Service-------------------------------------------------------------------        
 lavaseco_client_home:
