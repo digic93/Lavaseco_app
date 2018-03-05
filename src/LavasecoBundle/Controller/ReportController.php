@@ -212,6 +212,17 @@ class ReportController extends Controller {
         ];
         return $this->json($result);
     }
+    
+    public function inventoryAction(Request $request){
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
+        $configuration = $this->get('lavaseco.app_configuration');
+        
+        $result = $serviceCategoryRepository->getInventory();
+        return $this->render($configuration->getViewTheme() . ':Reports/inventory.html.twig', [
+                "inventories" => $result,
+        ]);
+    }
 
     private function getAllSalePoints() {
         $doctrineManager = $this->get('doctrine')->getManager();
