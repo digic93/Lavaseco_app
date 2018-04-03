@@ -6,7 +6,17 @@
 
 {% block body %} 
 
-    <h1>Reporte de Inventario</h1>
+    <div class="row">
+        <div class="col-md-10">
+            <h1>Reporte de Inventario</h1>
+        </div>
+        <div class="col-md-1">
+            <a href="{{ path('lavaseco_report_inventory_excel') }}" class="btn btn-success" style="margin-top: 20px;">
+                Descargar
+                <i class="fa fa-file-text" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
     <hr>
     <div class="row">
         <div class="col-md-12">
@@ -34,7 +44,7 @@
                             <td>{{ inventory.estado }}</td>
                             <td>{{ inventory.cliente}}</td>
                             <td>{{ inventory.fecha}}</td>
-                                                    </tr>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>

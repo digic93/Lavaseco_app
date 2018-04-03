@@ -3,6 +3,10 @@ services:
         class: LavasecoBundle\Services\AppConfiguration
         arguments: []
         
+    lavaseco.excel_utilities:
+        class: LavasecoBundle\Services\ExcelUtilities
+        arguments: []    
+        
     lavaseco.form.registration:
         class: LavasecoBundle\Form\RegistrationType
         tags:

@@ -89,6 +89,10 @@ lavaseco_report_cash_transaction:
 lavaseco_report_inventory:
     path:     /reportes/inventario
     defaults: { _controller: LavasecoBundle:Report:inventory }   
+
+lavaseco_report_inventory_excel:
+    path:     /reportes/excel/inventario
+    defaults: { _controller: LavasecoBundle:Report:inventoryExcel }   
     
 #app Service-------------------------------------------------------------------        
 lavaseco_client_home:
