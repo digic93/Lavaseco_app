@@ -253,3 +253,9 @@ lavaseco_api_bill_paymet:
     path:     /api/bill/payment
     defaults: { _controller: LavasecoBundle:Bill:payment }
     methods:  [POST]
+    
+ #permitido solo para los clientes moviles 
+lavaseco_mobile_login:
+    path:     /mobile/login
+    defaults: { _controller: LavasecoBundle:MobileAutentication:login }
+    methods:  [POST]
