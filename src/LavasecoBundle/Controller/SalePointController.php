@@ -9,13 +9,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class SalePointController extends Controller {
 
-    public function indexAction(Request $request) {
+    public function indexAction($salePointId, Request $request) {
         $data = array();
         $configuration = $this->get('lavaseco.app_configuration');
 
         $salePoint = new SalePoint();
 
-        $form = $this->createForm(SalePointType::class, $salePoint);
+        if($salePointId != 0) {
+            $salePoint = $this->getSalePointById($salePointId);
+        }
+
+        $branchOffices = $this->getBranchOffices();
+        $form = $this->createForm(SalePointType::class, $salePoint, ['branchOffice' => $branchOffices]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -27,7 +32,7 @@ class SalePointController extends Controller {
                 $em->persist($salePoint);
                 $em->flush();
 
-                $form = $this->createForm(SalePointType::class, new SalePoint());
+                $form = $this->createForm(SalePointType::class, new SalePoint(), ['branchOffice' => $branchOffices]);
                 $data["messagePad"] = "Punto de venta " . $salePoint->getName() . " creado correctamente";
             } catch (\Doctrine\DBAL\DBALException $e) {
                 $data["messagePad"] = "Punto de venta " . $salePoint->getName() . " no pudo ser creado, verifique que no exista un punto de venta con el mismo nombre";
@@ -36,13 +41,21 @@ class SalePointController extends Controller {
         }
 
         return $this->render($configuration->getViewTheme() . ':Settings/SalePoint/index.html.twig'
-                , ["form" => $form->createView(),"salePoints" => $this->getSalePoints()] + $data);
+                        , ["form" => $form->createView(), "salePoints" => $this->getSalePoints()] + $data);
     }
 
     public function getSalePointAction(Request $request) {
         $salePoint = $this->getSalePointByDeviceId($request->request->get('device'));
+        if (isset($salePoint)) {
+            $this->get('session')->set('salePoint', $salePoint);
+            $this->get('session')->set('brnachOfficeName', $salePoint->getBranchOfficeName());
+        } else {
+            $this->get('session')->remove('salePoint');
+            $this->get('session')->remove('brnachOfficeName');
+        }
 
-        $this->get('session')->set('salePoint', (isset($salePoint)) ? $salePoint : "-1");
+        $this->get('session')->remove('getSalePoint');
+
         return $this->json(true);
     }
 
@@ -67,9 +80,11 @@ class SalePointController extends Controller {
                 $this->get('session')->set('salePoint', $salePoint);
             } else {
                 $resutl ["succes"] = false;
-                $this->get('session')->set('salePoint', "-1");
             }
         }
+
+        $this->get('session')->remove('newSalePoint');
+
         return $this->json($resutl);
     }
 
@@ -80,6 +95,13 @@ class SalePointController extends Controller {
         return $salePointRepository->findOneBy(array('isActive' => $active));
     }
 
+    private function getSalePointById($salePointId) {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:SalePoint");
+
+        return $salePointRepository->findOneById($salePointId);
+    }
+    
     private function getSalePointByDeviceId($deviceId) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:SalePoint");
@@ -98,10 +120,39 @@ class SalePointController extends Controller {
     }
 
     public function getSalePoints() {
+        $data = array();
         $doctrineManager = $this->get('doctrine')->getManager();
         $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:SalePoint");
+        $salePoints = $salePointRepository->findAll();
 
-        return $salePointRepository->findAll();
+        foreach ($salePoints as $salePoint) {
+            $data[] = [
+                "id" => $salePoint->getId(),
+                "name" => $salePoint->getName(),
+                "branchOffice" => $salePoint->getBranchOfficeName(),
+                "turn" => $salePoint->getTurn(),
+                "isOpen" => $salePoint->getIsOpen() ? "Abierta" : "Cerrada",
+                "isActive" => $salePoint->getIsActive() ? "Activa" : "Inactiva",
+                "updateAt" => $salePoint->getUpdateAtString(),
+                "createdAt" => $salePoint->getCreatedAtString(),
+            ];
+        }
+
+        return $data;
+    }
+
+    private function getBranchOffices() {
+        $result = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $branchOfficeRepository = $doctrineManager->getRepository("LavasecoBundle:BranchOffice");
+
+        $branchsOffices = $branchOfficeRepository->findAll();
+
+        foreach ($branchsOffices as $branchsOffice) {
+            $result[$branchsOffice->getName()] = $branchsOffice;
+        }
+
+        return $result;
     }
 
 }

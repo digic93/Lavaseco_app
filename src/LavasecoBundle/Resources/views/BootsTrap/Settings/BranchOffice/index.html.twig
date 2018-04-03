@@ -6,9 +6,9 @@
 
 {% block body %} 
 
-    <h1>Punto de Venta</h1>
+    <h1>Sucursales</h1>
     <p>
-        Descripción de los puntos de venta     
+        Descripción de las sucursales
     </p>
     <hr>
     <div class="row">
@@ -17,30 +17,40 @@
             {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title" id="title">Creación Punto de Venta</h3>
+                    <h3 class="panel-title" id="title">Creación Sucursal</h3>
                 </div>
                 <div class="panel-body">
                     <!-- Form Tipo descriptor-->
                     <fieldset>
-                        <!-- Text input-->
-                        <div class="form-group">
-                            {{ form_errors(form.branchOffice) }}
-                            <label class="col-md-4 control-label" for="textinput">{{ form_label(form.branchOffice, 'Sucursal') }}</label>  
-                            <div class="col-md-5">
-                                {{ form_widget(form.branchOffice, {'attr': {'class': 'form-control  input-md'} }) }}
-                            </div>
-                        </div>
 
-                        
                         <!-- Text input-->
                         <div class="form-group">
                             {{ form_errors(form.name) }}
-                            <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.name, 'Nombre del Punto de Venta') }}</label>  
+                            <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.name, 'Nombre') }}</label>  
                             <div class="col-md-5">
                                 {{ form_widget(form.name, {'attr': {'class': 'form-control  input-md'} }) }}
                             </div>
                         </div>
 
+                                                    <!-- Text input-->
+                        <div class="form-group">
+                            {{ form_errors(form.address) }}
+                            <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.address, 'Dirección') }}</label>  
+                            <div class="col-md-5">
+                                {{ form_widget(form.address, {'attr': {'class': 'form-control  input-md'} }) }}
+                            </div>
+                        </div>
+
+                                                    <!-- Text input-->
+                        <div class="form-group">
+                            {{ form_errors(form.phoneNumber) }}
+                            <label id="" class="col-md-4 control-label" for="textinput">{{ form_label(form.phoneNumber, 'Numero Domicilios') }}</label>  
+                            <div class="col-md-5">
+                                {{ form_widget(form.phoneNumber, {'attr': {'class': 'form-control  input-md'} }) }}
+                            </div>
+                        </div>
+
+                           
                         <!-- Button -->
                         <div class="form-group">
                             <label class="col-md-4 control-label" for="singlebutton"></label>
@@ -58,34 +68,26 @@
         </div>
 
         <div class="col-md-12">
-            <h3>Puntos de Venta Registrados</h3>
+            <h3>Sucursales Registradas</h3>
             <hr>
-            <table id="salePointTable" class="display" cellspacing="0" width="100%">
+            <table id="officeBranchTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Sucursal</th>
-                        <th>Turno</th>
-                        <th>Estado Caja</th>
-                        <th>Activo</th>
-                        <th>Actualizado</th>
-                        <th>Fecha Creacion</th>
+                        <th>Direccion</th>
+                        <th>Telefono</th>
                         <th>Editar</th>
                     </tr>
                 </thead>
                 <tbody> 
-                    {% for salePoint in salePoints %}
+                    {% for branchOffice in branchOffices %}
                         <tr>
-                            <td>{{ salePoint.id }}</td>
-                            <td>{{ salePoint.name }}</td>
-                            <td>{{ salePoint.branchOffice }}</td>
-                            <td>{{ salePoint.turn }}</td>
-                            <td>{{ salePoint.isOpen }}</td>
-                            <td>{{ salePoint.isActive }}</td>
-                            <td>{{ salePoint.updateAt }}</td>
-                            <td>{{ salePoint.createdAt}}</td>
-                            <td><a href="{{ path('lavaseco_setting_sale_point', {'salePointId': salePoint.id}) }}">Editar</a></td>
+                            <td>{{ branchOffice.id }}</td>
+                            <td>{{ branchOffice.name }}</td>
+                            <td>{{ branchOffice.address }}</td>
+                            <td>{{ branchOffice.phoneNumber }}</td>
+                            <td><a href="{{ path('lavaseco_setting_branch_office', {'branchOfficeId': branchOffice.id}) }}" >Editar</a> </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -109,10 +111,10 @@
 
     <script>
         $(document).ready(function () {
-            var table = $("#salePointTable").DataTable();
+            var table = $("#officeBranchTable").DataTable();
         });
 
-        $('#salePointTable tbody').on('click', 'tr', function () {
+        $('#officeBranchTable tbody').on('click', 'tr', function () {
             $(".selected").toggleClass('selected');
             $(this).toggleClass('selected');
         });

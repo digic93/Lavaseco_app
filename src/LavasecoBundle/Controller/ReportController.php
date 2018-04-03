@@ -212,7 +212,39 @@ class ReportController extends Controller {
         ];
         return $this->json($result);
     }
+    
+    public function inventoryAction(Request $request){
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");        
+        $configuration = $this->get('lavaseco.app_configuration');
+        
+        $result = $serviceCategoryRepository->getInventory();
+        return $this->render($configuration->getViewTheme() . ':Reports/inventory.html.twig', [
+                "inventories" => $result,
+        ]);
+    }
 
+    public function inventoryExcelAction(Request $request){
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
+        
+        $excelUtilities = $this->get('lavaseco.excel_utilities');
+        
+        $result = $serviceCategoryRepository->getInventory();
+
+        $titles = [
+            "Factura",
+            "Servicio",
+            "Candtidad",
+            "Observacion",
+            "Proceso",
+            "Estado",
+            "Cliente",
+            "Fecha"];
+
+        return $excelUtilities->creteByArray("Inventario " . date("j/n/Y"), $result, $titles);
+    }
+    
     private function getAllSalePoints() {
         $doctrineManager = $this->get('doctrine')->getManager();
         $salePointRepository = $doctrineManager->getRepository("LavasecoBundle:SalePoint");

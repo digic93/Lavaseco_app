@@ -40,7 +40,13 @@ class BillContent
      *
      * @ORM\Column(name="address", type="string", length=80)
      */
-    
+    private $address;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="head", type="text")
+     */
     private $head;
 
     /**
@@ -49,14 +55,18 @@ class BillContent
      * @ORM\Column(name="foot", type="text")
      */
     private $foot;
+
+    /**
+     * @ORM\OneToMany(targetEntity="BranchOffice", mappedBy="billContent")
+     */
+    protected $branchOffices;
     
     /**
      * Get id
      *
      * @return int
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -67,8 +77,7 @@ class BillContent
      *
      * @return BillContent
      */
-    public function setCompanyName($companyName)
-    {
+    public function setCompanyName($companyName) {
         $this->companyName = $companyName;
 
         return $this;
@@ -79,8 +88,7 @@ class BillContent
      *
      * @return string
      */
-    public function getCompanyName()
-    {
+    public function getCompanyName() {
         return $this->companyName;
     }
 
@@ -91,8 +99,7 @@ class BillContent
      *
      * @return BillContent
      */
-    public function setFiscalId($fiscalId)
-    {
+    public function setFiscalId($fiscalId) {
         $this->fiscalId = $fiscalId;
 
         return $this;
@@ -103,9 +110,30 @@ class BillContent
      *
      * @return string
      */
-    public function getFiscalId()
-    {
+    public function getFiscalId() {
         return $this->fiscalId;
+    }
+
+    /**
+     * Set address
+     *
+     * @param string $address
+     *
+     * @return BillContent
+     */
+    public function setAddress($address) {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return string
+     */
+    public function getAddress() {
+        return $this->address;
     }
 
     /**
@@ -115,8 +143,7 @@ class BillContent
      *
      * @return BillContent
      */
-    public function setHead($head)
-    {
+    public function setHead($head) {
         $this->head = $head;
 
         return $this;
@@ -127,8 +154,7 @@ class BillContent
      *
      * @return string
      */
-    public function getHead()
-    {
+    public function getHead() {
         return $this->head;
     }
 
@@ -139,8 +165,7 @@ class BillContent
      *
      * @return BillContent
      */
-    public function setFoot($foot)
-    {
+    public function setFoot($foot) {
         $this->foot = $foot;
 
         return $this;
@@ -151,10 +176,49 @@ class BillContent
      *
      * @return string
      */
-    public function getFoot()
-    {
+    public function getFoot() {
         return $this->foot;
     }
-    
-    
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->branchOffices = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add branchOffice
+     *
+     * @param \LavasecoBundle\Entity\BranchOffice $branchOffice
+     *
+     * @return BillContent
+     */
+    public function addBranchOffice(\LavasecoBundle\Entity\BranchOffice $branchOffice)
+    {
+        $this->branchOffices[] = $branchOffice;
+
+        return $this;
+    }
+
+    /**
+     * Remove branchOffice
+     *
+     * @param \LavasecoBundle\Entity\BranchOffice $branchOffice
+     */
+    public function removeBranchOffice(\LavasecoBundle\Entity\BranchOffice $branchOffice)
+    {
+        $this->branchOffices->removeElement($branchOffice);
+    }
+
+    /**
+     * Get branchOffices
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBranchOffices()
+    {
+        return $this->branchOffices;
+    }
 }

@@ -35,40 +35,66 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $bills->getResult();
     }
 
-    public function findDelivered($limit = null) {
-        $bills = $this->createQueryBuilder('b')
-                ->where('b.processState = 7')
-                ->orWhere('b.billState = 3')
-                ->orderBy('b.id', 'DESC');
-        if($limit != null){
-            $bills = $bills->setMaxResults($limit);
+    public function findDelivered($branchOfficeId = null, $limit = null) {
+        $bills = $this->createQueryBuilder('b');
+
+        if ($branchOfficeId != null) {
+            $bills = $bills->innerJoin('b.salePoint', 's')
+                    ->innerJoin('s.branchOffice', 'bo')
+                    ->where('b.processState = 7')
+                    ->orWhere('b.billState = 3')
+                    ->andWhere('bo.id = :branchOfficeId')
+                    ->orderBy('b.id', 'DESC')
+                    ->setParameter('branchOfficeId', $branchOfficeId);
+        } else {
+            $bills = $bills->where('b.processState = 7')
+                    ->orWhere('b.billState = 3')
+                    ->orderBy('b.id', 'DESC');
         }
 
+        if ($limit != null) {
+            $bills = $bills->setMaxResults($limit);
+        }
+        
         return $bills->getQuery()->getResult();
     }
 
-    public function findUndelivered() {
-        $bills = $this->createQueryBuilder('b')
-                ->where('b.processState != 7')
-                ->andWhere('b.billState != 3')
-                ->getQuery();
+    public function findUndelivered($branchOfficeId = null) {
+        $bills = $this->createQueryBuilder('b');
 
-        return $bills->getResult();
+        if ($branchOfficeId != null) {
+            $bills = $bills->innerJoin('b.salePoint', 's')
+                    ->innerJoin('s.branchOffice', 'bo')
+                    ->where('b.processState != 7')
+                    ->andWhere('b.billState != 3')
+                    ->andWhere('bo.id = :branchOfficeId')
+                    ->orderBy('b.id', 'DESC')
+                    ->setParameter('branchOfficeId', $branchOfficeId);
+        } else {
+            $bills = $bills->where('b.processState != 7')
+                    ->andWhere('b.billState != 3')
+                    ->orderBy('b.id', 'DESC');
+        }
+        return $bills->getQuery()->getResult();
     }
 
-    public function getUnprintedBillAndTikets() {
+    public function getUnprintedBillAndTikets($salePoints) {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.printBill = true')
                 ->andWhere('b.printedTiket = true')
+                ->andWhere('b.salePoint in (:salePoints)')
+                ->setParameter('salePoints', array_values($salePoints))
                 ->getQuery();
 
         return $bills->getResult();
     }
 
-    public function getUnprintedTikets() {
+    public function getUnprintedTikets($salePoints) {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.printBill = false')
                 ->andWhere('b.printedTiket = true')
+                ->andWhere('b.salePoint in (:salePoints)')
+                ->setParameter('salePoints', array_values($salePoints))
                 ->getQuery();
 
         return $bills->getResult();
@@ -79,7 +105,7 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         $em = $this->getEntityManager()->getConnection();
         $sth = $em->prepare($procedure);
         $sth->execute();
-        
+
         return $sth->fetchAll();
     }
 
@@ -88,8 +114,8 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         $em = $this->getEntityManager()->getConnection();
         $sth = $em->prepare($procedure);
         $sth->execute();
-        
+
         return $sth->fetchAll();
     }
-    
+
 }

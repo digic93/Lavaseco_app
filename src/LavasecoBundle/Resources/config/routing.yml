@@ -43,9 +43,17 @@ lavaseco_setting_customers:
     defaults: { _controller: LavasecoBundle:Customer:create }
 
 lavaseco_setting_sale_point:
-    path:     /configuracion/puntoventa
-    defaults: { _controller: LavasecoBundle:SalePoint:index }
+    path:     /configuracion/puntoventa/{salePointId}
+    defaults: { _controller: LavasecoBundle:SalePoint:index, salePointId: 0 }   
+    requirements:
+        salePointId:  \d+
 
+lavaseco_setting_branch_office:
+    path:     /configuracion/sucursal/{branchOfficeId}
+    defaults: { _controller: LavasecoBundle:BranchOffice:index, branchOfficeId: 0 }
+    requirements:
+        branchOfficeId:  \d+
+        
 lavaseco_setting_loyalty:
     path:     /configuracion/fidelidad
     defaults: { _controller: LavasecoBundle:Loyalty:index }
@@ -77,6 +85,14 @@ lavaseco_report_sale_point:
 lavaseco_report_cash_transaction:
     path:     /reportes/movimientos/puntoventa
     defaults: { _controller: LavasecoBundle:Report:cashTransaction }
+
+lavaseco_report_inventory:
+    path:     /reportes/inventario
+    defaults: { _controller: LavasecoBundle:Report:inventory }   
+
+lavaseco_report_inventory_excel:
+    path:     /reportes/excel/inventario
+    defaults: { _controller: LavasecoBundle:Report:inventoryExcel }   
     
 #app Service-------------------------------------------------------------------        
 lavaseco_client_home:
@@ -208,9 +224,9 @@ lavaseco_api_pay_method:
     methods:  [GET]
     
 lavaseco_api_print:
-    path:     /api/print/
+    path:     /api/print/{officeBranchId}
     defaults: { _controller: LavasecoBundle:Print:unprinted }
-    methods:  [GET]
+    methods:  [POST]
 
 lavaseco_api_print_bill:
     path:     /api/print/bill/
