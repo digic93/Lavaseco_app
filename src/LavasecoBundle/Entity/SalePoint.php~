@@ -400,4 +400,33 @@ class SalePoint {
     {
         return $this->bills;
     }
+
+    /**
+     * Set branchOffice
+     *
+     * @param \LavasecoBundle\Entity\BranchOffice $branchOffice
+     *
+     * @return SalePoint
+     */
+    public function setBranchOffice(\LavasecoBundle\Entity\BranchOffice $branchOffice = null)
+    {
+        $this->branchOffice = $branchOffice;
+
+        return $this;
+    }
+
+    /**
+     * Get branchOffice
+     *
+     * @return \LavasecoBundle\Entity\BranchOffice
+     */
+    public function getBranchOffice()
+    {
+        return $this->branchOffice;
+    }
+    
+    public function getBranchOfficeName()
+    {
+        return $this->branchOffice->getName();
+    }
 }

@@ -38,7 +38,7 @@ class Customer {
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", length=100)
+     * @ORM\Column(name="password", type="string", length=100, nullable=true)
      */
     private $password;
 
@@ -90,7 +90,14 @@ class Customer {
      * @ORM\Column(name="total_spent", type="integer")
      */
     private $totalSpent;
-
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="uuid", type="string", length=50, nullable=true)
+     */
+    private $uuid;
+    
     /**
      * @ORM\OneToMany(targetEntity="Bill", mappedBy="customer")
      */
@@ -157,7 +164,7 @@ class Customer {
      * @return Customer
      */
     public function setPassword($password) {
-        $this->password = $password;
+        $this->password =  hash('sha256',$password);
 
         return $this;
     }
@@ -376,4 +383,28 @@ class Customer {
         return $this->createdAt->format('d/m/Y H:i');
     }
 
+
+    /**
+     * Set uuid
+     *
+     * @param string $uuid
+     *
+     * @return Customer
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * Get uuid
+     *
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
 }

@@ -39,4 +39,17 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+    
+    public function login($email, $password){
+        $customer = $this->getCustomersByEmail($email);
+        if(count($customer) > 0){
+            $customer = $customer[0] ;
+            
+            if($customer->getPassword() ==  hash('sha256', $password)){
+                return $customer;
+            }
+        }
+        
+        return null;
+    }
 }

@@ -110,7 +110,11 @@ lavaseco_client_orders:
 lavaseco_client_invoices:
     path:     /app/invoices
     defaults: { _controller: LavasecoBundle:Client:invoice }
-
+    
+lavaseco_mobile_restart_password:
+    path:     /Customer/restartpassword/{uuidUser}
+    defaults: { _controller: LavasecoBundle:MobileAutentication:restartPassword }
+    
 #Ajax Service-------------------------------------------------------------------        
 lavaseco_api_service_category:
     path:     /api/service/category/{serviceCategoryId}
@@ -253,9 +257,45 @@ lavaseco_api_bill_paymet:
     path:     /api/bill/payment
     defaults: { _controller: LavasecoBundle:Bill:payment }
     methods:  [POST]
-    
- #permitido solo para los clientes moviles 
-lavaseco_mobile_login:
-    path:     /mobile/login
+
+#RestFull api mobile----------------------------    
+api_mobile_login:
+    path: /api/mobile/login_check
     defaults: { _controller: LavasecoBundle:MobileAutentication:login }
-    methods:  [POST]
+    methods:  [POST]    
+
+api_mobile_reset_password:
+    path: /api/mobile/resetpassword
+    defaults: { _controller: LavasecoBundle:MobileAutentication:getResetpassword }
+    methods:  [POST]    
+
+api_mobile_orders:
+    path: /api/mobile/orders
+    defaults: { _controller: LavasecoBundle:Orders:customerOrders }
+    methods:  [GET]   
+    
+api_mobile_bill:
+    path: /api/mobile/bill/{billId}
+    defaults: { _controller: LavasecoBundle:Bill:getTiketMobileByBillId }
+    methods:  [GET]   
+    requirements:
+        billId:  \d+
+    
+api_mobile_sale_service:
+    path:     /api/mobile/service/{categoriaId}
+    defaults: { _controller: LavasecoBundle:Service:getServiceMobile }
+    methods:  [GET]
+    requirements:
+        categoriaId:  \d+
+
+api_mobile_service_descriptions:
+    path:     /api/mobile/service/description/{serviceCategoryId}
+    defaults: { _controller: LavasecoBundle:Service:getServiceAndDescriptionsMobileByServiceCategoryId }
+    methods:  [GET]
+    requirements:
+        serviceCategoryId:  \d+
+       
+api_mobile_validate_customer:
+    path:     /api/mobile/customer/{email}
+    defaults: { _controller: LavasecoBundle:Customer:validateEmail }
+    methods:  [GET]

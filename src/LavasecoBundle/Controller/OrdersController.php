@@ -4,6 +4,7 @@ namespace LavasecoBundle\Controller;
 
 use LavasecoBundle\Entity\BillHistory;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class OrdersController extends Controller {
@@ -43,6 +44,31 @@ class OrdersController extends Controller {
         $this->changeProcessState($billIds, $processState, $observation);
 
         return $this->json(["result" => true]);
+    }
+    
+    public function customerOrdersAction(Request $request){
+        $customer = MobileAutenticationController::validateToken($request, $this);
+        $bills = $customer->getBills()->toArray();
+        $billsResult = array();
+        
+        foreach ($bills as $bill){
+            
+            $billArray = array();
+            $billArray ["id"] = $bill->getId();
+            $billArray ["pago"] = $bill->getBillState()->getName();
+            $billArray ["id_estado"] = $bill->getProcessState()->getId();
+            $billArray ["estado"] = $bill->getProcessState()->getName();
+            $billArray ["precio"] = $bill->getTotal();
+            $billArray ["fecha"] = $bill->getCreatedAtString();
+        
+            $billsResult [] = $billArray;
+        }
+        
+        $response = new Response(json_encode($billsResult));
+        $response->headers->set('Content-Type', 'application/json');
+      
+        return $response;
+        
     }
 
     private function getProcessStateById($processStateId) {
@@ -115,5 +141,4 @@ class OrdersController extends Controller {
             $this->get('mailer')->send($message);
         }
     }
-
 }
