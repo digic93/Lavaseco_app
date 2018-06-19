@@ -49,7 +49,7 @@ class BranchOffice {
 
     /**
      * @ORM\ManyToOne(targetEntity="BillContent", inversedBy="branchOffices")
-     * @ORM\JoinColumn(name="branch_office_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="bill_content_id", referencedColumnName="id", nullable=false)
      */
     protected $billContent;
 
@@ -150,4 +150,45 @@ class BranchOffice {
         return $this->billContent;
     }
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->salePoints = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add salePoint
+     *
+     * @param \LavasecoBundle\Entity\SalePoint $salePoint
+     *
+     * @return BranchOffice
+     */
+    public function addSalePoint(\LavasecoBundle\Entity\SalePoint $salePoint)
+    {
+        $this->salePoints[] = $salePoint;
+
+        return $this;
+    }
+
+    /**
+     * Remove salePoint
+     *
+     * @param \LavasecoBundle\Entity\SalePoint $salePoint
+     */
+    public function removeSalePoint(\LavasecoBundle\Entity\SalePoint $salePoint)
+    {
+        $this->salePoints->removeElement($salePoint);
+    }
+
+    /**
+     * Get salePoints
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSalePoints()
+    {
+        return $this->salePoints;
+    }
 }

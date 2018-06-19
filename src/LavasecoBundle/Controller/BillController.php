@@ -10,6 +10,8 @@ use LavasecoBundle\Form\BillContentType;
 use LavasecoBundle\Entity\CashTransaction;
 use LavasecoBundle\Entity\ObjectStateReceivedService;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -133,7 +135,27 @@ class BillController extends Controller {
         $bill = $this->getBillById($billId);
         return $this->json($this->getTiket($bill));
     }
-
+    
+    public function getTiketMobileByBillIdAction($billId, Request $request) {
+        $billIdFilter = array($billId);
+        $customer = MobileAutenticationController::validateToken($request, $this);
+        
+        $bill = $customer->getBills()->filter(
+            function($entry) use ($billIdFilter) {
+               return in_array($entry->getId(), $billIdFilter);
+            }
+        );
+        
+        
+        if($bill->count() > 0){
+            $response = new Response(json_encode($this->getTiket($bill->first())));
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }else{
+            throw new HttpException(404, "Orden no encontrada");
+        }
+    }
+    
     public function getHistoryByBillIdAction($billId) {
         $resutl = array();
         $resutl["histories"] = array();
@@ -584,5 +606,4 @@ class BillController extends Controller {
             $this->get('mailer')->send($message);
         }
     }
-
 }

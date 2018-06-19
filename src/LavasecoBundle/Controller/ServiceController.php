@@ -60,6 +60,12 @@ class ServiceController extends Controller {
         return $this->json($servicesResponse);
     }
 
+    
+        public function getServiceAndDescriptionsMobileByServiceCategoryIdAction($serviceCategoryId, Request $request) {
+        MobileAutenticationController::validateToken($request, $this);
+        return $this->getServiceAndDescriptionsByServiceCategoryIdAction($serviceCategoryId);
+    }
+    
     public function getDescriptorsAction() {
         $descriptorsResponse = array();
         $doctrineManager = $this->get('doctrine')->getManager();
@@ -138,6 +144,23 @@ class ServiceController extends Controller {
         return $this->json($serviceCategoryResult);
     }
 
+    public function getServiceMobileAction($categoriaId, Request $request){
+        $serviceCagoriesResponse = array();
+        MobileAutenticationController::validateToken($request, $this);
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
+        $serviceCagories = $serviceCategoryRepository->getSubserviceCategoriesByServiceCategoryId($categoriaId);
+
+        foreach ($serviceCagories as $serviceCagory) {
+            $serviceCagoriesResponse [] = [
+                "id" => $serviceCagory->getId(),
+                "name" => $serviceCagory->getName(),
+            ];
+        }
+
+        return $this->json($serviceCagoriesResponse);
+    }
+    
     private function addService($price, $descriptors, ServiceCategory $serviceCategory) {
         $service = new Service();
         $em = $this->get('doctrine')->getManager();
