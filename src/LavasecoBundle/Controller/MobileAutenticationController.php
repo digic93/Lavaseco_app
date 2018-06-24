@@ -42,10 +42,9 @@ class MobileAutenticationController extends Controller {
     }
     
     public function getResetpasswordAction(Request $request){
-        $correo = $request->getContent();
-        if (!empty($correo))
+        if (!empty($request->getContent()))
         {   
-            $correo = json_decode($correo, true);
+            $correo = json_decode($request->getContent(), true);
             $this->sendEmailResetPassword($correo["email"]);
         }
         
@@ -109,8 +108,7 @@ class MobileAutenticationController extends Controller {
     private function sendEmailResetPassword($email){
         $doctrineManager = $this->getDoctrine()->getManager();
         $customerRepository = $doctrineManager->getRepository("LavasecoBundle:Customer");
-        
-        $customer = $customerRepository->getCustomersByEmail($email);
+        $customer = $customerRepository->findBy(["email" => $email]);
         if(count($customer) > 0){
             $this->sendMail($customer[0]);
         }
@@ -119,7 +117,7 @@ class MobileAutenticationController extends Controller {
     private function sendMail($customer){
         if ($customer->getEmail()) {    
             $configuration = $this->get('lavaseco.app_configuration');
-            
+                      
             $customer->setUuId(uniqid());
             $em = $this->getDoctrine()->getManager();
             $em->persist($customer);

@@ -3,9 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Form/ResetCustomerPasswordType.php</file>
-            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Resources/views/BootsTrap/Home/resetpassword.html.twig</file>
-            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Controller/MobileAutenticationController.php</file>
+            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Controller/CustomerController.php</file>
+            <file>file:/home/diego/Proyectos/Lavaseco_app/src/LavasecoBundle/Resources/config/routing.yml</file>
         </group>
     </open-files>
 </project-private>
