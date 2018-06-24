@@ -95,7 +95,19 @@ class Bill {
      * @ORM\OneToMany(targetEntity="BillHistory", mappedBy="bill")
      */
     protected $billHistories;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Address", inversedBy="billsDelivery")
+     * @ORM\JoinColumn(name="address_delivery_id", referencedColumnName="id")
+     */
+    protected $addressDelivery;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Address", inversedBy="billsCollect")
+     * @ORM\JoinColumn(name="address_collect_id", referencedColumnName="id")
+     */
+    protected $addressCollect;
+    
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="saleBills")
      * @ORM\JoinColumn(name="seller_user_id", referencedColumnName="id", nullable=false)
@@ -608,5 +620,101 @@ class Bill {
     public function getDiscount()
     {
         return $this->discount;
+    }
+
+    /**
+     * Add address
+     *
+     * @param \LavasecoBundle\Entity\Address $address
+     *
+     * @return Bill
+     */
+    public function addAddress(\LavasecoBundle\Entity\Address $address)
+    {
+        $this->address[] = $address;
+
+        return $this;
+    }
+
+    /**
+     * Remove address
+     *
+     * @param \LavasecoBundle\Entity\Address $address
+     */
+    public function removeAddress(\LavasecoBundle\Entity\Address $address)
+    {
+        $this->address->removeElement($address);
+    }
+
+    /**
+     * Get address
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * Set address
+     *
+     * @param \LavasecoBundle\Entity\Address $address
+     *
+     * @return Bill
+     */
+    public function setAddress(\LavasecoBundle\Entity\Address $address = null)
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * Set addressDelivery
+     *
+     * @param \LavasecoBundle\Entity\Address $addressDelivery
+     *
+     * @return Bill
+     */
+    public function setAddressDelivery(\LavasecoBundle\Entity\Address $addressDelivery = null)
+    {
+        $this->addressDelivery = $addressDelivery;
+
+        return $this;
+    }
+
+    /**
+     * Get addressDelivery
+     *
+     * @return \LavasecoBundle\Entity\Address
+     */
+    public function getAddressDelivery()
+    {
+        return $this->addressDelivery;
+    }
+
+    /**
+     * Set addressCollect
+     *
+     * @param \LavasecoBundle\Entity\Address $addressCollect
+     *
+     * @return Bill
+     */
+    public function setAddressCollect(\LavasecoBundle\Entity\Address $addressCollect = null)
+    {
+        $this->addressCollect = $addressCollect;
+
+        return $this;
+    }
+
+    /**
+     * Get addressCollect
+     *
+     * @return \LavasecoBundle\Entity\Address
+     */
+    public function getAddressCollect()
+    {
+        return $this->addressCollect;
     }
 }

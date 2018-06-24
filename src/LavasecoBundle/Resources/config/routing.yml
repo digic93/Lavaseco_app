@@ -299,3 +299,13 @@ api_mobile_validate_customer:
     path:     /api/mobile/customer/{email}
     defaults: { _controller: LavasecoBundle:Customer:validateEmail }
     methods:  [GET]
+    
+api_mobile_add_address:
+    path:     /api/mobile/address
+    defaults: { _controller: LavasecoBundle:Customer:addAddress }
+    methods:  [POST]
+    
+api_mobile_get_address:
+    path:     /api/mobile/address
+    defaults: { _controller: LavasecoBundle:Customer:getAddress }
+    methods:  [GET]

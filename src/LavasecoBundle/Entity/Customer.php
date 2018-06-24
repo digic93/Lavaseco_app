@@ -104,6 +104,11 @@ class Customer {
     protected $bills;
 
     /**
+     * @ORM\OneToMany(targetEntity="Address", mappedBy="customer")
+     */
+    protected $addressApp;
+    
+    /**
      * Get id
      *
      * @return int
@@ -406,5 +411,39 @@ class Customer {
     public function getUuid()
     {
         return $this->uuid;
+    }
+
+    /**
+     * Add addressApp
+     *
+     * @param \LavasecoBundle\Entity\Address $addressApp
+     *
+     * @return Customer
+     */
+    public function addAddressApp(\LavasecoBundle\Entity\Address $addressApp)
+    {
+        $this->addressApp[] = $addressApp;
+
+        return $this;
+    }
+
+    /**
+     * Remove addressApp
+     *
+     * @param \LavasecoBundle\Entity\Address $addressApp
+     */
+    public function removeAddressApp(\LavasecoBundle\Entity\Address $addressApp)
+    {
+        $this->addressApp->removeElement($addressApp);
+    }
+
+    /**
+     * Get addressApp
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAddressApp()
+    {
+        return $this->addressApp;
     }
 }

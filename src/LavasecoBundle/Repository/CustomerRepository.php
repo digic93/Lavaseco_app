@@ -26,7 +26,7 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
         $query = $qb->where($qb->expr()->like('c.email', ':email'))
                 ->setParameter('email', '%' . $email . '%')
                 ->getQuery();
-
+        
         return $query->getResult();
     }
 

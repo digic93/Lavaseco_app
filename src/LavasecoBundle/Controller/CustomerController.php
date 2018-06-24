@@ -95,6 +95,56 @@ class CustomerController extends Controller {
         ]);
     }
 
+    
+    public function addAddressAction (Request $request){
+        $customer = MobileAutenticationController::validateToken($request, $this);
+        
+        if (empty($request->getContent()))
+        {
+            throw new HttpException(500, "Informacion de dirección no valida");
+        }
+        $em = $this->get('doctrine')->getManager();
+        
+        $addressRequest = json_decode($request->getContent(), true);
+        
+        $address = new \LavasecoBundle\Entity\Address();    
+        $address->setLatitude($addressRequest["position"]["lat"]);
+        $address->setLongitude($addressRequest["position"]["lng"]);
+        $address->setNickname($addressRequest["nickname"]);
+        $address->setObservation($addressRequest["observations"]);
+        $address->setPlaceName($addressRequest["placeName"]);
+        $address->setCustomer($customer);
+        
+        $em->persist($address);
+        $em->flush();
+        
+        $addressRequest["id"] = $address->getId();
+        
+        return $this->json($addressRequest);
+    }
+
+
+    public function getAddressAction(Request $request){
+        $addressesResult = array();
+        $customer = MobileAutenticationController::validateToken($request, $this);
+        
+        $addresses = $customer->getAddressApp();   
+        foreach ($addresses as $address){
+           $addressesResult [] = [
+                "id" => $address->getId(),
+                "nickname" => $address->getNickname(),
+                "observations" => $address->getObservation(),
+                "placeName" => $address->getPlaceName(),
+                "position" => [
+                    "lat" => $address->getLatitude(),
+                    "lng" => $address->getLongitude()
+                ]
+           ];  
+        }
+        
+        return $this->json($addressesResult);
+    }
+    
     private function validateEmail($email) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $customerRepository = $doctrineManager->getRepository("LavasecoBundle:Customer");
