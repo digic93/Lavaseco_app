@@ -45,7 +45,7 @@
                     <p>Para realizar una entrega o reembolso la caja debe estar abierta.</p>
                 {% endif %}
             </div>
-
+            
             <table id="billsUndeliveredTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
@@ -63,6 +63,41 @@
                 </thead>
                 <tbody>
                     {% for bill in billsUndelivered %}
+                        <tr>
+                            <td>{{ bill.id }}</td>
+                            <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
+                            <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                            <td>$<span class="total"> {{ bill.total}}</span></td>
+                            <td>{{ bill.processState.name}}</td>
+                            <td>{{ bill.paymentAgreement.name }}</td>
+                            <td>{{ bill.billState.name}}</td>
+                            <td>{{ bill.observation}}</td>
+                            <td>{{ bill.sellerUser.name }}</td>
+                            <td>{{ bill.CreatedAtString}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>    
+            <hr>
+            <h3>Facturas Aplicacion</h3>
+            <hr>
+            <table id="billsMovileUndeliveredTable" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>No. Fac</th>
+                        <th>Cliente</th>
+                        <th>Telefono</th>
+                        <th>Total</th>
+                        <th>Estado Proceso</th>
+                        <th>Pago</th>
+                        <th>Estado Factura</th>
+                        <th>observación</th>
+                        <th>Vendedor</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in billsMovileUndelivered %}
                         <tr>
                             <td>{{ bill.id }}</td>
                             <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
@@ -98,6 +133,40 @@
                 </thead>
                 <tbody>
                     {% for bill in billsDelivered %}
+                        <tr>
+                            <td>{{ bill.id }}</td>
+                            <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
+                            <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                            <td>$<span class="total"> {{ bill.total}}</span></td>
+                            <td>{{ bill.processState.name}}</td>
+                            <td>{{ bill.paymentAgreement.name }}</td>
+                            <td>{{ bill.billState.name}}</td>
+                            <td>{{ bill.observation}}</td>
+                            <td>{{ bill.sellerUser.name }}</td>
+                            <td>{{ bill.CreatedAtString}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h3>Facturas Entregadas Aplicacion</h3>
+            <hr>
+            <table id="billsMovileDeliveredTable" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>No. Fac</th>
+                        <th>Cliente</th>
+                        <th>Telefono</th>
+                        <th>Total</th>
+                        <th>Estado Proceso</th>
+                        <th>Pago</th>
+                        <th>Estado Factura</th>
+                        <th>observación</th>
+                        <th>Vendedor</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in billsMovileDelivered %}
                         <tr>
                             <td>{{ bill.id }}</td>
                             <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
@@ -236,6 +305,14 @@
             });
 
             var billsDeliveredTable = $('#billsDeliveredTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
+
+            var billsDeliveredTable = $('#billsMovileUndeliveredTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
+
+            var billsDeliveredTable = $('#billsMovileDeliveredTable').DataTable({
                 "order": [[0, "Desc"]]
             });
 

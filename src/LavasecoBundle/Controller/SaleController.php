@@ -23,7 +23,7 @@ class SaleController extends Controller {
         $billContent = $billContentRepository->find(1);
 
         $serviceCategoryRepository = $doctrineManager->getRepository("LavasecoBundle:ServiceCategory");
-        $serviceCagories = $serviceCategoryRepository->getFirstLevel();
+        $serviceCagories = $serviceCategoryRepository->findBy(["id"=>2]);
 
         $paymentAgreementRepository = $doctrineManager->getRepository("LavasecoBundle:PaymentAgreement");
         $paymentAgreements = $paymentAgreementRepository->getAvailables();
