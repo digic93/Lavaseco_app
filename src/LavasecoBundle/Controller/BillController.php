@@ -28,6 +28,8 @@ class BillController extends Controller {
         $billsUndelivered = $billRepository->findUndelivered($branchOfficeId);
 
         return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', [
+                    "billsMovileDelivered" => [],
+                    "billsMovileUndelivered" => [],
                     "billsDelivered" => $billsDelivered,
                     "billsUndelivered" => $billsUndelivered,
                     "salePointIsOpen" => ($salePoint) ? $salePoint->getIsOpen() : false
@@ -297,6 +299,22 @@ class BillController extends Controller {
         $em->flush();
 
         return $this->json([true]);
+    }
+    
+    public function saveBillingMovileAcction(Request $request){
+        $customer = MobileAutenticationController::validateToken($request, $this);
+        $bill = $this->getBillMovileByRequest($request);
+    } 
+    
+    private function getBillMovileByRequest($request){
+        $billRequest = $request->getContent();
+        if (empty($billRequest))
+        {
+            
+        }
+        $billRequest = json_decode($billRequest, true);
+        $bill = new Bill();
+        return $bill;
     }
     
     private function getBillContentById($billContentId) {

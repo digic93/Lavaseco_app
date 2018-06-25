@@ -154,7 +154,7 @@ class MobileAutenticationController extends Controller {
             $token = $headers['token'][0];
             $data = $controller->get('lexik_jwt_authentication.encoder')->decode($token);
             
-        }catch(JWTDecodeFailureException $e){
+        }catch(\Exception $e){
             throw new HttpException(401, "la sesión a expirado.");
         };
         

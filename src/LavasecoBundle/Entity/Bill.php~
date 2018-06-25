@@ -145,6 +145,23 @@ class Bill {
     protected $salePoint;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="delivery_at", type="datetime")
+     */
+    private $deliveryAt;
+    
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="collect_at", type="datetime")
+     */
+    private $collectAt;
+    
+    
+    
+    /**
      * Constructor
      */
     public function __construct() {
@@ -668,5 +685,53 @@ class Bill {
         $this->address = $address;
 
         return $this;
+    }
+
+    /**
+     * Set addressDelivery
+     *
+     * @param \LavasecoBundle\Entity\Address $addressDelivery
+     *
+     * @return Bill
+     */
+    public function setAddressDelivery(\LavasecoBundle\Entity\Address $addressDelivery = null)
+    {
+        $this->addressDelivery = $addressDelivery;
+
+        return $this;
+    }
+
+    /**
+     * Get addressDelivery
+     *
+     * @return \LavasecoBundle\Entity\Address
+     */
+    public function getAddressDelivery()
+    {
+        return $this->addressDelivery;
+    }
+
+    /**
+     * Set addressCollect
+     *
+     * @param \LavasecoBundle\Entity\Address $addressCollect
+     *
+     * @return Bill
+     */
+    public function setAddressCollect(\LavasecoBundle\Entity\Address $addressCollect = null)
+    {
+        $this->addressCollect = $addressCollect;
+
+        return $this;
+    }
+
+    /**
+     * Get addressCollect
+     *
+     * @return \LavasecoBundle\Entity\Address
+     */
+    public function getAddressCollect()
+    {
+        return $this->addressCollect;
     }
 }

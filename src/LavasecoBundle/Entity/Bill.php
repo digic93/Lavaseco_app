@@ -145,6 +145,23 @@ class Bill {
     protected $salePoint;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="delivery_at", type="datetime", nullable=true)
+     */
+    private $deliveryAt;
+    
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="collect_at", type="datetime", nullable=true)
+     */
+    private $collectAt;
+    
+    
+    
+    /**
      * Constructor
      */
     public function __construct() {
@@ -716,5 +733,53 @@ class Bill {
     public function getAddressCollect()
     {
         return $this->addressCollect;
+    }
+
+    /**
+     * Set deliveryAt
+     *
+     * @param \DateTime $deliveryAt
+     *
+     * @return Bill
+     */
+    public function setDeliveryAt($deliveryAt)
+    {
+        $this->deliveryAt = $deliveryAt;
+
+        return $this;
+    }
+
+    /**
+     * Get deliveryAt
+     *
+     * @return \DateTime
+     */
+    public function getDeliveryAt()
+    {
+        return $this->deliveryAt;
+    }
+
+    /**
+     * Set collectAt
+     *
+     * @param \DateTime $collectAt
+     *
+     * @return Bill
+     */
+    public function setCollectAt($collectAt)
+    {
+        $this->collectAt = $collectAt;
+
+        return $this;
+    }
+
+    /**
+     * Get collectAt
+     *
+     * @return \DateTime
+     */
+    public function getCollectAt()
+    {
+        return $this->collectAt;
     }
 }
