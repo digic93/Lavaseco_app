@@ -664,30 +664,6 @@ class Bill {
     }
 
     /**
-     * Get address
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
-     * Set address
-     *
-     * @param \LavasecoBundle\Entity\Address $address
-     *
-     * @return Bill
-     */
-    public function setAddress(\LavasecoBundle\Entity\Address $address = null)
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    /**
      * Set addressDelivery
      *
      * @param \LavasecoBundle\Entity\Address $addressDelivery

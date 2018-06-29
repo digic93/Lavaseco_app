@@ -123,14 +123,37 @@ class CustomerController extends Controller {
         return $this->json($addressRequest);
     }
 
-
     public function getAddressAction(Request $request){
         $addressesResult = array();
         $customer = MobileAutenticationController::validateToken($request, $this);
         
         $addresses = $customer->getAddressApp();   
         foreach ($addresses as $address){
-           $addressesResult [] = [
+           $addressesResult [] = $this->getAddressToArry($address);
+        }
+        
+        return $this->json($addressesResult);
+    }
+    
+    public function getAddressSalepointAction(Request $request){
+        $addressesResult = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        MobileAutenticationController::validateToken($request, $this);
+        
+        $branchOfficeRepository = $doctrineManager->getRepository("LavasecoBundle:BranchOffice");
+        $branchOffices = $branchOfficeRepository->findAll();
+        
+        foreach ($branchOffices as $branchOffice){
+            foreach ($branchOffice->getAddressApp() as $address){
+               $addressesResult [] = $this->getAddressToArry($address);
+            }
+        }
+        
+        return $this->json($addressesResult);
+    }
+    
+    private function getAddressToArry($address){
+        return [
                 "id" => $address->getId(),
                 "nickname" => $address->getNickname(),
                 "observations" => $address->getObservation(),
@@ -139,12 +162,10 @@ class CustomerController extends Controller {
                     "lat" => $address->getLatitude(),
                     "lng" => $address->getLongitude()
                 ]
-           ];  
-        }
-        
-        return $this->json($addressesResult);
+            ];
     }
     
+
     private function validateEmail($email) {
         $doctrineManager = $this->get('doctrine')->getManager();
         $customerRepository = $doctrineManager->getRepository("LavasecoBundle:Customer");
