@@ -151,6 +151,11 @@ class BranchOffice {
     }
 
     /**
+     * @ORM\OneToMany(targetEntity="Address", mappedBy="branchOffice")
+     */
+    protected $addressApp;
+    
+    /**
      * Constructor
      */
     public function __construct()
@@ -190,5 +195,39 @@ class BranchOffice {
     public function getSalePoints()
     {
         return $this->salePoints;
+    }
+
+    /**
+     * Add addressApp
+     *
+     * @param \LavasecoBundle\Entity\Address $addressApp
+     *
+     * @return BranchOffice
+     */
+    public function addAddressApp(\LavasecoBundle\Entity\Address $addressApp)
+    {
+        $this->addressApp[] = $addressApp;
+
+        return $this;
+    }
+
+    /**
+     * Remove addressApp
+     *
+     * @param \LavasecoBundle\Entity\Address $addressApp
+     */
+    public function removeAddressApp(\LavasecoBundle\Entity\Address $addressApp)
+    {
+        $this->addressApp->removeElement($addressApp);
+    }
+
+    /**
+     * Get addressApp
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAddressApp()
+    {
+        return $this->addressApp;
     }
 }

@@ -309,3 +309,18 @@ api_mobile_get_address:
     path:     /api/mobile/address
     defaults: { _controller: LavasecoBundle:Customer:getAddress }
     methods:  [GET]
+
+api_mobile_get_address:
+    path:     /api/mobile/address
+    defaults: { _controller: LavasecoBundle:Customer:getAddress }
+    methods:  [GET]
+   
+api_mobile_get_addres_branch_office:
+    path:     /api/mobile/address/branchoffice
+    defaults: { _controller: LavasecoBundle:Customer:getAddressSalepoint }
+    methods:  [GET]
+    
+api_mobile_get_paymentAgreement:
+    path:     /api/mobile/paymentagreement
+    defaults: { _controller: LavasecoBundle:Bill:getpaymentAgreement }
+    methods:  [GET]

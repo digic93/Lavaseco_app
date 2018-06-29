@@ -301,20 +301,92 @@ class BillController extends Controller {
         return $this->json([true]);
     }
     
+    public function getpaymentAgreementAction(Request $request){
+        $paymentAgreementsResult = array();
+        MobileAutenticationController::validateToken($request, $this);
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $paymentAgreementRepository = $doctrineManager->getRepository("LavasecoBundle:PaymentAgreement");
+        
+        $paymentAgreements = $paymentAgreementRepository->getAvailables();
+        foreach ($paymentAgreements as $paymentAgreement){
+            $paymentAgreementsResult[] = [
+                "id" => $paymentAgreement->getId(),
+                "name" => $paymentAgreement->getName(),
+                ];
+        }
+        
+        return $this->json($paymentAgreementsResult);
+    }
+    
     public function saveBillingMovileAcction(Request $request){
         $customer = MobileAutenticationController::validateToken($request, $this);
-        $bill = $this->getBillMovileByRequest($request);
-    } 
+        $bill = $this->getBillMovileByRequest($customer, $request);
+        
+    }
     
-    private function getBillMovileByRequest($request){
-        $billRequest = $request->getContent();
-        if (empty($billRequest))
+    private function getBillMovileByRequest($customer, $request){
+        $em = $this->get('doctrine')->getManager();
+        $salePointRepository = $em->getRepository("LavasecoBundle:SalePoint");
+        
+        if (empty($request->getContent()))
         {
             
         }
-        $billRequest = json_decode($billRequest, true);
+        
+        $billRequest =  json_decode($billRequest, true);
+        
+        $paymentAgreement = $this->getPaymentAgreementById($billRequest["paymentAgreementId"]);
+
         $bill = new Bill();
+
+        $bill->setSellerUser($this->getLavasecoUser());
+        $bill->setCustomer($customer);
+        $bill->setObservation($billRequest["observations"]);
+        $bill->setPaymentAgreement($paymentAgreement);
+        $bill->setBillState($this->getBillStateById(1)); //siempre queda pendiete por ser una peticion de la aplicacion
+        $bill->setProcessState($this->getProcessStateById(8));//pendiente por recojer
+        $bill->setConsecutive($this->getBillConsecutive());
+        $bill->setSalePoint($salePointRepository->find(3));//punto de venta principal lavaseco
+        $bill->setDiscount($billRequest["redeemedPointBill"]);
+
+        $bill->setPrintedTiket(false);
+        $bill->setPrintBill(false);
+        $bill->setSendBill(true);
+        $bill->setNotifyDelivered(true);
+        $bill->setNotifyRedyDelivery(true);
+
+        $em->persist($bill);
+        
         return $bill;
+        
+    }
+    
+    private function saveBillDetailMobile($bill, $request){
+        $total = 0;
+        $em = $this->get('doctrine')->getManager();
+
+        foreach ($$request["services"] as $serviceRequest) {
+            $service = $this->getServiceByServiceCategoryId($serviceRequest);
+            
+            $total += $service->getPrice() * $serviceRequest["quantity"];
+            $billDetail = new BillDetail();
+            $billDetail->setBill($bill);
+            $billDetail->setService($service);
+            $billDetail->setPrice($service->getPrice());
+            $billDetail->setQuantity($serviceRequest["quantity"]);
+            $billDetail->setObservation($serviceRequest["observations"]);
+
+            $em->persist($billDetail);
+
+            $bill->addBillDetail($billDetail);
+            if (isset($serviceRequest["descriptors"])) {
+                $this->saveObjectStateReceivedService($service, $billDetail, $serviceRequest["descriptors"]);
+            }
+        }
+    }
+    
+    private function getLavasecoUser(){
+        
     }
     
     private function getBillContentById($billContentId) {
@@ -441,7 +513,7 @@ class BillController extends Controller {
     }
 
     private function getProcessState() {
-        ////determinar el estado delproceso segun el punto de venta o usuario que realiza la factura
+        ////determinar el estado del proceso segun el punto de venta o usuario que realiza la factura
         return $this->getProcessStateById(1);
     }
 

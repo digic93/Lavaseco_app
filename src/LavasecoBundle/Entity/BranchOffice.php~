@@ -151,6 +151,11 @@ class BranchOffice {
     }
 
     /**
+     * @ORM\OneToMany(targetEntity="Address", mappedBy="branchOffice")
+     */
+    protected $addressApp;
+    
+    /**
      * Constructor
      */
     public function __construct()

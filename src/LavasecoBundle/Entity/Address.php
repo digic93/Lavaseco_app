@@ -60,6 +60,12 @@ class Address
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     protected $customer;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="BranchOffice", inversedBy="addressApp")
+     * @ORM\JoinColumn(name="branch_office_id", referencedColumnName="id")
+     */
+    protected $branchOffice;
     
      
     /**
@@ -337,5 +343,53 @@ class Address
     public function getBillsCollect()
     {
         return $this->billsCollect;
+    }
+
+    /**
+     * Set salePoint
+     *
+     * @param \LavasecoBundle\Entity\SalePoint $salePoint
+     *
+     * @return Address
+     */
+    public function setSalePoint(\LavasecoBundle\Entity\SalePoint $salePoint = null)
+    {
+        $this->salePoint = $salePoint;
+
+        return $this;
+    }
+
+    /**
+     * Get salePoint
+     *
+     * @return \LavasecoBundle\Entity\SalePoint
+     */
+    public function getSalePoint()
+    {
+        return $this->salePoint;
+    }
+
+    /**
+     * Set branchOffice
+     *
+     * @param \LavasecoBundle\Entity\BranchOffice $branchOffice
+     *
+     * @return Address
+     */
+    public function setBranchOffice(\LavasecoBundle\Entity\BranchOffice $branchOffice = null)
+    {
+        $this->branchOffice = $branchOffice;
+
+        return $this;
+    }
+
+    /**
+     * Get branchOffice
+     *
+     * @return \LavasecoBundle\Entity\BranchOffice
+     */
+    public function getBranchOffice()
+    {
+        return $this->branchOffice;
     }
 }
