@@ -23,15 +23,12 @@ class BillController extends Controller {
         $doctrineManager = $this->get('doctrine')->getManager();
         $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
         $branchOfficeId = $salePoint->getBranchOffice()->getId();
-        
-        $billsDelivered = $billRepository->findDelivered($branchOfficeId, 200);
-        $billsUndelivered = $billRepository->findUndelivered($branchOfficeId);
-
+ 
         return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', [
-                    "billsMovileDelivered" => [],
-                    "billsMovileUndelivered" => [],
-                    "billsDelivered" => $billsDelivered,
-                    "billsUndelivered" => $billsUndelivered,
+                    "billsMovileDelivered" => $billRepository->findDelivered($branchOfficeId, 200, true),
+                    "billsMovileUndelivered" => $billRepository->findUndelivered($branchOfficeId, true),
+                    "billsDelivered" => $billRepository->findDelivered($branchOfficeId, 200),
+                    "billsUndelivered" => $billRepository->findUndelivered($branchOfficeId),
                     "salePointIsOpen" => ($salePoint) ? $salePoint->getIsOpen() : false
         ]);
     }
@@ -318,35 +315,88 @@ class BillController extends Controller {
         return $this->json($paymentAgreementsResult);
     }
     
-    public function saveBillingMovileAcction(Request $request){
-        $customer = MobileAutenticationController::validateToken($request, $this);
-        $bill = $this->getBillMovileByRequest($customer, $request);
-        
-    }
-    
-    private function getBillMovileByRequest($customer, $request){
+    public function saveBillingMovileAction(Request $request){
         $em = $this->get('doctrine')->getManager();
-        $salePointRepository = $em->getRepository("LavasecoBundle:SalePoint");
+        $customer = MobileAutenticationController::validateToken($request, $this);
         
         if (empty($request->getContent()))
         {
             
         }
         
-        $billRequest =  json_decode($billRequest, true);
+        $requestContent =  json_decode($request->getContent(), true);
+        
+        $bill = $this->getBillMovileByRequest($customer, $requestContent);
+        $total = $this->saveBillDetailMobile($bill, $requestContent);
+        
+         
+        $bill->setDeliveryAt(new \DateTime(date("Y/m/d H:i:s", strtotime($requestContent["dateOfDelivery"]))));
+        $bill->setCollectAt(new \DateTime(date("Y/m/d H:i:s", strtotime($requestContent["pickUpOfDelivery"]))));
+
+        $bill->setAddressDelivery($this->getAddressApp($requestContent, "delivery"));
+        $bill->setAddressCollect($this->getAddressApp($requestContent, "pickUp"));
+        
+        $em->persist($bill);
+        $em->flush();
+        
+        $redeemedPointBill = $bill->getDiscount();
+        $paymentAgreement = $bill->getPaymentAgreement();
+        
+        $bonification = ($redeemedPointBill == 0) ? $this->getBonificationByPaymentAgreement($bill->getPaymentAgreement()) : 0;
+        if ($customer && $paymentAgreement->getId() == 1) {
+            $this->updateCustomer($total, $customer, $bonification, $redeemedPointBill);
+        } else if ($redeemedPointBill != 0) {
+            $em = $this->get('doctrine')->getManager();
+            $customer->setPoints($customer->getPoints() - $redeemedPointBill);
+            $em->persist($customer);
+        }
+
+        $this->saveBillHistory($bill, $bill->getSellerUser());
+        
+        if ($customer->getEmail()) {
+                $salePoint = $bill->getSalePoint();
+                $configuration = $this->get('lavaseco.app_configuration');
+                $facturaId = $salePoint->getId() . "-" . $bill->getId();
+
+                $message = (new \Swift_Message('Factura de servicio ' . $facturaId))
+                        ->setFrom(['noreply@lavasecomodelo.com' => 'Lavaseco Modelo'])
+                        ->setTo($customer->getEmail())
+                        ->setBody(
+                        $this->renderView(
+                                $configuration->getViewTheme() . ':Emails/billEmail.html.twig', [
+                            'facturaId' => $facturaId,
+                            'customer' => $customer,
+                            'bill' => $bill,
+                            'billContent' => $this->getBillContentById(1),
+                            'payment' => 0,
+                            'points' => ($total * $bonification / 100 ),
+                            'redeemedPointBill' => $bill->getDiscount(),
+                                ]
+                        ), 'text/html'
+                );
+                $this->get('mailer')->send($message);
+            }
+        
+        
+        return $this->json(["id" => $bill->getId()]);
+    }
+    
+    private function getBillMovileByRequest($customer, $billRequest){
+        $em = $this->get('doctrine')->getManager();
+        $salePointRepository = $em->getRepository("LavasecoBundle:SalePoint");
         
         $paymentAgreement = $this->getPaymentAgreementById($billRequest["paymentAgreementId"]);
 
         $bill = new Bill();
-
-        $bill->setSellerUser($this->getLavasecoUser());
+        $userLavaseco = $this->getLavasecoUser()[0];
+        $bill->setSellerUser($userLavaseco);
         $bill->setCustomer($customer);
         $bill->setObservation($billRequest["observations"]);
         $bill->setPaymentAgreement($paymentAgreement);
         $bill->setBillState($this->getBillStateById(1)); //siempre queda pendiete por ser una peticion de la aplicacion
         $bill->setProcessState($this->getProcessStateById(8));//pendiente por recojer
         $bill->setConsecutive($this->getBillConsecutive());
-        $bill->setSalePoint($salePointRepository->find(3));//punto de venta principal lavaseco
+        $bill->setSalePoint($salePointRepository->find(1));//punto de venta principal Aplicación Movile
         $bill->setDiscount($billRequest["redeemedPointBill"]);
 
         $bill->setPrintedTiket(false);
@@ -358,15 +408,14 @@ class BillController extends Controller {
         $em->persist($bill);
         
         return $bill;
-        
     }
     
-    private function saveBillDetailMobile($bill, $request){
+    private function saveBillDetailMobile(&$bill, $request){
         $total = 0;
         $em = $this->get('doctrine')->getManager();
 
-        foreach ($$request["services"] as $serviceRequest) {
-            $service = $this->getServiceByServiceCategoryId($serviceRequest);
+        foreach ($request["services"] as $serviceRequest) {
+            $service = $this->getServiceByServiceCategoryId($serviceRequest["idService"]);
             
             $total += $service->getPrice() * $serviceRequest["quantity"];
             $billDetail = new BillDetail();
@@ -383,10 +432,39 @@ class BillController extends Controller {
                 $this->saveObjectStateReceivedService($service, $billDetail, $serviceRequest["descriptors"]);
             }
         }
+        return $total;
     }
     
     private function getLavasecoUser(){
+        $em = $this->get('doctrine')->getManager();
+        $userRepository = $em->getRepository("LavasecoBundle:User");
         
+        return $userRepository->getUserByNameOrEmail('lavasecomodelo@gmail.com');
+        
+    }
+    
+    private function getAddressApp($request, $index){
+        $em = $this->get('doctrine')->getManager();
+        $AddressRepository = $em->getRepository("LavasecoBundle:Address");
+        
+        if(isset($request[$index]["id"])){
+            return $AddressRepository->findOneBy(array('id'=>$request[$index]["id"]));
+        }else{
+            $address = $AddressRepository->findAnonimusAddress($request[$index]["nickname"]);
+            if(isset($address)){
+                return $address;
+            }else{
+                $address = new \LavasecoBundle\Entity\Address();    
+                $address->setLatitude($request[$index]["position"]["lat"]);
+                $address->setLongitude($request[$index]["position"]["lng"]);
+                $address->setNickname($request[$index]["nickname"]);
+                $address->setObservation($request[$index]["observations"]);
+                $address->setPlaceName($request[$index]["placeName"]);
+                $em->persist($address);
+                
+                return $address;
+            }
+        }
     }
     
     private function getBillContentById($billContentId) {
@@ -461,12 +539,16 @@ class BillController extends Controller {
         }
     }
 
-    private function saveBillHistory($bill) {
+    private function saveBillHistory($bill, $user = null) {
         $em = $this->get('doctrine')->getManager();
 
+        if($user == null){
+           $user = $this->getUser();
+        }
+        
         $billHistory = new BillHistory();
         $billHistory->setBill($bill);
-        $billHistory->setUser($this->getUser());
+        $billHistory->setUser($user);
         $billHistory->setProcessState($bill->getProcessState());
 
         $em->persist($billHistory);

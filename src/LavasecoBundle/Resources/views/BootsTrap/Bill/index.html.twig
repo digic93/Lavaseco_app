@@ -308,11 +308,11 @@
                 "order": [[0, "Desc"]]
             });
 
-            var billsDeliveredTable = $('#billsMovileUndeliveredTable').DataTable({
+            var billsMovileUnDeliveredTable = $('#billsMovileUndeliveredTable').DataTable({
                 "order": [[0, "Desc"]]
             });
 
-            var billsDeliveredTable = $('#billsMovileDeliveredTable').DataTable({
+            var billsMovileDeliveredTable = $('#billsMovileDeliveredTable').DataTable({
                 "order": [[0, "Desc"]]
             });
 
@@ -330,6 +330,30 @@
 
             $('#billsDeliveredTable tbody').on('click', 'tr', function () {
                 var data = billsDeliveredTable.row(this).data();
+                billId = data[0];
+                UndeliveredBillSelect = 0;
+                $(".selected").toggleClass('selected');
+
+                $(this).toggleClass('selected');
+
+                collapseProcessLine(data[0]);
+                getTicket(data[0]);
+            });
+
+            $('#billsMovileUndeliveredTable tbody').on('click', 'tr', function () {
+                var data = billsMovileUnDeliveredTable.row(this).data();
+                UndeliveredBillSelect = billId = data[0];
+
+                $(".selected").toggleClass('selected');
+
+                $(this).toggleClass('selected');
+
+                collapseProcessLine(data[0]);
+                getTicket(data[0]);
+            });
+
+            $('#billsMovileDeliveredTable tbody').on('click', 'tr', function () {
+                var data = billsMovileDeliveredTable.row(this).data();
                 billId = data[0];
                 UndeliveredBillSelect = 0;
                 $(".selected").toggleClass('selected');

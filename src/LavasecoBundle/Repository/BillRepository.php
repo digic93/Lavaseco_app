@@ -35,7 +35,7 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $bills->getResult();
     }
 
-    public function findDelivered($branchOfficeId = null, $limit = null) {
+    public function findDelivered($branchOfficeId = null, $limit = null, $movlie = false) {
         $bills = $this->createQueryBuilder('b');
 
         if ($branchOfficeId != null) {
@@ -46,6 +46,17 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
                     ->andWhere('bo.id = :branchOfficeId')
                     ->orderBy('b.id', 'DESC')
                     ->setParameter('branchOfficeId', $branchOfficeId);
+            if ($movlie) {
+                $bills = $bills->innerJoin('b.addressDelivery', 'ad')
+                        ->innerJoin('b.addressCollect', 'ac')
+                        ->andWhere('ad.id IS NOT NULL')
+                        ->andWhere('ac.id IS NOT NULL');
+            } else {
+                $bills = $bills->leftJoin('b.addressDelivery', 'ad')
+                        ->leftJoin('b.addressCollect', 'ac')
+                        ->andWhere('ad.id IS NULL')
+                        ->andWhere('ac.id IS NULL');
+            }
         } else {
             $bills = $bills->where('b.processState = 7')
                     ->orWhere('b.billState = 3')
@@ -55,11 +66,11 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         if ($limit != null) {
             $bills = $bills->setMaxResults($limit);
         }
-        
+
         return $bills->getQuery()->getResult();
     }
 
-    public function findUndelivered($branchOfficeId = null) {
+    public function findUndelivered($branchOfficeId = null, $movlie = false) {
         $bills = $this->createQueryBuilder('b');
 
         if ($branchOfficeId != null) {
@@ -70,6 +81,17 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
                     ->andWhere('bo.id = :branchOfficeId')
                     ->orderBy('b.id', 'DESC')
                     ->setParameter('branchOfficeId', $branchOfficeId);
+            if ($movlie) {
+                $bills = $bills->innerJoin('b.addressDelivery', 'ad')
+                        ->innerJoin('b.addressCollect', 'ac')
+                        ->andWhere('ad.id IS NOT NULL')
+                        ->andWhere('ac.id IS NOT NULL');
+            } else {
+                $bills = $bills->leftJoin('b.addressDelivery', 'ad')
+                        ->leftJoin('b.addressCollect', 'ac')
+                        ->andWhere('ad.id IS NULL')
+                        ->andWhere('ac.id IS NULL');
+            }
         } else {
             $bills = $bills->where('b.processState != 7')
                     ->andWhere('b.billState != 3')
