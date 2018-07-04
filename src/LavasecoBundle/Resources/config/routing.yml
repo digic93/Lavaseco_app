@@ -275,6 +275,11 @@ api_mobile_orders:
     methods:  [GET]   
     
 api_mobile_bill:
+    path: /api/mobile/bill
+    defaults: { _controller: LavasecoBundle:Bill:saveBillingMovile }
+    methods:  [POST]   
+    
+api_mobile_get_bill:
     path: /api/mobile/bill/{billId}
     defaults: { _controller: LavasecoBundle:Bill:getTiketMobileByBillId }
     methods:  [GET]   

@@ -23,6 +23,7 @@ class OrdersController extends Controller {
         if ($processId == 0 || $processId >= 7) {
             $branchOfficeId = $salePoint->getBranchOffice()->getId();
             $bills = $billRepository->findUndelivered($branchOfficeId);
+            $billsMovile = $billRepository->findUndelivered($branchOfficeId, true);
         } else {
 
             $bills = $billRepository->getBillsByProcessId($processId);
@@ -30,7 +31,8 @@ class OrdersController extends Controller {
             $data["processState"] = $processState;
         }
         $data["bills"] = $bills;
-
+        $data["billsMovile"] = $billsMovile;
+        
         return $this->render($configuration->getViewTheme() . ':Orders/index.html.twig', $data);
     }
 

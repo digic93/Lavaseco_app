@@ -50,7 +50,13 @@
                                                     </tr>
                                                     <tr>
                                                         <td style="padding: 0px 10px 10px 10px;">
-                                                            Cajero: {{ app.user.name }}
+                                                            Cajero: 
+                                                            {% if app.user %}
+                                                                {{  app.user.name}}
+                                                            {% else %}
+                                                                Lavaseco Modelo App
+                                                            {% endif %}
+
                                                         </td>
                                                     </tr>
                                                     <tr>
