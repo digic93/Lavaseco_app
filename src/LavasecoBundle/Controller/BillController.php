@@ -381,6 +381,36 @@ class BillController extends Controller {
         return $this->json(["id" => $bill->getId()]);
     }
     
+    
+    public function mobileInfoAction($billId) {
+        $bill = $this->getBillById($billId);
+
+        $billResult = [
+            "customer" => 
+                [
+                    "name" => $bill->getCustomer()->getName(),
+                    "email" => $bill->getCustomer()->getEmail(),
+                    "phone" => $bill->getCustomer()->getPhoneNumber(),
+                ],
+            "delivery" => 
+                [
+                    "Nickname" => $bill->getAddressDelivery()->getNickname(),
+                    "Latitude" => $bill->getAddressDelivery()->getLatitude(),
+                    "Longitude" => $bill->getAddressDelivery()->getLongitude(),
+                    "Observation" => $bill->getAddressDelivery()->getObservation(),
+                ],
+            "pickUp" =>
+                [
+                    "Nickname" => $bill->getAddressCollect()->getNickname(),
+                    "Latitude" => $bill->getAddressCollect()->getLatitude(),
+                    "Longitude" => $bill->getAddressCollect()->getLongitude(),
+                    "Observation" => $bill->getAddressCollect()->getObservation(),
+                ]
+        ];
+
+        return $this->json($billResult);
+    }
+    
     private function getBillMovileByRequest($customer, $billRequest){
         $em = $this->get('doctrine')->getManager();
         $salePointRepository = $em->getRepository("LavasecoBundle:SalePoint");
@@ -413,7 +443,7 @@ class BillController extends Controller {
     private function saveBillDetailMobile(&$bill, $request){
         $total = 0;
         $em = $this->get('doctrine')->getManager();
-
+        
         foreach ($request["services"] as $serviceRequest) {
             $service = $this->getServiceByServiceCategoryId($serviceRequest["idService"]);
             
@@ -432,6 +462,21 @@ class BillController extends Controller {
                 $this->saveObjectStateReceivedService($service, $billDetail, $serviceRequest["descriptors"]);
             }
         }
+        
+        
+//-----------Adicion costo de envio corregir en front       
+        $service = $this->getServiceByServiceCategoryId(17);
+        $total += $service->getPrice();
+        $billDetail = new BillDetail();
+        $billDetail->setBill($bill);
+        $billDetail->setService($service);
+        $billDetail->setPrice($service->getPrice());
+        $billDetail->setQuantity(1);
+        $billDetail->setObservation("");
+        
+        $em->persist($billDetail);
+        $bill->addBillDetail($billDetail);
+//----------------------------------------------     
         return $total;
     }
     

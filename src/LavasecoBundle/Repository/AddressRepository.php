@@ -13,8 +13,8 @@ class AddressRepository extends \Doctrine\ORM\EntityRepository {
         $this->findOneBy(
                 array(
                     'nickname' => $nickname, 
-                    'Customer' => null,
-                    'BranchOffice' => null,
+                    'customer' => null,
+                    'branchOffice' => null,
                 )
             );
     } 

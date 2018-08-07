@@ -20,13 +20,14 @@ class OrdersController extends Controller {
 
         $data["processStates"] = $processStateRepository->getProces();
 
-        if ($processId == 0 || $processId >= 7) {
+        //mostrador proceso listo para entregar
+        if ($processId == 0 || ($processId > 9 && $processId != 7)) {
             $branchOfficeId = $salePoint->getBranchOffice()->getId();
             $bills = $billRepository->findUndelivered($branchOfficeId);
             $billsMovile = $billRepository->findUndelivered($branchOfficeId, true);
         } else {
-
             $bills = $billRepository->getBillsByProcessId($processId);
+            $billsMovile = $billRepository->getBillsByProcessId($processId, TRUE);
             $processState = $processStateRepository->find($processId);
             $data["processState"] = $processState;
         }

@@ -1,0 +1,271 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/timeline.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+{% endblock %} 
+
+{% block body %} 
+    <p>
+        En esta pagina puedes ver las facturas de la aplicación móvil.
+    </p>    
+    <hr>
+    <h3>Facturas listas para Entregar</h3>
+    <div class="row">
+        <div class="col-md-12"> 
+            <div class="table-responsive">
+                <table id="billsDeliveryTable" class="display" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>No. Fac</th>
+                            <th>Cliente</th>
+                            <th>Recoger</th>
+                            <th>Pago</th>
+                            <th>Estado Factura</th>
+                            <th>Dirección</th>
+                            <th>Indicacion</th>
+                            <th>Recogido</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in billsDelivered %}
+                            <tr id="bill-{{ bill.id }}">
+                                <td>{{ bill.id }}</td>
+                                <td>{{ bill.customer.name }}</td>
+                                <td>{{ bill.deliveryAtString }}</td>
+                                <td>{{ bill.paymentAgreement.name }}</td>
+                                <td>{{ bill.billState.name}}</td>
+                                <td>{{ bill.addressDelivery.nickname}}</td>
+                                <td>{{ bill.addressDelivery.observation}}</td>
+                                <td>            
+                                    <button type="button" class="btn btn-success" onclick="pasarAlTransporte({{ bill.id }});">
+                                        <i class="fa fa-truck" aria-hidden="true"></i> Pasar a Transporte
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>    
+            </div>       
+            <hr>
+            <h3>Facturas Recogidas</h3>
+            <div class="table-responsive">
+                <table id="billsPickUpTable" class="display" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>No. Fac</th>
+                            <th>Cliente</th>
+                            <th>Recoger</th>
+                            <th>Pago</th>
+                            <th>Estado Factura</th>
+                            <th>Recogido</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in billsCollected %}
+                            <tr id="bill-{{ bill.id }}">
+                                <td>{{ bill.id }}</td>
+                                <td>{{ bill.customer.name }}</td>
+                                <td>{{ bill.deliveryAtString }}</td>
+                                <td>{{ bill.paymentAgreement.name }}</td>
+                                <td>{{ bill.billState.name}}</td>
+                                <td>            
+                                    <button type="button" class="btn btn-success" onclick="pasarAlMostrador({{ bill.id }});">
+                                        <i class="fa fa-check" aria-hidden="true"></i> Pasar al Mostrador
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>       
+        </div>       
+    </div>
+
+    <!-- Modal Forma de Pago-->
+    <div id="modalPayInvoice" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <label id="paymentTittle">Pago de Factura</label>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-10 col-md-offset-1">
+                            <div class="form-group">
+                                <p>Acuerdo de Pago</p>
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectPaymentAgreement" onChange="" class="form-control">
+                                        <option value="1" selected="selected" data-name="Totalidad">Pagar Total</option>
+                                        <option value="3" data-name="Abono">Abonar</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <p>Forma de Pago</p>
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectWayToPay" onChange="" class="form-control">
+                                        <option selected="selected" value="1" data-name="Efectivo">Efectivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div class="form-group">
+                                <div id="divTotalBill">
+                                    <p class='text-right'>
+                                        <strong>Total a Pagar: $ 
+                                            <span id="lblTotalBill"></span>
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <p>Dinero Recibido<span class="req">*</span></p>
+                                <div class="input-group" id="divCashReceived">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="cashReceived" type="number" autocomplete="off" onkeyup="updateChange();"/>
+                                </div>
+                            </div>
+
+                            <div id="divChange" class="form-group">
+                                <p>Vueltas</p>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="change" type="text" autocomplete="off" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSubmitPayment" type="submit"  onclick="paymentInvoice();" class="btn btn-success"/>Cobrar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        var bill;
+        var billId;
+        var UndeliveredBillSelect = 0;
+        var validField = false;
+
+        $(document).ready(function () {
+            var billsDeliveryTable = $('#billsDeliveryTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
+
+            var billsPickUpTable = $('#billsPickUpTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
+
+            $('#billsDeliveryTable tbody').on('click', 'tr', function () {
+                var data = billsDeliveryTable.row(this).data();
+                UndeliveredBillSelect = billId = data[0];
+                $(".selected").toggleClass('selected');
+                $(this).toggleClass('selected');
+            });
+
+            $('#billsPickUpTable tbody').on('click', 'tr', function () {
+                var data = billsPickUpTable.row(this).data();
+                billId = data[0];
+                UndeliveredBillSelect = 0;
+                $(".selected").toggleClass('selected');
+                $(this).toggleClass('selected');
+            });
+        });
+
+
+        function verFactura() {
+            if (UndeliveredBillSelect === 0) {
+                openModalAlerErrorSuccess("Alerta", "Seleccione por lo menos una factura para ver el detalle.");
+            } else {
+
+                $.ajax({
+                    url: "{{ path('lavaseco_api_orders_tikets') }}/" + billId,
+                    method: "GET",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (bill) {
+                        var html =
+                                "<div class=\"panel-body\">\
+                                <h3>Factura " + bill.bill + "</h3>\
+                                <h5>Fecha: " + bill.createdAt + "</h5>\
+                                <strong>Cliente: " + bill.customer + "</strong><br>\
+                                <strong>Numero Telefono: " + ((bill.phoneNumber === null) ? "No Registra" : bill.phoneNumber) + "</strong><br>\
+                                <hr>\
+                                <p>";
+
+                        for (var i in bill.billDetail.details) {
+                            html +=
+                                    "<strong>" + bill.billDetail.details[i].quantity + " x " + bill.billDetail.details[i].serviceName + "</strong><br>";
+                            for (var j in bill.billDetail.details[i].descriptors) {
+                                html += "<strong>" + bill.billDetail.details[i].descriptors[j] + "</strong><br>";
+                            }
+                            html += "<hr>";
+                        }
+                        html += "<strong>Observaciones: </strong>" + bill.billDetail.observation + "\
+                                        </p>\
+                                        <h3><strong>Total: " + bill.billDetail.total + "</strong></h3>\
+                                        </div>";
+
+                        openModalAlerhtml("Informacion del Cliente", html);
+                    }
+                });
+            }
+        }
+
+        function pasarAlMostrador(invoiceId){
+            changeState(invoiceId, 1, "el mostrador");
+        }
+
+        function pasarAlTransporte(invoiceId){
+            changeState(invoiceId, 9, "transporte");
+        }
+
+        function changeState(invoiceId,processState, msm) {
+            $.ajax({
+                url: "{{ path("lavaseco_api_order_change_processState") }}",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    "bills": [invoiceId],
+                    "processState": processState
+                },
+                beforeSend: function (xhr) {
+                    loadingModal("Guardando los cambios en el sistema... Espere por favor.");
+                },
+                success: function (result) {
+                    closeLoadingModal();
+                    openModalAlerErrorSuccess("Descargando Pedidos", "El pedido esta en "+ msm + ".",
+                        function () {
+                            location.reload();
+                        });
+
+                },
+                error: function () {
+                    closeLoadingModal();
+                    openModalAlerErrorSuccess("Error Descargando Pedidos", "Error al registrar, intente nuevamente.");
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
