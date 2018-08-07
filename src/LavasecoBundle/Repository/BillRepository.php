@@ -26,11 +26,24 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $consecutive;
     }
 
-    public function getBillsByProcessId($processId) {
+    public function getBillsByProcessId($processId, $movlie = false) {
         $bills = $this->createQueryBuilder('b')
                 ->where('b.processState = :processStateId')
-                ->setParameter('processStateId', $processId)
-                ->getQuery();
+                ->setParameter('processStateId', $processId);
+
+        if ($movlie) {
+            $bills = $bills->innerJoin('b.addressDelivery', 'ad')
+                    ->innerJoin('b.addressCollect', 'ac')
+                    ->andWhere('ad.id IS NOT NULL')
+                    ->andWhere('ac.id IS NOT NULL');
+        } else {
+            $bills = $bills->leftJoin('b.addressDelivery', 'ad')
+                    ->leftJoin('b.addressCollect', 'ac')
+                    ->andWhere('ad.id IS NULL')
+                    ->andWhere('ac.id IS NULL');
+        }
+
+        $bills = $bills->getQuery();
 
         return $bills->getResult();
     }
@@ -77,6 +90,7 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
             $bills = $bills->innerJoin('b.salePoint', 's')
                     ->innerJoin('s.branchOffice', 'bo')
                     ->where('b.processState != 7')
+                    ->andWhere('b.processState != 8')
                     ->andWhere('b.billState != 3')
                     ->andWhere('bo.id = :branchOfficeId')
                     ->orderBy('b.id', 'DESC')
@@ -94,6 +108,7 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
             }
         } else {
             $bills = $bills->where('b.processState != 7')
+                    ->andWhere('b.processState != 8')
                     ->andWhere('b.billState != 3')
                     ->orderBy('b.id', 'DESC');
         }
@@ -140,4 +155,64 @@ class BillRepository extends \Doctrine\ORM\EntityRepository {
         return $sth->fetchAll();
     }
 
+    public function getBillDelivery() {
+        $bills = $this->createQueryBuilder('b')
+                ->where('b.processState = 8')
+                ->orderBy('b.id', 'DESC')
+                ->innerJoin('b.addressDelivery', 'ad')
+                ->innerJoin('b.addressCollect', 'ac');
+        
+        return $bills->getQuery()->getResult();
+    }
+
+    public function getBillPickUp() {
+        $bills = $this->createQueryBuilder('b');
+        
+        //bills que allan estado en listo para entregar
+        $subquery = $this->createQueryBuilder('bl')
+                ->innerJoin('bl.addressDelivery', 'adl')
+                ->innerJoin('bl.addressCollect', 'acl')
+                ->innerJoin('bl.billHistories', 'h')
+                ->Where('h.processState = 4')
+                ->orWhere('h.processState = 1');
+        
+        $bills = $bills->innerJoin('b.addressDelivery', 'ad')
+                ->innerJoin('b.addressCollect', 'ac')
+                ->where('b.processState = 9')
+                ->andWhere($bills->expr()->in('b.id', $subquery->getDQL()))
+                ->orderBy('b.id', 'DESC');
+        
+        return $bills->getQuery()->getResult();
+        
+    }
+    
+    public function getBillDelivered() {  
+        $bills = $this->createQueryBuilder('b')
+                ->innerJoin('b.addressDelivery', 'ad')
+                ->innerJoin('b.addressCollect', 'ac')
+                ->where('b.processState = 4')
+                ->orderBy('b.id', 'DESC');
+
+        return $bills->getQuery()->getResult();
+    }
+
+    public function getBillCollected() {
+        $bills = $this->createQueryBuilder('b');
+        
+        //bills que allan estado en listo para entregar
+        $subquery = $this->createQueryBuilder('bl')
+                ->innerJoin('bl.addressDelivery', 'adl')
+                ->innerJoin('bl.addressCollect', 'acl')
+                ->innerJoin('bl.billHistories', 'h')
+                ->Where('h.processState = 4')
+                ->orWhere('h.processState = 1');
+        
+        $bills = $bills->innerJoin('b.addressDelivery', 'ad')
+                ->innerJoin('b.addressCollect', 'ac')
+                ->where('b.processState = 9')
+                ->andWhere($bills->expr()->notIn('b.id', $subquery->getDQL()))
+                ->orderBy('b.id', 'DESC');
+        
+        return $bills->getQuery()->getResult();
+    }
 }

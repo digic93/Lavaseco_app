@@ -1,0 +1,477 @@
+{% extends "LavasecoBundle:BootsTrap:Base/base.html.twig" %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/timeline.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset("BootsTrapTheme/css/jquery.dataTables.css") }}">
+{% endblock %} 
+
+{% block body %} 
+    <p>
+        En esta pagina puedes ver las facturas de la aplicación móvil.
+    </p>    
+    <hr>
+    <h3>Facturas A Recoger</h3>
+    <div class="row">
+        <div class="well well-sm pull-right">
+            <button type="button" id="" class="btn btn-info" onclick="infoCliente();">Info Cliente</button>
+            <button type="button" id="" class="btn btn-info" onclick="verFactura();">Detalle Factura</button>
+            <button type="button" id="" class="btn btn-info" onclick="verUbicacion();">Ver Ubicacion</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12"> 
+            <div class="table-responsive">
+                <table id="billsDeliveryTable" class="display responsive" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>No. Fac</th>
+                        <th>Cliente</th>
+                        <th>Recoger</th>
+                        <th>Pago</th>
+                        <th>Estado Factura</th>
+                        <th>Dirección</th>
+                        <th>Indicacion</th>
+                        <th>Recogido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in billsUndelivered %}
+                        <tr id="bill-{{ bill.id }}">
+                            <td>{{ bill.id }}</td>
+                            <td>{{ bill.customer.name }}</td>
+                            <td>{{ bill.deliveryAtString }}</td>
+                            <td>{{ bill.paymentAgreement.name }}</td>
+                            <td>{{ bill.billState.name}}</td>
+                            <td>{{ bill.addressDelivery.nickname}}</td>
+                            <td>{{ bill.addressDelivery.observation}}</td>
+                            <td>            
+                                <button type="button" class="btn btn-success" onclick="recogerPedido({{ bill.id }}, {{ bill.paymentAgreement.id }});">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>    
+            </div>       
+            <hr>
+            <h3>Facturas A Entregar</h3>
+            <div class="table-responsive">
+                <table id="billsPickUpTable" class="display" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>No. Fac</th>
+                            <th>Cliente</th>
+                            <th>Recoger</th>
+                            <th>Pago</th>
+                            <th>Estado Factura</th>
+                            <th>Dirección</th>
+                            <th>Indicacion</th>
+                            <th>Entregar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in billsPickUps %}
+                        <tr id="bill-{{ bill.id }}">
+                            <td>{{ bill.id }}</td>
+                            <td>{{ bill.customer.name }}</td>
+                            <td>{{ bill.deliveryAtString }}</td>
+                            <td>{{ bill.paymentAgreement.name }}</td>
+                            <td>{{ bill.billState.name}}</td>
+                            <td>{{ bill.addressDelivery.nickname}}</td>
+                            <td>{{ bill.addressDelivery.observation}}</td>
+                            <td>            
+                                <button type="button" class="btn btn-success" onclick="entregarPedido({{ bill.id }}, {{ bill.billState.id }});">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>       
+        </div>       
+    </div>
+
+    <!-- Modal Forma de Pago-->
+    <div id="modalPayInvoice" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <label id="paymentTittle">Pago de Factura</label>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-10 col-md-offset-1">
+                            <div class="form-group">
+                                <p>Acuerdo de Pago</p>
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectPaymentAgreement" onChange="" class="form-control">
+                                        <option value="1" selected="selected" data-name="Totalidad">Pagar Total</option>
+                                        <option value="3" data-name="Abono">Abonar</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <p>Forma de Pago</p>
+                                <div class="input-group" id="specificWayPay">
+                                    <select id="selectWayToPay" onChange="" class="form-control">
+                                        <option selected="selected" value="1" data-name="Efectivo">Efectivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div class="form-group">
+                                <div id="divTotalBill">
+                                    <p class='text-right'>
+                                        <strong>Total a Pagar: $ 
+                                            <span id="lblTotalBill"></span>
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <p>Dinero Recibido<span class="req">*</span></p>
+                                <div class="input-group" id="divCashReceived">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="cashReceived" type="number" autocomplete="off" onkeyup="updateChange();"/>
+                                </div>
+                            </div>
+
+                            <div id="divChange" class="form-group">
+                                <p>Vueltas</p>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-usd"></i></span>
+                                    <input class="form-control" id="change" type="text" autocomplete="off" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSubmitPayment" type="submit"  onclick="paymentInvoice();" class="btn btn-success"/>Cobrar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset("BootsTrapTheme/js/jquery.number.min.js") }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ asset("BootsTrapTheme/js/jquery.dataTables.js") }}"></script>
+
+    <script>
+        var bill;
+        var billId;
+        var UndeliveredBillSelect = 0;
+        var entrega = false;
+        var validField = false;
+
+        $(document).ready(function () {
+            var billsDeliveryTable = $('#billsDeliveryTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
+
+            var billsPickUpTable = $('#billsPickUpTable').DataTable({
+                "order": [[0, "Desc"]]
+            });
+
+            $('#billsDeliveryTable tbody').on('click', 'tr', function () {
+                var data = billsDeliveryTable.row(this).data();
+                UndeliveredBillSelect = billId = data[0];
+                $(".selected").toggleClass('selected');
+                $(this).toggleClass('selected');
+            });
+
+            $('#billsPickUpTable tbody').on('click', 'tr', function () {
+                var data = billsPickUpTable.row(this).data();
+                UndeliveredBillSelect = billId = data[0];
+                $(".selected").toggleClass('selected');
+                $(this).toggleClass('selected');
+            });
+        });
+
+
+        function infoCliente() {
+            if (UndeliveredBillSelect === 0) {
+                openModalAlerErrorSuccess("Alerta", "Seleccione por lo menos una factura para ver informacion del cliente.");
+            } else {
+                $.ajax({
+                    url: "{{ path('lavaseco_api_mobile_info_bill') }}/" + UndeliveredBillSelect,
+                    method: "GET",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (info) {
+                        openModalAlerhtml("Informacion del Cliente",
+                                "<strong>Nombre: </strong>" + info.customer.name + "<br>\
+                                <strong>Telefono: </strong>" + ((info.customer.phone === null) ? "No Registra" : info.customer.phone) + "<br>\n\
+                                <strong>Correo:</strong>" + info.customer.email
+                                );
+                        ;
+                    }
+                });
+            }
+        }
+
+        function verUbicacion() {
+            if (UndeliveredBillSelect === 0) {
+                openModalAlerErrorSuccess("Alerta", "Seleccione por lo menos una factura para ver Ubicacion.");
+            } else {
+                $.ajax({
+                    url: "{{ path('lavaseco_api_mobile_info_bill') }}/" + UndeliveredBillSelect,
+                    method: "GET",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (info) {
+                        openModalAlerhtml("Direccíon",
+                                "<strong>Recoger En: </strong>" + info.pickUp.Nickname + "<br>\
+                                <strong>Observacion: </strong>" + info.pickUp.Observation + "<br>\
+                                <a>ver Ubicacion</a>\n\
+                                <hr>\
+                                <strong>Entregar En: </strong>" + info.delivery.Nickname + "<br>\
+                                <strong>Observacion: </strong>" + info.delivery.Observation + "<br>\n\
+                                <a>ver Ubicacion</a>"
+                                );
+                        ;
+                    }
+                });
+            }
+        }
+
+        function verFactura() {
+            if (UndeliveredBillSelect === 0) {
+                openModalAlerErrorSuccess("Alerta", "Seleccione por lo menos una factura para ver el detalle.");
+            } else {
+
+                $.ajax({
+                    url: "{{ path('lavaseco_api_orders_tikets') }}/" + billId,
+                    method: "GET",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (bill) {
+                        var html =
+                                "<div class=\"panel-body\">\
+                                <h3>Factura " + bill.bill + "</h3>\
+                                <h5>Fecha: " + bill.createdAt + "</h5>\
+                                <strong>Cliente: " + bill.customer + "</strong><br>\
+                                <strong>Numero Telefono: " + ((bill.phoneNumber === null) ? "No Registra" : bill.phoneNumber) + "</strong><br>\
+                                <hr>\
+                                <p>";
+
+                        for (var i in bill.billDetail.details) {
+                            html +=
+                                    "<strong>" + bill.billDetail.details[i].quantity + " x " + bill.billDetail.details[i].serviceName + "</strong><br>";
+                            for (var j in bill.billDetail.details[i].descriptors) {
+                                html += "<strong>" + bill.billDetail.details[i].descriptors[j] + "</strong><br>";
+                            }
+                            html += "<hr>";
+                        }
+                        html += "<strong>Observaciones: </strong>" + bill.observation + "\
+                                        </p>\
+                                        <h3><strong>Total: " + bill.billDetail.total + "</strong></h3>\
+                                        </div>";
+
+                        openModalAlerhtml("Informacion del Cliente", html);
+                    }
+                });
+            }
+        }
+
+        function recogerPedido(invoiceId, paymentId){
+            payInvoice(invoiceId, paymentId, paymentId === 2, recogerPedidoFactura)
+        }
+        
+        function entregarPedido(invoiceId, billState){
+            entrega = true
+            payInvoice(invoiceId, (billState != 2)?1:2, false,entregarPedidoFactura)
+        }
+
+        function payInvoice(invoiceId, paymentId, paymentModal, callback) {
+                if(paymentModal){
+                    callback(invoiceId);
+                }else{
+                    $.ajax({
+                        url: "{{ path('lavaseco_api_bill') }}/" + invoiceId,
+                        method: "GET",
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        success: function (data) {
+
+                            if (data.billState === 2) {
+                                openModalAlerErrorSuccess("Alerta", "Factura " + data.id + " ya cancelada");
+                                $('#modalPayInvoice').modal('hide');
+                                callback(UndeliveredBillSelect);
+                                return;
+                            }
+                            
+                            if (paymentId === 1) {
+                                $('#selectPaymentAgreement').children('option:not(:first)').remove();
+                            }
+                            
+                            $('#selectPaymentAgreement').val(paymentId);
+                            var totalPago = parseInt(data.total) - parseInt(data.payed);
+                            $('#paymentTittle').text('Pago de la factura No. ' + data.id);
+                            $('#lblTotalBill').html("<strong>" + totalPago + "</strong>");
+                            $('#modalPayInvoice').modal('show');
+                        },
+                        error: function () {
+                            openModalAlerErrorSuccess("Error", "Error al cargar la factura");
+                        }
+                    });
+                }
+            }
+            
+            function paymentInvoice() {
+                if (UndeliveredBillSelect === undefined) {
+                    openModalAlerErrorSuccess("Alerta", "No se encuentra ninguana factura seleccionanda.");
+                }
+
+                if (updateChange()) {
+                    $.ajax({
+                        url: "{{ path("lavaseco_api_bill_paymet") }}",
+                        method: "POST",
+                        dataType: "json",
+                        data: {
+                            "bill": UndeliveredBillSelect,
+                            "cashReceived": parseInt($("#cashReceived").val()),
+                            "paymentAgreement": $('#selectPaymentAgreement').val()
+                        },
+                        beforeSend: function (xhr) {
+                            loadingModal("Espere por favor.");
+                        },
+                        success: function (result) {
+                            closeLoadingModal();
+                            if (!result.error){
+                                openModalAlerErrorSuccess("Alerta", "Transacción realizada con exito.");
+                                if(entrega){
+                                    entregarPedidoFactura(UndeliveredBillSelect)
+                                }else{
+                                    recogerPedidoFactura(UndeliveredBillSelect);
+                                }
+                            }
+                            else{
+                                openModalAlerErrorSuccess("Error", result.error);
+                            }
+                            $('#modalPayInvoice').modal('hide');
+                            $("#cashReceived").val('');
+
+                        },
+                        error: function () {
+                            closeLoadingModal();
+                            openModalAlerErrorSuccess("Error", "Error, intente nuevamente.");
+                        }
+                    });
+
+                } else {
+                    openModalAlerErrorSuccess("Error", "Verifique el dinero dado por el cliente");
+                }
+            }
+            
+            function updateChange() {
+                var paymentAgreement = $('#selectPaymentAgreement').val();
+
+                if (paymentAgreement !== "3") {//3 es el id del metodo de abono
+                    var change = $("#cashReceived").val() - $('#lblTotalBill').text();
+                    var vMissingMoney = $('#lblTotalBill').text() - $("#cashReceived").val();
+
+                    if (change < 0) {
+                        $("#change").val('');
+                        $("#missingMoney").val(vMissingMoney);
+                        $("#divCashReceived").removeClass("has-success");
+                        $("#divCashReceived").addClass("has-error");
+                        return false;
+                    } else {
+                        $("#change").val(change);
+                        $("#missingMoney").val('');
+                        $("#divCashReceived").addClass("has-success");
+                        $("#divCashReceived").removeClass("has-error");
+                        return true;
+                    }
+                } else {
+                    if (parseInt($("#cashReceived").val()) > ($('#lblTotalBill').text())) {
+                        $("#change").val('');
+                        $("#missingMoney").val('');
+                        $("#divCashReceived").removeClass("has-success");
+                        $("#divCashReceived").addClass("has-error");
+                        return false;
+                    } else {
+                        $("#change").val(0);
+                        $("#missingMoney").val(vMissingMoney);
+                        $("#divCashReceived").addClass("has-success");
+                        $("#divCashReceived").removeClass("has-error");
+                        return true;
+                    }
+                }
+            }
+            
+            function recogerPedidoFactura(invoiceId){
+                $.ajax({
+                    url: "{{ path("lavaseco_api_order_change_processState") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: {
+                        "bills": [invoiceId],
+                        "processState": 9,
+                        "observation": "Se recoge el pedido"
+                    },
+                    beforeSend: function (xhr) {
+                        loadingModal("Guardando los cambios en el sistema... Espere por favor.");
+                    },
+                    success: function (result) {
+                        closeLoadingModal();
+                        openModalAlerErrorSuccess("Recogiendo Pedidos", "El pedido a sido recogido y esta en transporte.",
+                                    function () {
+                                        openModalAlerErrorSuccess();
+                                        location.reload();
+                                    });
+                        
+                    },
+                    error: function () {
+                        closeLoadingModal();
+                        openModalAlerErrorSuccess("Error Recogiendo Pedidos", "Error al registrar, intente nuevamente.");
+                    }
+                });
+            }
+            
+            function entregarPedidoFactura(invoiceId) {
+                $.ajax({
+                    url: "{{ path("lavaseco_api_bill_deliver") }}",
+                    method: "POST",
+                    dataType: "json",
+                    data: {id:invoiceId},
+                    beforeSend: function (xhr) {
+                        loadingModal("Registrando la entrega en el sistema... Espere por favor.");
+                    },
+                    success: function (result) {
+                        closeLoadingModal();
+                        if (result.error !== undefined) {
+                            openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entregar de la factura");
+                        } else {
+                            openModalAlerErrorSuccess('Confirmación de Factura', "Se registró la entrega con éxito",
+                                    function () {
+                                        location.reload();
+                                    });
+                        }
+                    },
+                    error: function () {
+                        closeLoadingModal();
+                        openModalAlerErrorSuccess('Confirmación de Factura', "Error al registrar la entrega de la factura");
+                    }
+                });
+            }
+            
+    </script>
+{% endblock %}
+

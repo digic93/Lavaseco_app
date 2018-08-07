@@ -159,6 +159,15 @@
             }
         }
 
+    function openModalAlerhtml(title, html, collback) {
+            $("#titleModalAlert").text(title);
+            $("#messageModalAlert").html(html);
+            $("#modalAlertSuccessError").modal('show');
+            if (collback !== undefined){
+                modalSuccessErrorCollback = collback;
+            }
+        }
+
         function openModalAlerConfirmation(title, content, collback) {
             $("#titleModalAlertConf").text(title);
             $("#messageModalAlertConf").text(content);

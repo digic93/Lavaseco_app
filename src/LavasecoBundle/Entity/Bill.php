@@ -734,6 +734,11 @@ class Bill {
     {
         return $this->deliveryAt;
     }
+  
+    public function getDeliveryAtString()
+    {
+        return $this->deliveryAt->format('d/m/Y H:i');;
+    }
 
     /**
      * Set collectAt
