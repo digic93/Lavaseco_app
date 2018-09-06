@@ -28,11 +28,11 @@ lavaseco_Bills:
 
 lavaseco_movile:
     path:     /mensajeria
-    defaults: { _controller: LavasecoBundle:Movile:index } 
+    defaults: { _controller: LavasecoBundle:Mobile:index } 
         
 lavaseco_movile_up_and_down:
     path:     /mensajeria/carga
-    defaults: { _controller: LavasecoBundle:Movile:charger } 
+    defaults: { _controller: LavasecoBundle:Mobile:charger } 
 
 lavaseco_setting_bill_content:
     path:     /configuracion/factura
@@ -276,6 +276,15 @@ api_mobile_login:
     path: /api/mobile/login_check
     defaults: { _controller: LavasecoBundle:MobileAutentication:login }
     methods:  [POST]    
+
+api_mobile_signin:
+    path: /api/mobile/signin
+    defaults: { _controller: LavasecoBundle:MobileAutentication:signin }
+    methods:  [POST]    
+
+api_mobile_validate_customer:
+    path:     /api/mobile/customer/{email}
+    defaults: { _controller: LavasecoBundle:Customer:validateEmail }
 
 api_mobile_reset_password:
     path: /api/mobile/resetpassword

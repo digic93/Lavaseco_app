@@ -701,6 +701,7 @@ class BillController extends Controller {
     }
 
     private function getTiket(Bill $bill) {
+        //$bill = new Bill();
         $tiket = [
             "bill" => $bill->getId(),
             "consecutive" => $bill->getConsecutive(),
@@ -710,7 +711,11 @@ class BillController extends Controller {
             "observation" => $bill->getObservation(),
             "salePoint" => $bill->getSalePoint()->getId(),
             "createdAt" => $bill->getCreatedAtString(),
-            "billDetail" => $this->getItemsBill($bill)
+            "billDetail" => $this->getItemsBill($bill),
+            "addressCollect"=> ($bill->getAddressCollect() == null)?"No Aplica":$bill->getAddressCollect()->getFullAddress(),
+            "addressDelivery"=>($bill->getAddressDelivery() == null)?"No Aplica":$bill->getAddressDelivery()->getFullAddress(),
+            "deliveryAt"=>($bill->getAddressDelivery() == null)?"No Aplica":$bill->getDeliveryAtString(),
+            "collectAt"=>($bill->getAddressCollect() == null)?"No Aplica":$bill->getCollectAtString(),
         ];
 
         return $tiket;
@@ -725,6 +730,7 @@ class BillController extends Controller {
         $billDetails = $bill->getBillDetails();
         foreach ($billDetails as $billDetail) {
             $billDetailsArray ["details"] [] = [
+                "price" =>$billDetail->getPrice(),
                 "quantity" => $billDetail->getQuantity(),
                 "observation" => $billDetail->getObservation(),
                 "serviceName" => $billDetail->getServiceName(),

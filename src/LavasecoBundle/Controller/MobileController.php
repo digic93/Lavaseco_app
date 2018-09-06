@@ -5,7 +5,7 @@ namespace LavasecoBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class MovileController extends Controller {
+class MobileController extends Controller {
 
     public function indexAction(Request $request) {
         $configuration = $this->get('lavaseco.app_configuration');

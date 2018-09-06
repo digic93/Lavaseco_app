@@ -49,12 +49,9 @@ class CustomerController extends Controller {
     }
 
     public function registerAction(Request $request) {
-        $em = $this->get('doctrine')->getManager();
         $id = $request->request->get('id');
-        
-        
-        $doctrineManager = $this->get('doctrine')->getManager();
-        $customerRepository = $doctrineManager->getRepository("LavasecoBundle:Customer");
+        $em = $this->get('doctrine')->getManager();
+        $customerRepository = $em->getRepository("LavasecoBundle:Customer");
         
         $customer = $customerRepository->find($id);
         

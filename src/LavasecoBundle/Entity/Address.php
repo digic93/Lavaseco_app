@@ -392,4 +392,12 @@ class Address
     {
         return $this->branchOffice;
     }
+    
+    public function getFullAddress(){
+        if ($this->getNickname() !==  $this->getPlaceName()){
+            return $this->getNickname() ." - ". $this->getPlaceName();
+        }else{
+            return $this->getNickname();
+        }
+    }
 }
