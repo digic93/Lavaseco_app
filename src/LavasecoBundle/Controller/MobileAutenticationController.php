@@ -2,6 +2,7 @@
 
 namespace LavasecoBundle\Controller;
 
+use LavasecoBundle\Entity\Customer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -54,7 +55,6 @@ class MobileAutenticationController extends Controller {
         return $response;
     }
    
-    
     public function restartPasswordAction($uuidUser, Request $request){
         $configuration = $this->get('lavaseco.app_configuration');
         $doctrineManager = $this->get('doctrine')->getManager();
@@ -71,16 +71,52 @@ class MobileAutenticationController extends Controller {
         
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->get('doctrine')->getManager();
             $customer = $form->getData();
             $customer->setUuid("");
-            $em->persist($customer);
-            $em->flush();
+            $doctrineManager->persist($customer);
+            $doctrineManager->flush();
             return $this->render($configuration->getViewTheme() . ':Home/resetpassword.html.twig',['customer' => $customer, 'message' => "Se a restaurado la contrasña correctamente" ]);
 
         }
         return $this->render($configuration->getViewTheme() . ':Home/resetpassword.html.twig',['customer' => $customer, 'form' =>$form->createView() ]);
         
+    }
+   
+    public function signinAction(Request $request){
+        $params = $this->getUserParams($request);
+        $em = $this->get('doctrine')->getManager();
+               
+        $customer = new Customer();
+        $customer->setName($params['name']);
+        $customer->setEmail($params['email']);
+        $customer->setPoints($this->getStartPoints());
+        $customer->setPhoneNumber($params['phone']);
+        $customer->setPassword($params['password']);
+        
+        $em->persist($customer);
+        $em->flush();
+
+        $configuration = $this->get('lavaseco.app_configuration');
+        $message = (new \Swift_Message('Bienvenido al Lavaseco Modelo'))
+                ->setFrom(['noreply@lavasecomodelo.com' => 'Lavaseco Modelo'])
+                ->setTo($customer->getEmail())
+                ->setBody(
+                $this->renderView(
+                        $configuration->getViewTheme() . ':Emails/welcomeEmail.html.twig', [
+                    'customer' => $customer,
+                        ]
+                ), 'text/html'
+        );
+        $this->get('mailer')->send($message);
+
+        return $this->json(["id" => $customer->getId(),
+                    "name" => $customer->getName(),
+                    "email" => $customer->getEmail(),
+                    "address" => $customer->getAddress(),
+                    "phoneNumber" => $customer->getPhoneNumber(),
+                    "createdAt" => $customer->getCreatedAt(),
+                    "lastVisit" => $customer->getLastVisit(),
+        ]);
     }
     
     private function getUserParams($request){
@@ -156,9 +192,17 @@ class MobileAutenticationController extends Controller {
             
         }catch(\Exception $e){
             throw new HttpException(401, "la sesión a expirado.");
-        };
+        }
         
         return $userRepository->find($data['customerId']);        
     }
     
+    public function getStartPoints() {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $customerLoyalty = $doctrineManager->getRepository("LavasecoBundle:Loyalty");
+
+        $loyalty = $customerLoyalty->find(1);
+
+        return $loyalty->getStartPoint();
+    }
 }
