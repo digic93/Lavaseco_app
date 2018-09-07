@@ -155,26 +155,30 @@ class BillController extends Controller {
         }
     }
     
-    public function getHistoryByBillIdAction($billId) {
-        $resutl = array();
-        $resutl["histories"] = array();
-
-        $bill = $this->getBillById($billId);
-        $billHistories = $bill->getBillHistories();
-
-        $resutl["bill"] = $bill->getId();
-        $resutl["order"] = $bill->getConsecutive();
-
-        foreach ($billHistories as $billHistory) {
-            $resutl["histories"][] = [
-                "processState" => $billHistory->getProcessState()->getName(),
-                "createdAt" => $billHistory->getCreatedAtString(),
-                "user" => $billHistory->getUser()->getName(),
-                "observation" => $billHistory->getObservation()
-            ];
+    
+    public function getHistoryBillMobileByBillIdAction($billId, Request $request) {
+        $billIdFilter = array($billId);
+        $customer = MobileAutenticationController::validateToken($request, $this);
+        
+        $bill = $customer->getBills()->filter(
+            function($entry) use ($billIdFilter) {
+               return in_array($entry->getId(), $billIdFilter);
+            }
+        );
+        
+        
+        if($bill->count() > 0){
+            $response = new Response(json_encode($this->getHistoryBill($bill->first())));
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }else{
+            throw new HttpException(404, "Orden no encontrada");
         }
-
-        return $this->json($resutl);
+    }
+    
+    public function getHistoryByBillIdAction($billId) {
+        $bill = $this->getBillById($billId);
+        return $this->json($this->getHistoryBill($bill));
     }
 
     public function getPayMethodAction() {
@@ -828,5 +832,27 @@ class BillController extends Controller {
             );
             $this->get('mailer')->send($message);
         }
+    }
+    
+    private function getHistoryBill($bill){
+        $resutl = array();
+        $resutl["histories"] = array();
+
+       
+        $billHistories = $bill->getBillHistories();
+
+        $resutl["bill"] = $bill->getId();
+        $resutl["order"] = $bill->getConsecutive();
+
+        foreach ($billHistories as $billHistory) {
+            $resutl["histories"][] = [
+                "processState" => $billHistory->getProcessState()->getName(),
+                "createdAt" => $billHistory->getCreatedAtString(),
+                "user" => $billHistory->getUser()->getName(),
+                "observation" => $billHistory->getObservation()
+            ];
+        }
+        
+        return $resutl;
     }
 }
