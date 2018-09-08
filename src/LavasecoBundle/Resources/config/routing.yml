@@ -307,6 +307,13 @@ api_mobile_get_bill:
     methods:  [GET]   
     requirements:
         billId:  \d+
+
+api_mobile_get_bill_history:
+    path: /api/mobile/bill/history/{billId}
+    defaults: { _controller: LavasecoBundle:Bill:getHistoryBillMobileByBillId }
+    methods:  [GET]   
+    requirements:
+        billId:  \d+
     
 api_mobile_sale_service:
     path:     /api/mobile/service/{categoriaId}
