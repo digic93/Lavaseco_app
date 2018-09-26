@@ -282,10 +282,21 @@ api_mobile_signin:
     defaults: { _controller: LavasecoBundle:MobileAutentication:signin }
     methods:  [POST]    
 
+api_mobile_update_customer:
+    path:     /api/mobile/customer
+    defaults: { _controller: LavasecoBundle:Customer:update }
+    methods:  [PUT]
+    
+api_mobile_update_password:
+    path:     /api/mobile/password
+    defaults: { _controller: LavasecoBundle:Customer:updatePassword }
+    methods:  [PUT]
+    
 api_mobile_validate_customer:
     path:     /api/mobile/customer/{email}
     defaults: { _controller: LavasecoBundle:Customer:validateEmail }
-
+    methods:  [GET]
+    
 api_mobile_reset_password:
     path: /api/mobile/resetpassword
     defaults: { _controller: LavasecoBundle:MobileAutentication:getResetpassword }
@@ -344,10 +355,10 @@ api_mobile_get_address:
     defaults: { _controller: LavasecoBundle:Customer:getAddress }
     methods:  [GET]
 
-api_mobile_get_address:
+api_mobile_update_address:
     path:     /api/mobile/address
-    defaults: { _controller: LavasecoBundle:Customer:getAddress }
-    methods:  [GET]
+    defaults: { _controller: LavasecoBundle:Customer:updateAddress }
+    methods:  [PUT]
    
 api_mobile_get_addres_branch_office:
     path:     /api/mobile/address/branchoffice

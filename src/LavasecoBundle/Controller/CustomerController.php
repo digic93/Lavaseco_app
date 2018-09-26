@@ -91,7 +91,6 @@ class CustomerController extends Controller {
                     "lastVisit" => $customer->getLastVisit(),
         ]);
     }
-
     
     public function addAddressAction (Request $request){
         $customer = MobileAutenticationController::validateToken($request, $this);
@@ -132,6 +131,35 @@ class CustomerController extends Controller {
         return $this->json($addressesResult);
     }
     
+    public function updateAddressAction(Request $request){
+        $customer = MobileAutenticationController::validateToken($request, $this);
+        
+        if (empty($request->getContent()))
+        {
+            throw new HttpException(500, "Informacion de dirección no valida");
+        }
+        $em = $this->get('doctrine')->getManager();
+        $addressRequest = json_decode($request->getContent(), true);
+        
+        $addresses = $customer->getAddressApp();
+        foreach ($addresses as $address){
+            if($address->getId() == $addressRequest["id"]){
+                
+                $address->setLatitude($addressRequest["position"]["lat"]);
+                $address->setLongitude($addressRequest["position"]["lng"]);
+                $address->setNickname($addressRequest["nickname"]);
+                $address->setObservation($addressRequest["observations"]);
+                $address->setPlaceName($addressRequest["placeName"]);
+
+                $em->persist($address);
+                $em->flush();
+
+                return $this->json($addressRequest);
+            }
+        }
+        return $this->json(false);
+    }
+    
     public function getAddressSalepointAction(Request $request){
         $addressesResult = array();
         $doctrineManager = $this->get('doctrine')->getManager();
@@ -149,6 +177,39 @@ class CustomerController extends Controller {
         return $this->json($addressesResult);
     }
     
+    public function updateAction(Request $request){
+        $customer = MobileAutenticationController::validateToken($request, $this);  
+        $em = $this->get('doctrine')->getManager();
+        
+        $customerData = json_decode($request->getContent(), true);
+        
+        $customer->setName($customerData['name']);
+        $customer->setPhoneNumber($customerData['phone']);
+        $customer->setAddress($customerData['address']);
+
+        $em->persist($customer);
+        $em->flush();
+        
+        return $this->json($customerData);
+    }
+
+    public function updatePasswordAction(Request $request){
+        $em = $this->get('doctrine')->getManager();
+        $customer = MobileAutenticationController::validateToken($request, $this);  
+        
+        $passwords = json_decode($request->getContent(), true);
+        
+        if(hash('sha256',$passwords["current"]) == $customer->getPassword() ){
+            $customer->setPassword($passwords["new"]);
+            $em->persist($customer);
+            $em->flush();
+            return $this->json(true);
+        }else{
+            return $this->json(false);
+        }
+        
+    }
+    
     private function getAddressToArry($address){
         return [
                 "id" => $address->getId(),
@@ -161,7 +222,6 @@ class CustomerController extends Controller {
                 ]
             ];
     }
-    
 
     private function validateEmail($email) {
         $doctrineManager = $this->get('doctrine')->getManager();
