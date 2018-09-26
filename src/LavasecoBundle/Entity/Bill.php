@@ -737,7 +737,7 @@ class Bill {
   
     public function getDeliveryAtString()
     {
-        return $this->deliveryAt->format('d/m/Y H:i');;
+        return $this->deliveryAt->format('d/m/Y H:i');
     }
 
     /**
@@ -765,6 +765,6 @@ class Bill {
     }
     
     public function getCollectAtString(){
-        return $this->deliveryAt->format('d/m/Y H:i');;
+        return $this->collectAt->format('d/m/Y H:i');
     }
 }
