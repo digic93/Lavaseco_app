@@ -5,8 +5,8 @@ security:
     role_hierarchy:   
         ROLE_CASHIER:     [ROLE_USER]
         ROLE_OPERATOR:    [ROLE_USER]
-        ROLE_MOVILE:      [ROLE_OPERATOR]
-        ROLE_ADMIN:       [ROLE_MOVILE, ROLE_CASHIER]  
+        ROLE_MESSENGER:   [ROLE_USER]
+        ROLE_ADMIN:       [ROLE_OPERATOR, ROLE_CASHIER, ROLE_MESSENGER]  
         ROLE_MANAGER:     [ROLE_ADMIN]  
         ROLE_SUPER_ADMIN: [ROLE_MANAGER] 
         ROLE_CLIENT:  [ROLE_MOBILE_CLIENT]
@@ -77,8 +77,7 @@ security:
         - { path: ^/api/order/tiket/, role: ROLE_OPERATOR }
         - { path: ^/api/order/next/processState, role: ROLE_OPERATOR }
         
-        - { path: ^/mensajeria, role: ROLE_MOVILE}
+        - { path: ^/mensajeria, role: ROLE_MESSENGER}
 
-        
         #MOBILE CLIENT 
         - { path: ^/api/mobile, roles: IS_AUTHENTICATED_ANONYMOUSLY }

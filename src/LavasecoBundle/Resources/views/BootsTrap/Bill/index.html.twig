@@ -6,7 +6,7 @@
 {% endblock %} 
 
 {% block body %} 
-    <h3 >Facturas</h3>
+    <h3 >Facturas {% if apllication%} Aplicacion {% else %} Sucursal {% endif %} </h3>
     <p>
         En esta pagina puedes ver las facturas su estado y la trazabilidad del proceso.
     </p>
@@ -26,165 +26,173 @@
     <div class="row">
         <!--facturas-->
         <div class="col-md-9"> 
-            <div class="well well-sm pull-right">
-                {% if salePointIsOpen %}
-                    <form class="form-inline">
-                        <button type="button" id="deleveryButton" class="btn btn-default" onclick="delivered();">Entregar</button> 
-                        {% if is_granted('ROLE_ADMIN') %}
-                            | <button type="button" id="refundButton" class="btn btn-default" onclick="refund();">Reembolso</button>
-                        {% endif  %}
+            <div class="row"> 
+                <div class="well well-sm pull-right">
+                    {% if salePointIsOpen %}
+                        <form class="form-inline">
+                            <button type="button" id="deleveryButton" class="btn btn-default" onclick="delivered();">Entregar</button> 
+                            {% if is_granted('ROLE_ADMIN') %}
+                                | <button type="button" id="refundButton" class="btn btn-default" onclick="refund();">Reembolso</button>
+                            {% endif  %}
 
-                        {#                    <div class="form-group">
-                                                            <select class="form-control" id="sel1">
-                                                                <option>Seleccione un estado </option>
-                                                            </select>
-                                                        </div>
-                                    #}
-                    </form>                
-                {% else %}
-                    <p>Para realizar una entrega o reembolso la caja debe estar abierta.</p>
-                {% endif %}
+                            {#                    <div class="form-group">
+                                                                <select class="form-control" id="sel1">
+                                                                    <option>Seleccione un estado </option>
+                                                                </select>
+                                                            </div>
+                                        #}
+                        </form>                
+                    {% else %}
+                        <p>Para realizar una entrega o reembolso la caja debe estar abierta.</p>
+                    {% endif %}
+                </div>
+            </div>                
+        {% if apllication == false %}
+            <div class ="table-responsive">
+                <table id="billsUndeliveredTable" class="display" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>No. Fac</th>
+                            <th>Cliente</th>
+                            <th>Telefono</th>
+                            <th>Total</th>
+                            <th>Estado Proceso</th>
+                            <th>Pago</th>
+                            <th>Estado Factura</th>
+                            <th>observación</th>
+                            <th>Vendedor</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in billsUndelivered %}
+                            <tr>
+                                <td>{{ bill.id }}</td>
+                                <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
+                                <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                                <td>$<span class="total"> {{ bill.total}}</span></td>
+                                <td>{{ bill.processState.name}}</td>
+                                <td>{{ bill.paymentAgreement.name }}</td>
+                                <td>{{ bill.billState.name}}</td>
+                                <td>{{ bill.observation}}</td>
+                                <td>{{ bill.sellerUser.name }}</td>
+                                <td>{{ bill.CreatedAtString}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            
-            <table id="billsUndeliveredTable" class="display" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th>No. Fac</th>
-                        <th>Cliente</th>
-                        <th>Telefono</th>
-                        <th>Total</th>
-                        <th>Estado Proceso</th>
-                        <th>Pago</th>
-                        <th>Estado Factura</th>
-                        <th>observación</th>
-                        <th>Vendedor</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bill in billsUndelivered %}
+        {% else %}
+            <div class ="table-responsive">
+                <table id="billsMovileUndeliveredTable" class="display" cellspacing="0" width="100%">
+                    <thead>
                         <tr>
-                            <td>{{ bill.id }}</td>
-                            <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
-                            <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
-                            <td>$<span class="total"> {{ bill.total}}</span></td>
-                            <td>{{ bill.processState.name}}</td>
-                            <td>{{ bill.paymentAgreement.name }}</td>
-                            <td>{{ bill.billState.name}}</td>
-                            <td>{{ bill.observation}}</td>
-                            <td>{{ bill.sellerUser.name }}</td>
-                            <td>{{ bill.CreatedAtString}}</td>
+                            <th>No. Fac</th>
+                            <th>Cliente</th>
+                            <th>Telefono</th>
+                            <th>Total</th>
+                            <th>Estado Proceso</th>
+                            <th>Pago</th>
+                            <th>Estado Factura</th>
+                            <th>observación</th>
+                            <th>Vendedor</th>
+                            <th>Fecha</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>    
-            <hr>
-            <h3>Facturas Aplicacion</h3>
-            <hr>
-            <table id="billsMovileUndeliveredTable" class="display" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th>No. Fac</th>
-                        <th>Cliente</th>
-                        <th>Telefono</th>
-                        <th>Total</th>
-                        <th>Estado Proceso</th>
-                        <th>Pago</th>
-                        <th>Estado Factura</th>
-                        <th>observación</th>
-                        <th>Vendedor</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bill in billsMovileUndelivered %}
-                        <tr>
-                            <td>{{ bill.id }}</td>
-                            <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
-                            <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
-                            <td>$<span class="total"> {{ bill.total}}</span></td>
-                            <td>{{ bill.processState.name}}</td>
-                            <td>{{ bill.paymentAgreement.name }}</td>
-                            <td>{{ bill.billState.name}}</td>
-                            <td>{{ bill.observation}}</td>
-                            <td>{{ bill.sellerUser.name }}</td>
-                            <td>{{ bill.CreatedAtString}}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <hr>
+                    </thead>
+                    <tbody>
+                        {% for bill in billsMovileUndelivered %}
+                            <tr>
+                                <td>{{ bill.id }}</td>
+                                <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
+                                <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                                <td>$<span class="total"> {{ bill.total}}</span></td>
+                                <td>{{ bill.processState.name}}</td>
+                                <td>{{ bill.paymentAgreement.name }}</td>
+                                <td>{{ bill.billState.name}}</td>
+                                <td>{{ bill.observation}}</td>
+                                <td>{{ bill.sellerUser.name }}</td>
+                                <td>{{ bill.CreatedAtString}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
             <h3>Facturas Entregadas</h3>
             <hr>
-            <table id="billsDeliveredTable" class="display" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th>No. Fac</th>
-                        <th>Cliente</th>
-                        <th>Telefono</th>
-                        <th>Total</th>
-                        <th>Estado Proceso</th>
-                        <th>Pago</th>
-                        <th>Estado Factura</th>
-                        <th>observación</th>
-                        <th>Vendedor</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bill in billsDelivered %}
+        {% if apllication == false %}
+            <div class ="table-responsive">
+                <table id="billsDeliveredTable" class="display" cellspacing="0" width="100%">
+                    <thead>
                         <tr>
-                            <td>{{ bill.id }}</td>
-                            <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
-                            <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
-                            <td>$<span class="total"> {{ bill.total}}</span></td>
-                            <td>{{ bill.processState.name}}</td>
-                            <td>{{ bill.paymentAgreement.name }}</td>
-                            <td>{{ bill.billState.name}}</td>
-                            <td>{{ bill.observation}}</td>
-                            <td>{{ bill.sellerUser.name }}</td>
-                            <td>{{ bill.CreatedAtString}}</td>
+                            <th>No. Fac</th>
+                            <th>Cliente</th>
+                            <th>Telefono</th>
+                            <th>Total</th>
+                            <th>Estado Proceso</th>
+                            <th>Pago</th>
+                            <th>Estado Factura</th>
+                            <th>observación</th>
+                            <th>Vendedor</th>
+                            <th>Fecha</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <h3>Facturas Entregadas Aplicacion</h3>
-            <hr>
-            <table id="billsMovileDeliveredTable" class="display" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th>No. Fac</th>
-                        <th>Cliente</th>
-                        <th>Telefono</th>
-                        <th>Total</th>
-                        <th>Estado Proceso</th>
-                        <th>Pago</th>
-                        <th>Estado Factura</th>
-                        <th>observación</th>
-                        <th>Vendedor</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bill in billsMovileDelivered %}
+                    </thead>
+                    <tbody>
+                        {% for bill in billsDelivered %}
+                            <tr>
+                                <td>{{ bill.id }}</td>
+                                <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
+                                <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                                <td>$<span class="total"> {{ bill.total}}</span></td>
+                                <td>{{ bill.processState.name}}</td>
+                                <td>{{ bill.paymentAgreement.name }}</td>
+                                <td>{{ bill.billState.name}}</td>
+                                <td>{{ bill.observation}}</td>
+                                <td>{{ bill.sellerUser.name }}</td>
+                                <td>{{ bill.CreatedAtString}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class ="table-responsive">
+                <table id="billsMovileDeliveredTable" class="display" cellspacing="0" width="100%">
+                    <thead>
                         <tr>
-                            <td>{{ bill.id }}</td>
-                            <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
-                            <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
-                            <td>$<span class="total"> {{ bill.total}}</span></td>
-                            <td>{{ bill.processState.name}}</td>
-                            <td>{{ bill.paymentAgreement.name }}</td>
-                            <td>{{ bill.billState.name}}</td>
-                            <td>{{ bill.observation}}</td>
-                            <td>{{ bill.sellerUser.name }}</td>
-                            <td>{{ bill.CreatedAtString}}</td>
+                            <th>No. Fac</th>
+                            <th>Cliente</th>
+                            <th>Telefono</th>
+                            <th>Total</th>
+                            <th>Estado Proceso</th>
+                            <th>Pago</th>
+                            <th>Estado Factura</th>
+                            <th>observación</th>
+                            <th>Vendedor</th>
+                            <th>Fecha</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for bill in billsMovileDelivered %}
+                            <tr>
+                                <td>{{ bill.id }}</td>
+                                <td>{{ bill.customer.name | default("No se Registro Cliente")}}</td>
+                                <td>{{ bill.customer.phoneNumber | default("No se Registra telefono")}}</td>
+                                <td>$<span class="total"> {{ bill.total}}</span></td>
+                                <td>{{ bill.processState.name}}</td>
+                                <td>{{ bill.paymentAgreement.name }}</td>
+                                <td>{{ bill.billState.name}}</td>
+                                <td>{{ bill.observation}}</td>
+                                <td>{{ bill.sellerUser.name }}</td>
+                                <td>{{ bill.CreatedAtString}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
         </div>
         <div class="col-md-3">
-
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title"><b>Buscar...</b></h3>
@@ -212,7 +220,13 @@
                     <h3 id="billTicket">Factura No. ***</h3>
 
                     <h5 id="dateTicket">Fecha: DD/MM/YYY hh:mm</h5>
-                    <hr>                   
+                    <hr>   
+                    <div class="alert alert-success" role="alert"  style="width: 100%;">
+                        <h6 class="h6"><strong>Pago:   </strong><span id="paymentAgreement"></span></h6>
+                        <h6 class="h6"><strong>Pagado:   $</strong><span id="payed"></span></h6>
+                        <h6 class="h6"><strong>Estado factura:   </strong><span id="billState"></span></h6>
+                    </div>
+                    <hr>
                     <strong id="customerTicket">Cliente: XXXXXXXXXXXX</strong><br>
                     <strong id="phoneNumberTicket">Numero Telefono: XXXXXXXXXXXX</strong><br>
                     <hr>
@@ -452,6 +466,11 @@
                 $("#phoneNumberTicket").html("Numero Telefono: " + ticket.phoneNumber);
                 drawDetails(ticket.billDetail.details);
                 $("#billDetailsTicket").append("<hr><strong>Observaciones: </strong>" + ((ticket.observation === "") ? "Ninguna" : ticket.observation));
+           
+                $("#payed").html(ticket.payed);
+                $("#billState").html(ticket.billState);
+                $("#paymentAgreement").html(ticket.paymentAgreement);
+	
             }
 
             function drawDetails(billDetails) {

@@ -24,8 +24,8 @@
                             </div>
                         </a>
 
-                        <a href="{{ path('lavaseco_Bills') }}">
-                            <div class="col-sm-6 col-md-4 service-itm">
+                        <a>
+                            <div class="col-sm-6 col-md-4 service-itm" onclick="billButton();">
                                 <div class="thumbnail service">
                                     <i class="fa fa-file-text-o fa-5x" aria-hidden="true"></i>
                                     <h5 class="text-center">Facturas</h5>
@@ -35,8 +35,8 @@
 
                     {% endif %}
                     {% if (is_granted('ROLE_OPERATOR') and salePointSession != null)%} 
-                        <a href="{{ path('lavaseco_orders') }}">
-                            <div class="col-sm-6 col-md-4 service-itm">
+                        <a>
+                            <div class="col-sm-6 col-md-4 service-itm" onclick="orderButton();">
                                 <div class="thumbnail service">
                                     <i class="fa fa-pencil-square-o fa-5x" aria-hidden="true"></i>
                                     <h5 class="text-center">Ordenes</h5>
@@ -45,7 +45,27 @@
                         </a>  
                     {% endif %}
 
+                    
+                    {% if (is_granted('ROLE_MESSENGER') and salePointSession != null)%} 
+                        <a>
+                            <div class="col-sm-6 col-md-4 service-itm" onclick="movileButton();">
+                                <div class="thumbnail service">
+                                    <i class="fa fa-truck fa-5x" aria-hidden="true"></i>
+                                    <h5 class="text-center">Mensajeria</h5>
+                                </div>
+                            </div>
+                        </a>  
+                    {% endif %}
+                    
                     {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))%}
+                        <a>
+                            <div class="col-sm-6 col-md-4 service-itm" onclick="reporstButton();">
+                                <div class="thumbnail service">
+                                    <i class="fa fa-area-chart fa-5x" aria-hidden="true"></i>
+                                    <h5 class="text-center">Reportes</h5>
+                                </div>
+                            </div>
+                        </a>
                         <a>
                             <div class="col-sm-6 col-md-4 service-itm" onclick="settingsButton();">
                                 <div class="thumbnail service">
@@ -53,6 +73,7 @@
                                     <h5 class="text-center">Configuración</h5>
                                 </div>
                             </div>
+                        </a>
                         </div>
                     {% endif %}
                 {% endif %}
@@ -121,5 +142,79 @@
         $("#breadcrumbMenu").html("<li><a href=\"\">Inicio</a></li><li class=\"active\">Configuración</li>");
         $("#blockOption").html(html);
     }
+
+    {% if is_granted('ROLE_MESSENGER') %}
+
+        function movileButton(){
+            var html = "<a href=\"{{ path('lavaseco_movile') }}\">\
+                                <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                    <div class=\"thumbnail service\">\
+                                        <i class=\"fa fa-cubes fa-5x\" aria-hidden=\"true\"></i>\
+                                        <h5 class=\"text-center\">Recoger y Entregar</h5>\
+                                    </div>\
+                                </div>\
+                            </a>\
+                            <a href=\"{{ path('lavaseco_movile_up_and_down') }}\">\
+                                <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                    <div class=\"thumbnail service\">\
+                                        <i class=\"fa fa-money fa-5x\" aria-hidden=\"true\"></i>\
+                                        <h5 class=\"text-center\">Cargar y Descargar</h5>\
+                                    </div>\
+                                </div>\
+                            </a>";
+
+            $("#breadcrumbMenu").html("<li><a href=\"\">Inicio</a></li><li class=\"active\">Reportes</li>");
+            $("#blockOption").html(html);
+        }
+    {% endif %}
+
+
+    function billButton(){
+        var html = "<a href=\"{{ path('lavaseco_Bills') }}\">\
+                            <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                <div class=\"thumbnail service\">\
+                                    <i class=\"fa fa-home fa-5x\" aria-hidden=\"true\"></i>\
+                                    <h5 class=\"text-center\">Sucursal</h5>\
+                                </div>\
+                            </div>\
+                        </a>\
+                        <a href=\"{{ path('lavaseco_Bills_app') }}\">\
+                            <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                <div class=\"thumbnail service\">\
+                                    <i class=\"fa fa-mobile fa-5x\" aria-hidden=\"true\"></i>\
+                                    <h5 class=\"text-center\">Aplicación</h5>\
+                                </div>\
+                            </div>\
+                        </a>";
+
+        $("#breadcrumbMenu").html("<li><a href=\"\">Inicio</a></li><li class=\"active\">Facturas</li>");
+        $("#blockOption").html(html);
+    }
+    
+    
+    {% if is_granted('ROLE_OPERATOR') %}
+
+        function orderButton(){
+            var html = "<a href=\"{{ path('lavaseco_orders') }}\">\
+                                <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                    <div class=\"thumbnail service\">\
+                                        <i class=\"fa fa-home fa-5x\" aria-hidden=\"true\"></i>\
+                                        <h5 class=\"text-center\">Sucursal</h5>\
+                                    </div>\
+                                </div>\
+                            </a>\
+                            <a href=\"{{ path('lavaseco_orders_app') }}\">\
+                                <div class=\"col-sm-6 col-md-4 service-itm\">\
+                                    <div class=\"thumbnail service\">\
+                                        <i class=\"fa fa-mobile fa-5x\" aria-hidden=\"true\"></i>\
+                                        <h5 class=\"text-center\">Aplicación</h5>\
+                                    </div>\
+                                </div>\
+                            </a>";
+
+            $("#breadcrumbMenu").html("<li><a href=\"\">Inicio</a></li><li class=\"active\">Ordenes</li>");
+            $("#blockOption").html(html);
+        }
+    {% endif %}
     </script>
 {% endblock %}
