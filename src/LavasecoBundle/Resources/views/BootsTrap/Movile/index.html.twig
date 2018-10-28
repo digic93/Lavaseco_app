@@ -127,7 +127,7 @@
                                 </div>
                             </div>
                             <hr>
-
+                             <!--Table-->
                             <div class="form-group">
                                 <div id="divTotalBill">
                                     <p class='text-right'>
@@ -186,6 +186,37 @@
                             <div  id="googlemap" style="height:500px;"></div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Modal -->
+    <div class="modal fade" id="changeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="titleModal" class="modal-title" id="myModalLabel">Cambio de Estado</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <strong id="modalOrdersText"></strong>
+                    </p>
+                    <div class="form-horizontal">
+                        <!-- Textarea -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="textarea">Observaciones</label>
+                            <div class="col-md-5">                     
+                                <textarea id="observationProccess" class="form-control" id="textarea" name="textarea"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button id="btnGuardarCambio" type="button" class="btn btn-success" >Guardar</button>
                 </div>
             </div>
         </div>
@@ -309,14 +340,21 @@
                             html +=
                                     "<strong>" + bill.billDetail.details[i].quantity + " x " + bill.billDetail.details[i].serviceName + "</strong><br>";
                             for (var j in bill.billDetail.details[i].descriptors) {
-                                html += "<strong>" + bill.billDetail.details[i].descriptors[j] + "</strong><br>";
+                                html += "<strong>" + bill.billDetail.details[i].descriptors[j] + " </strong>";
                             }
                             html += "<hr>";
                         }
                         html += "<strong>Observaciones: </strong>" + bill.observation + "\
-                                        </p>\
-                                        <h3><strong>Total: " + bill.billDetail.total + "</strong></h3>\
-                                        </div>";
+                                    <hr> \
+                                    <div  class=\"alert alert-success\" role=\"alert\"  style=\"width: 100%;\">\
+                                        <h5>Acuerdo de pago</h5>\
+                                        <h6 class=\"h6\"><strong>Pago:   </strong><span>" + bill.paymentAgreement + "</span></h6>\
+                                        <h6 class=\"h6\"><strong>Pagado:   $</strong><span>" + bill.payed + "</span></h6>\
+                                        <h6 class=\"h6\"><strong>Estado factura:   </strong><span>" + bill.billState + "</span></h6>\
+                                    </div>\
+                                    </p>\
+                                    <h3><strong>Total: " + bill.billDetail.total + "</strong></h3>\
+                                    </div>";
 
                         openModalAlerhtml("Informacion del Cliente", html);
                     }
@@ -450,8 +488,8 @@
                 }
             }
         }
-
-        function recogerPedidoFactura(invoiceId){
+        
+        function updateChangeState(invoiceId, observation){
             $.ajax({
                 url: "{{ path("lavaseco_api_order_change_processState") }}",
                 method: "POST",
@@ -459,7 +497,7 @@
                 data: {
                     "bills": [invoiceId],
                     "processState": 9,
-                    "observation": "Se recoge el pedido"
+                    "observation": observation
                 },
                 beforeSend: function (xhr) {
                     loadingModal("Guardando los cambios en el sistema... Espere por favor.");
@@ -477,7 +515,21 @@
                     closeLoadingModal();
                     openModalAlerErrorSuccess("Error Recogiendo Pedidos", "Error al registrar, intente nuevamente.");
                 }
-            });
+            });            
+        }
+
+        function recogerPedidoFactura(invoiceId){
+            $("#titleModal").empty();
+            $("#modalOrdersText").empty();
+            $("#titleModal").html("Recoger Pedido");
+            $("#modalOrdersText").html("Observaciones al recoger el pedido:");
+            $("#observationProccess").val("Se recoge la orden");
+            $("#changeModal").modal('toggle');
+            $("#btnGuardarCambio").attr('onclick', "saveChanges(" + invoiceId +");");
+        }
+        
+        function saveChanges(invoiceId){
+            updateChangeState(invoiceId, $("#observationProccess").val());
         }
 
         function entregarPedidoFactura(invoiceId) {

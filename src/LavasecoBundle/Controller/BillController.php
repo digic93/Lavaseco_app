@@ -25,11 +25,25 @@ class BillController extends Controller {
         $branchOfficeId = $salePoint->getBranchOffice()->getId();
  
         return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', [
-                    "billsMovileDelivered" => $billRepository->findDelivered($branchOfficeId, 200, true),
-                    "billsMovileUndelivered" => $billRepository->findUndelivered($branchOfficeId, true),
-                    "billsDelivered" => $billRepository->findDelivered($branchOfficeId, 200),
-                    "billsUndelivered" => $billRepository->findUndelivered($branchOfficeId),
-                    "salePointIsOpen" => ($salePoint) ? $salePoint->getIsOpen() : false
+            "apllication" => false,
+            "billsDelivered" => $billRepository->findDelivered($branchOfficeId, 200),
+            "billsUndelivered" => $billRepository->findUndelivered($branchOfficeId),
+            "salePointIsOpen" => ($salePoint) ? $salePoint->getIsOpen() : false
+        ]);
+    }
+    
+        public function indexAppAction() {
+        $configuration = $this->get('lavaseco.app_configuration');
+        $salePoint = $this->get('session')->get('salePoint');
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
+        $branchOfficeId = $salePoint->getBranchOffice()->getId();
+ 
+        return $this->render($configuration->getViewTheme() . ':Bill/index.html.twig', [
+            "apllication" => true,
+            "billsMovileDelivered" => $billRepository->findDelivered($branchOfficeId, 200, true),
+            "billsMovileUndelivered" => $billRepository->findUndelivered($branchOfficeId, true),
+            "salePointIsOpen" => ($salePoint) ? $salePoint->getIsOpen() : false
         ]);
     }
 
@@ -712,6 +726,10 @@ class BillController extends Controller {
             "seller" => $bill->getSellerUser()->getName(),
             "customer" => ($bill->getCustomer()) ? $bill->getCustomer()->getName() : "No se Registro Cliente",
             "phoneNumber" => ($bill->getCustomer()) ? $bill->getCustomer()->getPhoneNumber() : "No se Registro Telefono",
+            "observation" => $bill->getObservation(),
+            "paymentAgreement" => $bill->getPaymentAgreement()->getName(),
+            "billState" => $bill->getBillState()->getName(),
+            "payed" => $bill->getPayed(),
             "observation" => $bill->getObservation(),
             "salePoint" => $bill->getSalePoint()->getId(),
             "createdAt" => $bill->getCreatedAtString(),

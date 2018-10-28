@@ -24,14 +24,38 @@ class OrdersController extends Controller {
         if ($processId == 0 || ($processId > 9 && $processId != 7)) {
             $branchOfficeId = $salePoint->getBranchOffice()->getId();
             $bills = $billRepository->findUndelivered($branchOfficeId);
-            $billsMovile = $billRepository->findUndelivered($branchOfficeId, true);
         } else {
             $bills = $billRepository->getBillsByProcessId($processId);
+            $processState = $processStateRepository->find($processId);
+            $data["processState"] = $processState;
+        }
+        $data["aplication"] = false;
+        $data["bills"] = $bills;
+        
+        return $this->render($configuration->getViewTheme() . ':Orders/index.html.twig', $data);
+    }
+
+    public function indexAppAction($processId) {
+        $data = array();
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $salePoint = $this->get('session')->get('salePoint');
+        $configuration = $this->get('lavaseco.app_configuration');
+
+        $billRepository = $doctrineManager->getRepository("LavasecoBundle:Bill");
+        $processStateRepository = $doctrineManager->getRepository("LavasecoBundle:ProcessState");
+
+        $data["processStates"] = $processStateRepository->getProces();
+
+        //mostrador proceso listo para entregar
+        if ($processId == 0 || ($processId > 9 && $processId != 7)) {
+            $branchOfficeId = $salePoint->getBranchOffice()->getId();
+            $billsMovile = $billRepository->findUndelivered($branchOfficeId, true);
+        } else {
             $billsMovile = $billRepository->getBillsByProcessId($processId, TRUE);
             $processState = $processStateRepository->find($processId);
             $data["processState"] = $processState;
         }
-        $data["bills"] = $bills;
+        $data["aplication"] = true;
         $data["billsMovile"] = $billsMovile;
         
         return $this->render($configuration->getViewTheme() . ':Orders/index.html.twig', $data);

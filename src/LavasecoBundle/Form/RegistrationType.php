@@ -28,7 +28,8 @@ class RegistrationType extends AbstractType {
                             'choices' => array( 
                                 'Vendedor' => 'ROLE_CASHIER',
                                 'Operador' => 'ROLE_OPERATOR', 
-                                'Administrador' => 'ROLE_MANAGER'
+                                'Mensajero' => 'ROLE_MESSENGER',
+                                'Administrador' => 'ROLE_MANAGER',
                             ), 
                     'multiple' => true));
     }

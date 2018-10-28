@@ -22,9 +22,19 @@ lavaseco_orders:
     requirements:
         processId:  \d+
 
+lavaseco_orders_app:
+    path:     /orden/apliacion/{processId}
+    defaults: { _controller: LavasecoBundle:Orders:indexApp, processId: 0 }
+    requirements:
+        processId:  \d+
+
 lavaseco_Bills:
     path:     /facturas
     defaults: { _controller: LavasecoBundle:Bill:index }
+
+lavaseco_Bills_app:
+    path:     /facturas/apliacion
+    defaults: { _controller: LavasecoBundle:Bill:indexApp }
 
 lavaseco_movile:
     path:     /mensajeria

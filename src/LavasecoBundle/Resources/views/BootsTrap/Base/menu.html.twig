@@ -34,11 +34,13 @@
             <a class="navbar-brand" href="{{ path("lavaseco_homepage") }}">
                 <img alt="Brand"  height="50" width="97" src="{{ asset( "Logo/logo.png" ) }}" style="margin: -15px 5px;">
             </a>
-            {#            <a class="navbar-brand" href="{{ path("lavaseco_homepage") }}">
-                            <nav class="navbar navbar-default">
-                            <span class="glyphicon glyphicon-leaf" aria-hidden="true"></span> 
-                            Lavaseco Modelo
-                        </a>#}
+            {#         
+                <a class="navbar-brand" href="{{ path("lavaseco_homepage") }}">
+                    <nav class="navbar navbar-default">
+                    <span class="glyphicon glyphicon-leaf" aria-hidden="true"></span> 
+                    Lavaseco Modelo
+                </a>
+            #}
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -52,12 +54,29 @@
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                     {% if (is_granted('ROLE_CASHIER') and salePointSession != null) %} 
                         <li><a href="{{ path('lavaseco_sales') }}">Venta <i class="fa fa-shopping-cart" aria-hidden="true"></i></a></li>
-                        <li><a href="{{ path('lavaseco_Bills') }}">Facturas <i class="fa fa-file-text" aria-hidden="true"></i></a></li>
-                            {% endif %}
-                            {% if (is_granted('ROLE_OPERATOR') and salePointSession != null)%} 
-                        <li><a href="{{ path('lavaseco_orders') }}">Ordenes <i class="fa fa-pencil" aria-hidden="true"></i></a></li>
-                            {% endif %}
-                            {% if (is_granted('ROLE_MOVILE') and salePointSession != null)%} 
+                    
+                        
+                        
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Facturas <i class="fa fa-file-text" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ path('lavaseco_Bills') }}">Sucursal</a></li>
+                                <li><a href="{{ path('lavaseco_Bills_app') }}">Aplicación</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                    {% if (is_granted('ROLE_OPERATOR') and salePointSession != null)%}  
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Ordenes <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ path('lavaseco_orders') }}">Sucursal</a></li>
+                                <li><a href="{{ path('lavaseco_orders_app') }}">Aplicación</a></li>
+                            </ul>
+                        </li>
+                        
+                    
+                    {% endif %}
+                    {% if (is_granted('ROLE_MESSENGER') and salePointSession != null)%} 
                         <li>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Mensajeria <i class="fa fa-truck" aria-hidden="true"></i></a>
                             <ul class="dropdown-menu">
@@ -65,7 +84,7 @@
                                 <li><a href="{{ path('lavaseco_movile_up_and_down') }}">Cargar y Descargar</a></li>
                             </ul>
                         </li>
-                            {% endif %}
+                    {% endif %}
 
                     {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')) %}
                         {% if is_granted('ROLE_ADMIN') %}
