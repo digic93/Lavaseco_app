@@ -223,6 +223,8 @@
                     <hr>   
                     <div class="alert alert-success" role="alert"  style="width: 100%;">
                         <h6 class="h6"><strong>Pago:   </strong><span id="paymentAgreement"></span></h6>
+                        <h6 class="h6"><strong>Total:   </strong><span id="total"></span></h6>
+                        <h6 class="h6"><strong>Puntos:   </strong><span id="discount"></span></h6>
                         <h6 class="h6"><strong>Pagado:   $</strong><span id="payed"></span></h6>
                         <h6 class="h6"><strong>Estado factura:   </strong><span id="billState"></span></h6>
                     </div>
@@ -467,9 +469,11 @@
                 drawDetails(ticket.billDetail.details);
                 $("#billDetailsTicket").append("<hr><strong>Observaciones: </strong>" + ((ticket.observation === "") ? "Ninguna" : ticket.observation));
            
-                $("#payed").html(ticket.payed);
+                $("#payed").html($.number(ticket.payed));
                 $("#billState").html(ticket.billState);
                 $("#paymentAgreement").html(ticket.paymentAgreement);
+                $("#discount").html($.number(ticket.billDetail.discount));
+                $("#total").html("$" + $.number(ticket.billDetail.total));
 	
             }
 

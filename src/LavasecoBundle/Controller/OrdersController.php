@@ -85,7 +85,7 @@ class OrdersController extends Controller {
             $billArray ["pago"] = $bill->getBillState()->getName();
             $billArray ["id_estado"] = $bill->getProcessState()->getId();
             $billArray ["estado"] = $bill->getProcessState()->getName();
-            $billArray ["precio"] = $bill->getTotal();
+            $billArray ["precio"] = $bill->getTotalServices();
             $billArray ["fecha"] = $bill->getCreatedAtString();
         
             $billsResult [] = $billArray;

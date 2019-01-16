@@ -38,11 +38,11 @@ lavaseco_Bills_app:
 
 lavaseco_movile:
     path:     /mensajeria
-    defaults: { _controller: LavasecoBundle:Mobile:index } 
-        
+    defaults: { _controller: LavasecoBundle:Mobile:index }
+
 lavaseco_movile_up_and_down:
     path:     /mensajeria/carga
-    defaults: { _controller: LavasecoBundle:Mobile:charger } 
+    defaults: { _controller: LavasecoBundle:Mobile:charger }
 
 lavaseco_setting_bill_content:
     path:     /configuracion/factura
@@ -62,7 +62,7 @@ lavaseco_setting_customers:
 
 lavaseco_setting_sale_point:
     path:     /configuracion/puntoventa/{salePointId}
-    defaults: { _controller: LavasecoBundle:SalePoint:index, salePointId: 0 }   
+    defaults: { _controller: LavasecoBundle:SalePoint:index, salePointId: 0 }
     requirements:
         salePointId:  \d+
 
@@ -71,7 +71,7 @@ lavaseco_setting_branch_office:
     defaults: { _controller: LavasecoBundle:BranchOffice:index, branchOfficeId: 0 }
     requirements:
         branchOfficeId:  \d+
-        
+
 lavaseco_setting_loyalty:
     path:     /configuracion/fidelidad
     defaults: { _controller: LavasecoBundle:Loyalty:index }
@@ -106,13 +106,13 @@ lavaseco_report_cash_transaction:
 
 lavaseco_report_inventory:
     path:     /reportes/inventario
-    defaults: { _controller: LavasecoBundle:Report:inventory }   
+    defaults: { _controller: LavasecoBundle:Report:inventory }
 
 lavaseco_report_inventory_excel:
     path:     /reportes/excel/inventario
-    defaults: { _controller: LavasecoBundle:Report:inventoryExcel }   
-    
-#app Service-------------------------------------------------------------------        
+    defaults: { _controller: LavasecoBundle:Report:inventoryExcel }
+
+#app Service-------------------------------------------------------------------
 lavaseco_client_home:
     path:     /app
     defaults: { _controller: LavasecoBundle:Client:index }
@@ -120,7 +120,7 @@ lavaseco_client_home:
 lavaseco_client_login:
     path:     /app/login
     defaults: { _controller: LavasecoBundle:Client:login }
-    
+
 lavaseco_client_orders:
     path:     /app/orders
     defaults: { _controller: LavasecoBundle:Client:orders }
@@ -128,12 +128,12 @@ lavaseco_client_orders:
 lavaseco_client_invoices:
     path:     /app/invoices
     defaults: { _controller: LavasecoBundle:Client:invoice }
-    
+
 lavaseco_mobile_restart_password:
     path:     /Customer/restartpassword/{uuidUser}
     defaults: { _controller: LavasecoBundle:MobileAutentication:restartPassword }
-    
-#Ajax Service-------------------------------------------------------------------        
+
+#Ajax Service-------------------------------------------------------------------
 lavaseco_api_service_category:
     path:     /api/service/category/{serviceCategoryId}
     defaults: { _controller: LavasecoBundle:Service:getServiceCategoryId, serviceCategoryId: 0}
@@ -170,8 +170,8 @@ lavaseco_api_search_customer:
     path:     /api/search/customer
     defaults: { _controller: LavasecoBundle:Customer:search }
     methods:  [POST]
-    
-#permitido solo para los usuarios que tienen acceso a venta    
+
+#permitido solo para los usuarios que tienen acceso a venta
 lavaseco_api_get_customer:
     path:     /api/customer/{customerId}
     defaults: { _controller: LavasecoBundle:Customer:getCustomer, customerId:0}
@@ -183,7 +183,7 @@ lavaseco_api_validate_customer:
     path:     /api/customer/{email}
     defaults: { _controller: LavasecoBundle:Customer:validateEmail, email: ''}
     methods:  [GET]
-        
+
 lavaseco_api_create_customer:
     path:     /api/customer
     defaults: { _controller: LavasecoBundle:Customer:register }
@@ -204,7 +204,7 @@ lavaseco_api_orders_tikets:
 lavaseco_api_order_change_processState:
     path:     /api/order/next/processState
     defaults: { _controller: LavasecoBundle:Orders:changeProcessState }
-    methods:  [POST] 
+    methods:  [POST]
 
 lavaseco_api_bill:
     path:     /api/bill/{billId}
@@ -212,24 +212,24 @@ lavaseco_api_bill:
     methods:  [GET]
     requirements:
         billId:  \d+
-        
+
 lavaseco_api_bill_deliver:
     path:     /api/bill/delivery
     defaults: { _controller: LavasecoBundle:Bill:deliver }
     methods:  [POST]
-        
+
 lavaseco_api_bill_refund:
     path:     /api/bill/refund
     defaults: { _controller: LavasecoBundle:Bill:refund }
-    methods:  [POST] 
-        
+    methods:  [POST]
+
 lavaseco_api_bill_history:
     path:     /api/bill/history/{billId}
     defaults: { _controller: LavasecoBundle:Bill:getHistoryByBillId, billId: 0 }
     methods:  [GET]
     requirements:
         billId:  \d+
-        
+
 lavaseco_api_sale_point:
     path:     /api/sale/point
     defaults: { _controller: LavasecoBundle:SalePoint:register }
@@ -239,12 +239,12 @@ lavaseco_api_sale_point_active:
     path:     /api/sale/point/active
     defaults: { _controller: LavasecoBundle:SalePoint:getSalePoint }
     methods:  [POST]
-    
+
 lavaseco_api_pay_method:
     path:     /api/pay/method
     defaults: { _controller: LavasecoBundle:Bill:getPayMethod }
     methods:  [GET]
-    
+
 lavaseco_api_print:
     path:     /api/print/{officeBranchId}
     defaults: { _controller: LavasecoBundle:Print:unprinted }
@@ -258,7 +258,7 @@ lavaseco_api_print_bill:
 lavaseco_api_report_daily_sale:
     path:     /api/report/daily/sale
     defaults: { _controller: LavasecoBundle:Report:getDailySale }
-    methods:  [POST]    
+    methods:  [POST]
 
 lavaseco_api_report_sale_point:
     path:     /api/report/salepoint
@@ -269,7 +269,7 @@ lavaseco_api_report_cash_transaction:
     path:     /api/report/transaction
     defaults: { _controller: LavasecoBundle:Report:getCashTransaction }
     methods:  [POST]
-    
+
 lavaseco_api_bill_paymet:
     path:     /api/bill/payment
     defaults: { _controller: LavasecoBundle:Bill:payment }
@@ -281,61 +281,66 @@ lavaseco_api_mobile_info_bill:
     methods:  [GET]
 
 
-#RestFull api mobile----------------------------    
+#RestFull api mobile----------------------------
 api_mobile_login:
     path: /api/mobile/login_check
     defaults: { _controller: LavasecoBundle:MobileAutentication:login }
-    methods:  [POST]    
+    methods:  [POST]
 
 api_mobile_signin:
     path: /api/mobile/signin
     defaults: { _controller: LavasecoBundle:MobileAutentication:signin }
-    methods:  [POST]    
+    methods:  [POST]
 
 api_mobile_update_customer:
     path:     /api/mobile/customer
     defaults: { _controller: LavasecoBundle:Customer:update }
     methods:  [PUT]
-    
+
+api_mobile_get_point:
+    path:     /api/mobile/point
+    defaults: { _controller: LavasecoBundle:Customer:getPoint }
+    methods:  [GET]
+
 api_mobile_update_password:
     path:     /api/mobile/password
     defaults: { _controller: LavasecoBundle:Customer:updatePassword }
     methods:  [PUT]
-    
+
 api_mobile_validate_customer:
     path:     /api/mobile/customer/{email}
     defaults: { _controller: LavasecoBundle:Customer:validateEmail }
     methods:  [GET]
-    
+
 api_mobile_reset_password:
     path: /api/mobile/resetpassword
     defaults: { _controller: LavasecoBundle:MobileAutentication:getResetpassword }
-    methods:  [POST]    
+    methods:  [POST]
 
 api_mobile_orders:
     path: /api/mobile/orders
     defaults: { _controller: LavasecoBundle:Orders:customerOrders }
-    methods:  [GET]   
-    
+    methods:  [GET]
+
 api_mobile_bill:
     path: /api/mobile/bill
     defaults: { _controller: LavasecoBundle:Bill:saveBillingMovile }
-    methods:  [POST]   
-    
+    methods:  [POST]
+
 api_mobile_get_bill:
     path: /api/mobile/bill/{billId}
     defaults: { _controller: LavasecoBundle:Bill:getTiketMobileByBillId }
-    methods:  [GET]   
+    methods:  [GET]
     requirements:
         billId:  \d+
 
 api_mobile_get_bill_history:
     path: /api/mobile/bill/history/{billId}
     defaults: { _controller: LavasecoBundle:Bill:getHistoryBillMobileByBillId }
-    methods:  [GET]   
+    methods:  [GET]
     requirements:
         billId:  \d+
-    
+
 api_mobile_sale_service:
     path:     /api/mobile/service/{categoriaId}
     defaults: { _controller: LavasecoBundle:Service:getServiceMobile }
@@ -349,17 +354,17 @@ api_mobile_service_descriptions:
     methods:  [GET]
     requirements:
         serviceCategoryId:  \d+
-       
+
 api_mobile_validate_customer:
     path:     /api/mobile/customer/{email}
     defaults: { _controller: LavasecoBundle:Customer:validateEmail }
     methods:  [GET]
-    
+
 api_mobile_add_address:
     path:     /api/mobile/address
     defaults: { _controller: LavasecoBundle:Customer:addAddress }
     methods:  [POST]
-    
+
 api_mobile_get_address:
     path:     /api/mobile/address
     defaults: { _controller: LavasecoBundle:Customer:getAddress }
@@ -369,12 +374,12 @@ api_mobile_update_address:
     path:     /api/mobile/address
     defaults: { _controller: LavasecoBundle:Customer:updateAddress }
     methods:  [PUT]
-   
+
 api_mobile_get_addres_branch_office:
     path:     /api/mobile/address/branchoffice
     defaults: { _controller: LavasecoBundle:Customer:getAddressSalepoint }
     methods:  [GET]
-    
+
 api_mobile_get_paymentAgreement:
     path:     /api/mobile/paymentagreement
     defaults: { _controller: LavasecoBundle:Bill:getpaymentAgreement }
