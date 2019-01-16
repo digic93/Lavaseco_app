@@ -32,7 +32,7 @@ class BillController extends Controller {
         ]);
     }
     
-        public function indexAppAction() {
+    public function indexAppAction() {
         $configuration = $this->get('lavaseco.app_configuration');
         $salePoint = $this->get('session')->get('salePoint');
         $doctrineManager = $this->get('doctrine')->getManager();
@@ -748,6 +748,7 @@ class BillController extends Controller {
         $billDetailsArray ["total"] = 0;
         $billDetailsArray ["quantity"] = 0;
         $billDetailsArray ["details"] = array();
+        $billDetailsArray ["discount"] = $bill->getDiscount();
 
         $billDetails = $bill->getBillDetails();
         foreach ($billDetails as $billDetail) {
